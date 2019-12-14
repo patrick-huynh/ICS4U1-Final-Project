@@ -10,5 +10,12 @@ package prototype;
  * @author 325254100
  */
 public class Employee extends Person{
+    protected String title;
+    private long empNum;
     
+    public Employee(String fName, String lName, long empNum, String title){
+        super(fName, lName);
+        this.empNum = empNum;
+        this.title = title;
+    }
 }
