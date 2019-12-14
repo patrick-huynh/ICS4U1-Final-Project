@@ -12,7 +12,7 @@ package prototype;
 public abstract class Person {
     private String fname, lname, phone, gender, dob, address;
     private int age;
-    public Person (String fname,String  lname,String  phone, String gender, String dob, int age, String address) {
+    public Person (String fname, String  lname, String  phone, String gender, String dob, int age, String address) {
         this.fname = fname;
         this.lname = lname;
         this.phone = phone;
