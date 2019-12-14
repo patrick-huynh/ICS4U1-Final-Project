@@ -10,4 +10,9 @@ package prototype;
  * @author 325254100
  */
 public class Patient extends Person{
+  protected long PatientID;
+  protected String status;
+  public Patient(String firstName, String lastName, String status, long PatientID){
+    super(firstName, lastName);
+  }
 }
