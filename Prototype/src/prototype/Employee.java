@@ -13,8 +13,8 @@ public class Employee extends Person{
     protected String title;
     private long empNum;
     
-    public Employee(String fName, String lName, long empNum, String title){
-        super(fName, lName);
+    public Employee(String fName, String lName, String phone, String gender, String dob, int age, String address, long empNum, String title){
+        super(fName, lName, phone, gender, dob, age, address);
         this.empNum = empNum;
         this.title = title;
     }
