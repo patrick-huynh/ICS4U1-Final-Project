@@ -12,7 +12,7 @@ package prototype;
 public class Patient extends Person{
   protected long PatientID;
   protected String status;
-  public Patient(String firstName, String lastName, String phone, String gender, String dob, int age, String status, long PatientID){
+  public Patient(String firstName, String lastName, String phone, String gender, String dob, int age, String address, String status, long PatientID){
     super(firstName, lastName, phone, gender, dob, age, address);
     this.PatientID = PatientID;
     this.status = status;
