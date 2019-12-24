@@ -5,4 +5,4 @@ Group Members: Patrick Huynh, Jaimin Patel, Henchel Santillan
 
 Course: ICS4U
 
-Date of Start: 12 December 2019
+Start Date: 12 December 2019
