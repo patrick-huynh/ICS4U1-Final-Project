@@ -45,7 +45,15 @@ public static void copy(File source, File destination) {
 		}
 }
 
-/*In essence, reload exchanges information in previous.txt with recent.txt and uploads the new recent.txt into the database.*/
-public static void reload() {
+/*In essence, revert exchanges information in previous.txt with recent.txt and uploads the new recent.txt into the database.*/
+public static void revert() {
 
 }
+
+/*Allows the user to download recent.txt (copy) to their file system.*/
+public static void retrieve() {
+
+}
+
+
+
