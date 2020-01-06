@@ -97,6 +97,7 @@ public class MenuTest extends Application {
 		file_cxtmenu.getItems().addAll(load_cxtmenu, save_cxtmenu, revert_cxtmenu, reload_cxtmenu);
 		
 		ctxmenu.getItems().add(file_cxtmenu);
+		ctxmenu.setAutoHide(true);
 		
 		pane.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
 			ctxmenu.show(pane, event.getScreenX(), event.getScreenY());

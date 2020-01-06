@@ -8,7 +8,8 @@ import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.geometry.Insets;
 
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.layout.GridPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
@@ -19,7 +20,7 @@ public class TextModal {
 	
 	private Stage parent, modal;
 	private Scene main;
-	private VBox vbox;
+	private GridPane grid;
 	
 	/**Constructor for class TextModal
 	 * @param parent - The Stage owner of this TextModal. */
@@ -28,11 +29,12 @@ public class TextModal {
 		label_container = new ArrayList<>();
 		field_container = new ArrayList<>();
 		
-		vbox = new VBox();
-		vbox.setSpacing(10);
-		vbox.setPadding(new Insets(50, parent.getScene().getWidth() / 2.0, parent.getScene().getHeight() / 2.0, 50));
+		grid = new GridPane();
+		main = new Scene(grid, parent.getScene().getWidth() / 2.0, parent.getScene().getHeight() / 2.0);
 		
-		main = new Scene(vbox, parent.getScene().getWidth() / 2.0, parent.getScene().getHeight() / 2.0);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
 		
 		modal = new Stage(StageStyle.UTILITY);
 		modal.initModality(Modality.WINDOW_MODAL);
@@ -56,14 +58,14 @@ public class TextModal {
 		}
 		
 		label_container.add(label);
-		vbox.getChildren().add(label);
+		grid.getChildren().add(label);
 	}
 	
 	/**Adds a TextField object to the modal. This method works on a first-in display basis.
 	 * @param field - The TextField object to show*/
 	public void addField(TextField field) {
 		field_container.add(field);
-		vbox.getChildren().add(field);
+		grid.getChildren().add(field);
 	}
 
 	/**Adds a Label object with its complementary TextField object to the modal.

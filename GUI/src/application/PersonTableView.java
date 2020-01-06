@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
+import javafx.util.converter.NumberStringConverter;
 import javafx.stage.Screen;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -22,15 +23,16 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
 import javafx.event.EventHandler;
 
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 
 //SAMPLE CLASS, with no css or fxml. No styling or layout has been applied; only tested for functionality.
 /*Things to fix:
- * Cell Wrapping: When a value is entered and does not fit in the cell, how will the table handle this?
  * Age Column: edit commits do not work, since right-end parameterized object is Number and not String
- * cancenlEdit not yet implemented
+ * cancenlEdit not yet implemented (only works with ESC key)
  * Method of creating tables is the same, only setOnEditCommit and property factories vary. Needs FXML and CSS
  * editable, feature-rich tables: design, good spacing, adjustable and adaptable. 
- * Still working on textmodal
+ * Still working on textmodal. Will create adjustable modal.
  * */
 
 public class PersonTableView extends Application {
@@ -39,6 +41,7 @@ public class PersonTableView extends Application {
 	Pane pane;
 	Scene scene;
 	TableView<Person> table;
+	ContextMenu tableRC;	//table right-click
 	
 	private final NumberFormat nf = new DecimalFormat("#.##");
 	
@@ -92,7 +95,7 @@ public class PersonTableView extends Application {
 		
 		TableColumn<Person, Number> age = new TableColumn<>("Age");
 		age.setCellValueFactory(cellData -> cellData.getValue().ageProperty());
-		age.setCellFactory(tc -> new TableCell<Person, Number>() {
+		/*age.setCellFactory(tc -> new TableCell<Person, Number>() {
 			@Override
 			protected void updateItem(Number value, boolean empty) {
 				super.updateItem(value,  empty);
@@ -102,15 +105,20 @@ public class PersonTableView extends Application {
 					setText(nf.format(value));
 				}
 			}
-		});
+		});*/
 		
-		/*age.setOnEditCommit(new EventHandler<CellEditEvent<Person, Number>>() {
+		age.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		
+		age.setOnEditCommit(new EventHandler<CellEditEvent<Person, Number>>() {
 			@Override
 			public void handle(CellEditEvent<Person, Number> e) {
-				((Person) e.getTableView().getItems().get(
-						e.getTablePosition().getRow())).setAge(e.getNewValue());
+				if (e.getNewValue() instanceof Number) {
+					((Person) e.getTableView().getItems().get(
+							e.getTablePosition().getRow())).setAge(e.getNewValue());
+					table.refresh();
+				}
 			}
-		});*/
+		});
 		
 		table.getColumns().add(firstName);
 		table.getColumns().add(lastName);
@@ -122,6 +130,16 @@ public class PersonTableView extends Application {
 		
 		pane.getChildren().add(table);
 		
+		tableRC = new ContextMenu();
+		tableRC.setAutoHide(true);
+		MenuItem addRow = new MenuItem("Add Row");
+		MenuItem deleteRow = new MenuItem("Delete Row");
+		tableRC.getItems().addAll(addRow, deleteRow);
+		
+		table.setOnContextMenuRequested(event -> {
+			tableRC.show(table, event.getScreenX(), event.getScreenY());
+		});
+		
 		stage.setScene(scene);
 		stage.setTitle("Simple Table Test");
 		stage.show();
@@ -129,9 +147,11 @@ public class PersonTableView extends Application {
 	
 	@SuppressWarnings("unchecked")
 	private void setTableEditable() {
+		//Make table editable by external user input using TableView Selection Model
 		table.setEditable(true);
 		table.getSelectionModel().cellSelectionEnabledProperty().set(true);
 		
+		//Lambda event to capture event and process (filter), then consume (terminate) it
 		table.setOnKeyPressed(event -> {
 			if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
 				final TablePosition<Person, ?> focusedCell = table.focusModelProperty().get().focusedCellProperty().get();
@@ -140,14 +160,50 @@ public class PersonTableView extends Application {
 				table.getSelectionModel().selectNext();
 				event.consume();
 			} else if (event.getCode() == KeyCode.LEFT) {
-				table.getSelectionModel().selectPrevious();
+				selectPrevious();
 				event.consume();
 			}
 		});
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void selectPrevious() {
+		if (table.getSelectionModel().isCellSelectionEnabled()) {
+			TablePosition<Person, ?> position = table.getFocusModel().getFocusedCell();
+			
+			if (position.getColumn() - 1 >= 0) {
+				table.getSelectionModel().select(position.getRow(), getPrevColumn(position.getTableColumn(), -1));
+			} else if (position.getRow() < table.getItems().size()) {
+				table.getSelectionModel().select(position.getRow() - 1,
+						table.getVisibleLeafColumn(table.getVisibleLeafColumns().size()));
+			}
+		} else {
+			int focus = table.getFocusModel().getFocusedIndex();
+			
+			if (focus == -1) {
+				table.getSelectionModel().select(table.getItems().size() - 1);
+			} else if (focus > 0) {
+				table.getSelectionModel().select(focus - 1);
+			}
+		}
+	}
 	
+	private TableColumn<Person, ?> getPrevColumn(final TableColumn<Person, ?> column, int offset) {
+		int column_index = table.getVisibleLeafIndex(column);
+		return table.getVisibleLeafColumn(column_index + offset);
+	}
 	
+	//Open up textmodal for person, create new Person object, add to observablearraylist, refresh table
+	//boolean returns since need to check if inputs are valid (e.g. Date, Names, Age, etc.)
+	//will use try-catch 
+	/*private boolean addRow() {
+		
+	}
+	
+	private boolean deleteRow() {
+	
+	}
+	*/
 	public static void main(String[] args) {
 		launch(args);
 	}

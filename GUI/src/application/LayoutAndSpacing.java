@@ -24,7 +24,7 @@ public class LayoutAndSpacing extends Application {
 		pane = new VBox();
 		scene = new Scene(pane, screen.getWidth() / 2, screen.getHeight() / 2);
 		pane.setSpacing(10);
-		pane.setPadding(new Insets(50, scene.getWidth() / 2.0, 50, scene.getWidth()/2.0));
+		pane.setPadding(new Insets(50, scene.getWidth() / 2.0, scene.getWidth()/2.0, 50));
 		
 		Label label = new Label("Hello World!");
 		TextField field = new TextField("Say something!");

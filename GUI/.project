@@ -20,4 +20,11 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>IMAGES</name>
+			<type>2</type>
+			<location>/home/jhr/Programming/eclipse_workspace/GUI/IMAGES</location>
+		</link>
+	</linkedResources>
 </projectDescription>

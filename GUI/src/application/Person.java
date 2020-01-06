@@ -53,8 +53,8 @@ public class Person {
 		return age.get();
 	}
 	
-	public void setAge(double val) {
-		age.set(val);
+	public void setAge(Number val) {
+		age.set(val.doubleValue());
 	}
 	
 	public DoubleProperty ageProperty() {
