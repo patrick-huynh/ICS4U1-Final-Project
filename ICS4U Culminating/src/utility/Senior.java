@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 public class Senior extends Person {
 	
 	private final SimpleStringProperty date_of_entry;
-	private final SimpleLongProperty home_id, insurance_number;
+	private final SimpleLongProperty home_id, chequing_acc;
 	private SimpleDoubleProperty care_hours;	//number of hours of care to receive per week
 	//Maybe add bank account number, 
 	
@@ -16,7 +16,7 @@ public class Senior extends Person {
 	 * @param hID - The ID of the Senior object while in the reitrement residence
 	 * @param insurance - The Old Age Security (OAS) number of the Senior object*/
 	public Senior(String fname, String lname, String dob, double age, double height, double weight, String doe,
-			long hID, long insurance) {
+			long hID, long chequing) {
 		super(fname, lname, dob, age, height, weight);
 		
 		date_of_entry = new SimpleStringProperty();
@@ -25,8 +25,8 @@ public class Senior extends Person {
 		home_id = new SimpleLongProperty();
 		home_id.set(hID);
 		
-		insurance_number = new SimpleLongProperty();
-		insurance_number.set(insurance);
+		chequing_acc = new SimpleLongProperty();
+		chequing_acc.set(chequing); 
 		
 		care_hours = new SimpleDoubleProperty();
 		care_hours.set(0);
@@ -34,29 +34,64 @@ public class Senior extends Person {
 	
 	/**Gets the date of entry of the Senior into the residence.
 	 * @return long - The value of the property date_of_entry.*/
-	public String getDateOfEntry() {
+	public String getDOE() {
 		return date_of_entry.get();
 	}
 	
-	/***/
+	/**
+         * @return long - ID of the Senior.
+         */
 	public long getHomeID() {
 		return home_id.get();
 	}
-	
-	/***/
-	public long getInsuranceNumber() {
-		return insurance_number.get();
-	}
-	
-	/***/
+
+        /**
+         * @return long - The chequing account number of the Senior.
+         */
+	public long getAccountNumber() {
+            return chequing_acc.get();
+        }
+	/**
+         * @return double - The hours cared for the Senior.
+         */
 	public double getHours() {
 		return care_hours.get();
 	}
 	
-	/***/
-	public void setHours(double hours) {
-		care_hours.set(hours);
-	}
+        /**
+         * @param date - The date of entry of the Senior.
+         */
+        public void setDOE(String date) {
+            date_of_entry.set(date);
+        }
+        
+        /**
+         * @param hID - The ID of the Senior.
+         */
+        public void setHomeID(long hID) {
+            home_id.set(hID);
+        }
+        
+        /**
+         * @param chequing - The chequing account number of the Senior.
+         */
+        public void setAccountNumber(long chequing) {
+            chequing_acc.set(chequing);
+        }
+        
+        /**
+         * @param hours - The number of hours the Senior is cared for.
+         */
+        public void setHours (double hours) {
+            care_hours.set(hours);
+        }
+        
+        /**
+         * This method resets the number of hours cared for the citizen to 0.
+         */
+        public void resetHours() {
+            care_hours.set(0);
+        }
 	
 	//SETTERS REQUIRED; FIELDS CANNOT BE FINAL
 }
