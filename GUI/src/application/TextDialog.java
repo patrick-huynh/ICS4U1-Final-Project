@@ -1,6 +1,7 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -13,10 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.scene.layout.ColumnConstraints;
-
-import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 
 //INCOMPLETE: WILL MAKE WITH STYLING
 
@@ -26,6 +23,8 @@ public class TextDialog {
 	
 	private ArrayList<Label> label_container;
 	private ArrayList<TextField> field_container;
+        //used to map TextField controls with their respective texts
+        private ArrayList<HashMap<TextField, String>> responses;
 	
 	private Stage parent, modal;
 	private Scene main;
@@ -40,6 +39,7 @@ public class TextDialog {
 		
 		label_container = new ArrayList<>();
 		field_container = new ArrayList<>();
+                responses = new ArrayList<>();
 		
 		frame = new GridPane();
 		frame.setVgap(10);
@@ -51,7 +51,10 @@ public class TextDialog {
 		row++;
 		
 		cancel = new Button("Cancel");
+                frame.add(cancel, 0, 1);
+                        
 		submit = new Button("Submit");
+                frame.add(submit, 1, 1);
 		
 		main = new Scene(frame);
 		
@@ -67,31 +70,32 @@ public class TextDialog {
 	}
 	
 	public void primeButtons() {
-		cancel.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				modal.hide();
-			}
+		cancel.setOnAction(e -> {
+                    modal.close();
 		});
 		
 		//collect all information from TextFields in the ArrayList
-		submit.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				for (int i = 0; i < field_container.size(); i++) {
-					if (field_container.get(i) != null) {
-						
-					}
-				}
+		submit.setOnAction(e -> {
+                    for (int i = 0; i < field_container.size(); i++) {
+                        if (field_container.get(i) != null) {
+				responses.get(i).put(field_container.get(i), 
+                                        field_container.get(i).getText());
 			}
+                    }
+                    modal.close();
 		});
 	}
 	
 	//Set Row indices using RowConstraints
-	private void updateButtonPositions() {
-		
+	private void updateAdd() {
+            GridPane.setConstraints(cancel, 0, row + 1);
+            GridPane.setConstraints(submit, 1, row + 1);
 	}
 	
+        private void updateSubtract() {
+            GridPane.setConstraints(cancel, 0, row - 1);
+            GridPane.setConstraints(submit, 0, row - 1);
+        }
 	
 	public Stage getParent() {
 		return parent;
@@ -116,6 +120,7 @@ public class TextDialog {
 		frame.add(label, 0, row);
 		frame.add(field, 1, row);
 		row++;
+                updateAdd();
 		
 		label_container.add(label);
 		field_container.add(field);
@@ -126,6 +131,7 @@ public class TextDialog {
 		label_container.remove(label);
 		field_container.remove(field);
 		row--;
+                updateSubtract();
 	}
 	
 	public void addDateBox(Label label, boolean req, DateBox box) {
@@ -139,6 +145,7 @@ public class TextDialog {
 		frame.add(box.getDayBox(), 3, row);
 		frame.add(box.getYearBox(), 4, row);
 		row++;
+                updateAdd();
 		
 		label_container.add(label);
 	}
@@ -177,4 +184,8 @@ public class TextDialog {
 		}
 		return null;
 	}
+        
+        public ArrayList<HashMap<TextField, String>> getResponses() {
+            return responses;
+        }
 }
