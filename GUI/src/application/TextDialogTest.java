@@ -20,13 +20,20 @@ public class TextDialogTest extends Application {
 		age.setAsNumericOnly();
 		dialog.setHeaderContent("Add New Row: Person");
 		
+		DateBox date = new DateBox();
+		date.setYearConstraints(1925, 1955);
+		
 		dialog.addOpenedPair(new Label("First Name: "), true, new TextField());
+		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField());
 		dialog.addOpenedPair(new Label("Age: "), true, age);
+		dialog.addDateBox(new Label("Date of Birth"), false, date);
 		
 		Button button = new Button("Click to open modal.");
 		button.setOnAction(event -> {
 			dialog.display();
 		});
+		
+		dialog.primeButtons();
 		
 		Pane pane = new Pane();
 		pane.getChildren().add(button);

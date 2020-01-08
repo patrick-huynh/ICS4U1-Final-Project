@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.layout.ColumnConstraints;
 
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
@@ -77,8 +78,8 @@ public class TextDialog {
 		submit.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				for (int i = 0; i < label_container.size(); i++) {
-					if (label_container.get(i) != null) {
+				for (int i = 0; i < field_container.size(); i++) {
+					if (field_container.get(i) != null) {
 						
 					}
 				}
@@ -86,10 +87,11 @@ public class TextDialog {
 		});
 	}
 	
-	//Net Row indices using RowConstraints
+	//Set Row indices using RowConstraints
 	private void updateButtonPositions() {
 		
 	}
+	
 	
 	public Stage getParent() {
 		return parent;
@@ -124,6 +126,21 @@ public class TextDialog {
 		label_container.remove(label);
 		field_container.remove(field);
 		row--;
+	}
+	
+	public void addDateBox(Label label, boolean req, DateBox box) {
+		if (req) {
+			label.setText(label.getText().concat("*"));
+			label.setTextFill(Color.RED);
+		}		
+		
+		frame.add(label, 1, row);
+		frame.add(box.getMonthBox(), 2, row);
+		frame.add(box.getDayBox(), 3, row);
+		frame.add(box.getYearBox(), 4, row);
+		row++;
+		
+		label_container.add(label);
 	}
 	
 	public void display() {

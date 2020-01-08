@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class LimitedTextField extends TextField {
 	
@@ -67,4 +69,13 @@ public class LimitedTextField extends TextField {
 			}
 		});
 	}
+	
+	public void setAsDateOnly() {
+		this.setOnKeyPressed(event -> {
+			if (event.getCode() == KeyCode.TAB || event.getCode() == KeyCode.ENTER) {
+			
+			}
+		});
+	}
+	
 }
