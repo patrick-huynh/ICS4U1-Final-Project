@@ -23,10 +23,10 @@ public class TextDialogTest extends Application {
 		DateBox date = new DateBox();
 		date.setYearConstraints(1925, 1955);
 		
-		dialog.addOpenedPair(new Label("First Name: "), true, new TextField());
-		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField());
-		dialog.addOpenedPair(new Label("Age: "), true, age);
-		dialog.addDateBox(new Label("Date of Birth"), false, date);
+		dialog.addOpenedPair(new Label("First Name: "), true, new TextField(), false);
+		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField(), false);
+		dialog.addOpenedPair(new Label("Age: "), true, age, true);
+		dialog.addDateBox(new Label("Date of Birth"));
 		
 		Button button = new Button("Click to open modal.");
 		button.setOnAction(event -> {
