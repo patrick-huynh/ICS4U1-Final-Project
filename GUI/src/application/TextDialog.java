@@ -33,6 +33,7 @@ public class TextDialog {
 	private GridPane frame;
 	private final Label header_content;
 	private final Button cancel, confirm, submit;
+        private final DateBox box;
 	
 	/**Creates a custom TextDialog with an empty header label and two buttons.
 	 * @param parent - The owner Stage of this TextDialog.*/
@@ -53,16 +54,18 @@ public class TextDialog {
 		row++;
 		
 		cancel = new Button("Cancel");
-                frame.add(cancel, 0, 1);
+                frame.add(cancel, 2, 1);
                   
         confirm = new Button("Confirm");
-        frame.add(confirm, 1, 1);
+        frame.add(confirm, 3, 1);
                 
                 
 		submit = new Button("Submit");
-               	frame.add(submit, 2, 1);
+               	frame.add(submit, 4, 1);
                 submit.setDisable(true);
 		
+                box = new DateBox();
+                
 		main = new Scene(frame);
 		
 		modal = new Stage(StageStyle.UTILITY);
@@ -92,9 +95,9 @@ public class TextDialog {
 			}
 			
 			if (filled) {
-				submit.setDisable(filled);
+				submit.setDisable(false);
 			} else {
-				//add a new label
+				
 				//add warning that some required fields are missing
 			}
 		});
@@ -115,15 +118,15 @@ public class TextDialog {
 	
 	//Set Row indices using RowConstraints
 	private void updateAdd() {
-            GridPane.setConstraints(cancel, 0, row + 1);
-            GridPane.setConstraints(confirm, 0, row + 1);
-            GridPane.setConstraints(submit, 1, row + 1);
+            GridPane.setConstraints(cancel, 2, row + 1);
+            GridPane.setConstraints(confirm, 3, row + 1);
+            GridPane.setConstraints(submit, 4, row + 1);
 	}
 	
         private void updateSubtract() {
-            GridPane.setConstraints(cancel, 0, row - 1);
-            GridPane.setConstraints(confirm, 0, row - 1);
-            GridPane.setConstraints(submit, 0, row - 1);
+            GridPane.setConstraints(cancel, 2, row - 1);
+            GridPane.setConstraints(confirm, 3, row - 1);
+            GridPane.setConstraints(submit, 4, row - 1);
         }
 	
 	public Stage getParent() {
@@ -140,7 +143,7 @@ public class TextDialog {
 	
 	//Automatically add a 0-width label beside each row, which can be used to send error messages about input
 	//also, disable submit button until all fields parsed have correct input
-	public void addOpenedPair(Label label, boolean req, TextField field) {
+	public void addOpenedPair(Label label, boolean req, TextField field, boolean isAgeField) {
 		Label warning = new Label();
 		
 		if (req) {
@@ -150,6 +153,12 @@ public class TextDialog {
 			field.focusedProperty().addListener(new ChangeListener<Boolean>() {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                                        if (isAgeField && !field.getText().trim().isEmpty()) {
+                                            int birth_year = 2020 - Integer.parseInt(field.getText());
+                                            box.getYearBox().getItems().clear();
+                                            box.getYearBox().getItems().add(birth_year);
+                                        }
+                                    
 					if (!newPropertyValue && field.getText().trim().isEmpty()) {
 						warning.setText("NEEDED");
 						warning.setTextFill(Color.RED);
@@ -177,8 +186,8 @@ public class TextDialog {
 		row--;
                 updateSubtract();
 	}
-	
-	public void addDateBox(Label label, DateBox box) {
+
+	public void addDateBox(Label label) {
 		frame.add(label, 1, row);
 		frame.add(box.getMonthBox(), 2, row);
 		frame.add(box.getDayBox(), 3, row);
@@ -188,7 +197,7 @@ public class TextDialog {
 		
 		label_container.add(label);
 	}
-	
+        
 	public void display() {
 		modal.showAndWait();
 	}
