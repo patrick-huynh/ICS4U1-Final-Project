@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Modality;
 import javafx.scene.Scene;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 
 import javafx.scene.layout.GridPane;
@@ -30,7 +32,7 @@ public class TextDialog {
 	private Scene main;
 	private GridPane frame;
 	private final Label header_content;
-	private final Button cancel, submit;
+	private final Button cancel, confirm, submit;
 	
 	/**Creates a custom TextDialog with an empty header label and two buttons.
 	 * @param parent - The owner Stage of this TextDialog.*/
@@ -52,9 +54,14 @@ public class TextDialog {
 		
 		cancel = new Button("Cancel");
                 frame.add(cancel, 0, 1);
-                        
+                  
+        confirm = new Button("Confirm");
+        frame.add(confirm, 1, 1);
+                
+                
 		submit = new Button("Submit");
-                frame.add(submit, 1, 1);
+               	frame.add(submit, 2, 1);
+                submit.setDisable(true);
 		
 		main = new Scene(frame);
 		
@@ -74,12 +81,32 @@ public class TextDialog {
                     modal.close();
 		});
 		
+		confirm.setOnAction(e -> {
+			boolean filled = false;
+			
+			for (TextField contained_field : field_container) {
+				if(contained_field != null &&
+						!contained_field.getText().trim().isEmpty()) {
+					filled = true;
+				}
+			}
+			
+			if (filled) {
+				submit.setDisable(filled);
+			} else {
+				//add a new label
+				//add warning that some required fields are missing
+			}
+		});
+		
 		//collect all information from TextFields in the ArrayList
 		submit.setOnAction(e -> {
                     for (int i = 0; i < field_container.size(); i++) {
                         if (field_container.get(i) != null) {
-				responses.get(i).put(field_container.get(i), 
+                        	HashMap<TextField, String> pair = new HashMap<>();
+                        	pair.put(field_container.get(i), 
                                         field_container.get(i).getText());
+                        	responses.add(pair);
 			}
                     }
                     modal.close();
@@ -89,11 +116,13 @@ public class TextDialog {
 	//Set Row indices using RowConstraints
 	private void updateAdd() {
             GridPane.setConstraints(cancel, 0, row + 1);
+            GridPane.setConstraints(confirm, 0, row + 1);
             GridPane.setConstraints(submit, 1, row + 1);
 	}
 	
         private void updateSubtract() {
             GridPane.setConstraints(cancel, 0, row - 1);
+            GridPane.setConstraints(confirm, 0, row - 1);
             GridPane.setConstraints(submit, 0, row - 1);
         }
 	
@@ -112,13 +141,28 @@ public class TextDialog {
 	//Automatically add a 0-width label beside each row, which can be used to send error messages about input
 	//also, disable submit button until all fields parsed have correct input
 	public void addOpenedPair(Label label, boolean req, TextField field) {
+		Label warning = new Label();
+		
 		if (req) {
 			label.setText(label.getText().concat("*"));
 			label.setTextFill(Color.RED);
+			
+			field.focusedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+					if (!newPropertyValue && field.getText().trim().isEmpty()) {
+						warning.setText("NEEDED");
+						warning.setTextFill(Color.RED);
+					} else {
+						warning.setText("");
+					}
+				}
+			});
 		}
 		
 		frame.add(label, 0, row);
 		frame.add(field, 1, row);
+		frame.add(warning, 2, row);
 		row++;
                 updateAdd();
 		
@@ -134,12 +178,7 @@ public class TextDialog {
                 updateSubtract();
 	}
 	
-	public void addDateBox(Label label, boolean req, DateBox box) {
-		if (req) {
-			label.setText(label.getText().concat("*"));
-			label.setTextFill(Color.RED);
-		}		
-		
+	public void addDateBox(Label label, DateBox box) {
 		frame.add(label, 1, row);
 		frame.add(box.getMonthBox(), 2, row);
 		frame.add(box.getDayBox(), 3, row);
@@ -158,31 +197,8 @@ public class TextDialog {
 		return label_container;
 	}
 	
-	public Label getLabelAt(int index) {
-		if (index > 0 && index < label_container.size()) {
-			return label_container.get(index);
-		}
-		return null;
-	}
-	
-	public Label getLabelAt(String text) {
-		for (Label contained_label : label_container) {
-			if (contained_label.getText().equals(text)) {
-				return contained_label;
-			}
-		}
-		return null;
-	}
-	
 	public ArrayList<TextField> getFields() {
 		return field_container;
-	}
-	
-	public TextField getFieldAt(int index) {
-		if (index > 0 && index < field_container.size()) {
-			return field_container.get(index);
-		}
-		return null;
 	}
         
         public ArrayList<HashMap<TextField, String>> getResponses() {
