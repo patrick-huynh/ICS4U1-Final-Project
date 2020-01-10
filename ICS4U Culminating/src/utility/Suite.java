@@ -75,7 +75,7 @@ public class Suite {
 	}
 
 	/**Adds an occupant to the suite.*/
-	public boolean addOccupant(String fname, String lname, String dob, double age, double height, double weight, 
+	public boolean addOccupant(String fname, String lname, String dob, double age, double height, double weight, String gender, 
 			String doe, long home_id, long insurance_number) {
 		if (this.suite_style.getMaxCapacity() > occupants.length) {
 			Senior[] temp = occupants.clone();
@@ -85,7 +85,7 @@ public class Suite {
 				occupants[i] = temp[i];
 			}
 			
-			occupants[occupants.length - 1] = new Senior(fname, lname, dob, age, height, weight, doe, home_id, 
+			occupants[occupants.length - 1] = new Senior(fname, lname, dob, age, height, weight, gender, doe, home_id, 
 					insurance_number);		
 			return true;
 			
