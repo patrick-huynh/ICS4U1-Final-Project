@@ -216,10 +216,15 @@ public class PersonTableView extends Application {
 		dialog.setHeaderContent("Add New Row: Person");
 		
 		DateBox date = new DateBox();
-		date.setYearConstraints(1925, 1955);
+                
+                LimitedTextField firstName = new LimitedTextField();
+                firstName.setAsAlphaOnly();
 		
-		dialog.addOpenedPair(new Label("First Name: "), true, new TextField(), false);
-		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField(), false);
+                LimitedTextField lastName = new LimitedTextField();
+                lastName.setAsAlphaOnly();
+                
+		dialog.addOpenedPair(new Label("First Name: "), true, firstName, false);
+		dialog.addOpenedPair(new Label("Last Name: "), true, lastName, false);
 		dialog.addOpenedPair(new Label("Age: "), true, age, true);
 		dialog.addDateBox(new Label("Date of Birth"));
                 dialog.primeButtons();
@@ -233,9 +238,10 @@ public class PersonTableView extends Application {
                     int month = dialog.getDateBox().getMonthBox().getValue();
                     int day = dialog.getDateBox().getDayBox().getValue();
                     int year = dialog.getDateBox().getYearBox().getValue();
-                    String dob = Integer.toString(month) + "/" + Integer.toString(day) + 
-                            Integer.toString(year); 
-                         
+                    
+                    String dob = Integer.toString(month) + "/" + Integer.toString(day) + "/" +
+                    Integer.toString(year); 
+                     
                     double nAge = Double.valueOf(resp.get(2).get(dialog.getFields().get(2)));
                     
                     Person person = new Person(fName, lName, dob, nAge);
