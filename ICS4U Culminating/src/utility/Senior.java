@@ -13,11 +13,11 @@ public class Senior extends Person {
 	
 	/**Constructor for class Senior.
 	 * @param doe - The date of entry of the Senior object into the retirement residence.
-	 * @param hID - The ID of the Senior object while in the reitrement residence
+	 * @param hID - The ID of the Senior object while in the retirement residence
 	 * @param insurance - The Old Age Security (OAS) number of the Senior object*/
-	public Senior(String fname, String lname, String dob, double age, double height, double weight, String doe,
+	public Senior(String fname, String lname, String dob, double age, double height, double weight, String gender, String doe,
 			long hID, long chequing) {
-		super(fname, lname, dob, age, height, weight);
+		super(fname, lname, dob, age, height, weight, gender);
 		
 		date_of_entry = new SimpleStringProperty();
 		date_of_entry.set(doe);
