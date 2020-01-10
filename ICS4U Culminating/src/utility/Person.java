@@ -77,6 +77,10 @@ public abstract class Person {
 		return weight.get();
 	}
         
+        /**
+         * 
+         * @return The gender of the person.
+         */
         public String getGender(){
             return gender.get();
         }
@@ -86,6 +90,10 @@ public abstract class Person {
 	public void setWeight(double val) {
 		weight.set(val);
 	}
+        /**
+         * 
+         * @param g - The gender of the person.
+         */
         public void setGender(String g) {
             gender.set(g);
         }
