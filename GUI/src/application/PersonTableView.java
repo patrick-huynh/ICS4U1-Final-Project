@@ -3,6 +3,9 @@ package application;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,6 +25,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
 import javafx.event.EventHandler;
+
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -133,6 +139,11 @@ public class PersonTableView extends Application {
 		tableRC = new ContextMenu();
 		tableRC.setAutoHide(true);
 		MenuItem addRow = new MenuItem("Add Row");
+                addRow.setOnAction(event -> {
+                    addRow(stage);
+                });
+                        
+                
 		MenuItem deleteRow = new MenuItem("Delete Row");
 		tableRC.getItems().addAll(addRow, deleteRow);
 		
@@ -196,14 +207,47 @@ public class PersonTableView extends Application {
 	//Open up textmodal for person, create new Person object, add to observablearraylist, refresh table
 	//boolean returns since need to check if inputs are valid (e.g. Date, Names, Age, etc.)
 	//will use try-catch 
-	/*private boolean addRow() {
+	private void addRow(Stage stage) {
+                TextDialog dialog = new TextDialog(stage);
 		
+		LimitedTextField age = new LimitedTextField();
+		age.setMaxLength(3);
+		age.setAsNumericOnly();
+		dialog.setHeaderContent("Add New Row: Person");
+		
+		DateBox date = new DateBox();
+		date.setYearConstraints(1925, 1955);
+		
+		dialog.addOpenedPair(new Label("First Name: "), true, new TextField(), false);
+		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField(), false);
+		dialog.addOpenedPair(new Label("Age: "), true, age, true);
+		dialog.addDateBox(new Label("Date of Birth"));
+                dialog.primeButtons();
+                
+                dialog.display();
+                
+                if(dialog.isSubmitPressed) {
+                    ArrayList<HashMap<TextField, String>> resp = dialog.getResponses();
+                    String fName = resp.get(0).get(dialog.getFields().get(0));
+                    String lName = resp.get(1).get(dialog.getFields().get(1));
+                    int month = dialog.getDateBox().getMonthBox().getValue();
+                    int day = dialog.getDateBox().getDayBox().getValue();
+                    int year = dialog.getDateBox().getYearBox().getValue();
+                    String dob = Integer.toString(month) + "/" + Integer.toString(day) + 
+                            Integer.toString(year); 
+                         
+                    double nAge = Double.valueOf(resp.get(2).get(dialog.getFields().get(2)));
+                    
+                    Person person = new Person(fName, lName, dob, nAge);
+                    table.getItems().add(person);
+                    table.refresh();
+                }
 	}
 	
-	private boolean deleteRow() {
+	/*private boolean deleteRow() {
 	
-	}
-	*/
+	}*/
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
