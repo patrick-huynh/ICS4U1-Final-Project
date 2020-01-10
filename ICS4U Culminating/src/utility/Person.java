@@ -2,10 +2,12 @@ package utility;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 public abstract class Person {
 	private final SimpleStringProperty fname, lname, dob;
-	private SimpleDoubleProperty age, height, weight;
+        private SimpleIntegerProperty age;
+	private SimpleDoubleProperty height, weight;
         private SimpleStringProperty gender;
 	
 	/**Constructor for abstract class Person.
@@ -13,13 +15,19 @@ public abstract class Person {
 	 * @param nlname - The last name of the Person object.
 	 * @param ndob - The date of birth of the Person object.
 	 * @param nage - The age of the Person object.
-	 * @param height - The height of the Person object, in cm.
-	 * @param weight - The weight of the Person object, in kg.*/
-	public Person(String nfname, String nlname, String ndob, double nage, double nheight, double nweight, String ngender) {
+	 * @param nheight - The height of the Person object, in cm.
+	 * @param nweight - The weight of the Person object, in kg.
+         * @param ngender - The gender of the Person object (M/F).
+         */
+	public Person(String nfname, String nlname, String ndob, int nage, double nheight, double nweight, String ngender) {
 		fname = new SimpleStringProperty();
 		lname = new SimpleStringProperty();
 		dob = new SimpleStringProperty();
-		
+		gender = new SimpleStringProperty();
+		age = new SimpleIntegerProperty();
+                height = new SimpleDoubleProperty();
+                weight = new SimpleDoubleProperty();
+                        
 		fname.set(nfname);
 		lname.set(nlname);
 		dob.set(ndob);
@@ -49,17 +57,17 @@ public abstract class Person {
 	
 	/**Gets the value of the SimpleDoubleProperty age.
 	 * @return double - The wrapped double type representing the age of the Person object.*/
-	public double getAge() {
+	public int getAge() {
 		return age.get();
 	}
 	
-	/**Sets the value of the SimpleDoubleProperty age.
+	/**Sets the value of the SimpleIntegerProperty age.
 	 * @param val - The new age of the Person object.*/
-	public void setAge(double val) {
+	public void setAge(int val) {
 		age.set(val);
 	}
 	
-	/**Gets the value of the SimpleDoubleProperty height.
+	/**Gets the value of the SimpleIntegerProperty height.
 	 * @return double - The wrapped double type representing the height of the Person object.*/
 	public double getHeight() {
 		return height.get();
