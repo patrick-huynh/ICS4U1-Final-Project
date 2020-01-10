@@ -24,9 +24,9 @@ public class Caregiver extends Person {
      * @param ntotalHoursWorked - The total hours worked.
      * @param assignedSenior - The assigned senior to the care giver.
      */
-    public Caregiver(String fname, String lname, String dob, double age, double height, double weight,
+    public Caregiver(String fname, String lname, String dob, double age, double height, double weight, String gender,
             long empnum, String ntype, int ntimeClockIn, int ntimeClockOut, int ntotalHoursWorked, Senior assignedSenior) {
-        super(fname, lname, dob, age, height, weight);
+        super(fname, lname, dob, age, height, weight,gender);
 
         type = new SimpleStringProperty();
         type.set(ntype);
@@ -42,7 +42,9 @@ public class Caregiver extends Person {
 
         totalHoursWorked = new SimpleIntegerProperty();
         totalHoursWorked.set(ntotalHoursWorked);
-
+        
+        WAGE = new SimpleDoubleProperty();
+        WAGE.set(14);
     }
 
     /**
