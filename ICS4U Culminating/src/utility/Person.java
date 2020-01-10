@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 public abstract class Person {
 	private final SimpleStringProperty fname, lname, dob;
 	private SimpleDoubleProperty age, height, weight;
+        private SimpleStringProperty gender;
 	
 	/**Constructor for abstract class Person.
 	 * @param nfname - The first name of the Person object.
@@ -14,7 +15,7 @@ public abstract class Person {
 	 * @param nage - The age of the Person object.
 	 * @param height - The height of the Person object, in cm.
 	 * @param weight - The weight of the Person object, in kg.*/
-	public Person(String nfname, String nlname, String ndob, double nage, double nheight, double nweight) {
+	public Person(String nfname, String nlname, String ndob, double nage, double nheight, double nweight, String ngender) {
 		fname = new SimpleStringProperty();
 		lname = new SimpleStringProperty();
 		dob = new SimpleStringProperty();
@@ -25,6 +26,7 @@ public abstract class Person {
 		age.set(nage);
 		height.set(nheight);
 		weight.set(nweight);
+                gender.set(ngender);
 	}
 	
 	/**Gets the value of the SimpleStringProperty fname.
@@ -74,10 +76,19 @@ public abstract class Person {
 	public double getWeight() {
 		return weight.get();
 	}
+        
+        public String getGender(){
+            return gender.get();
+        }
 	
 	/**Sets the value of the SimpleDoubleProperty weight.
 	 * @param val - The new weight of the Person object.*/
 	public void setWeight(double val) {
 		weight.set(val);
 	}
+        public void setGender(String g) {
+            gender.set(g);
+        }
+        
+        //MAKE GENDER METHODS
 }
