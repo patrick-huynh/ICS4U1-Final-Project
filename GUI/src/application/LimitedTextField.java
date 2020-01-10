@@ -5,8 +5,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 public class LimitedTextField extends TextField {
 	
@@ -14,12 +12,12 @@ public class LimitedTextField extends TextField {
 	
 	public LimitedTextField() {
 		super();
-		maxLength = new SimpleIntegerProperty(0);
+		maxLength = new SimpleIntegerProperty(255);
 	}
 	
 	public LimitedTextField(String text) {
 		super(text);
-		maxLength = new SimpleIntegerProperty(0);
+		maxLength = new SimpleIntegerProperty(255);
 	}
 	
 	public IntegerProperty maxLentghProperty() {
@@ -69,13 +67,16 @@ public class LimitedTextField extends TextField {
 			}
 		});
 	}
-	
-	public void setAsDateOnly() {
-		this.setOnKeyPressed(event -> {
-			if (event.getCode() == KeyCode.TAB || event.getCode() == KeyCode.ENTER) {
-			
-			}
-		});
-	}
-	
+        
+        public void setAsAlphaOnly() {
+            this.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue,
+                        String newValue) {
+                    if(!newValue.matches("/^[A-Za-z]+$/")) {
+                        getThis().setText(newValue.replaceAll("[^a-zA-Z]", ""));
+                    }
+                }
+            });
+        }
 }
