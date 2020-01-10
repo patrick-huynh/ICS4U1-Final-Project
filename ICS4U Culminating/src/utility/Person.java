@@ -89,6 +89,4 @@ public abstract class Person {
         public void setGender(String g) {
             gender.set(g);
         }
-        
-        //MAKE GENDER METHODS
 }
