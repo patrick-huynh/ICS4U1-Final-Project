@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 
 public class TextDialog {
 	
+        public boolean isSubmitPressed = false;
 	private int row = 0;
 	
 	private ArrayList<Label> label_container;
@@ -85,16 +86,22 @@ public class TextDialog {
 		});
 		
 		confirm.setOnAction(e -> {
-			boolean filled = false;
+                        boolean allFields = false;
+                        boolean dates = false;
 			
 			for (TextField contained_field : field_container) {
 				if(contained_field != null &&
 						!contained_field.getText().trim().isEmpty()) {
-					filled = true;
+					allFields = true;
 				}
 			}
+                        
+                        if(box.getMonthBox().getValue() != null && box.getDayBox().getValue() 
+                                != null && box.getYearBox().getValue() != null) {
+                            dates = true;
+                        }
 			
-			if (filled) {
+			if (allFields && dates) {
 				submit.setDisable(false);
 			} else {
 				
@@ -112,6 +119,7 @@ public class TextDialog {
                         	responses.add(pair);
 			}
                     }
+                    isSubmitPressed = true;
                     modal.close();
 		});
 	}
@@ -197,6 +205,10 @@ public class TextDialog {
 		
 		label_container.add(label);
 	}
+        
+        public DateBox getDateBox() {
+            return box;
+        }
         
 	public void display() {
 		modal.showAndWait();
