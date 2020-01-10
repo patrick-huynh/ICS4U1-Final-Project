@@ -37,13 +37,7 @@ public final class DateBox {
 	
 	public ChoiceBox<Integer> getYearBox() {
 		return year;
-	}
-	
-	public void setYearConstraints(int lower, int upper) {
-		for (int i = lower; i <= upper; i++) {
-			year.getItems().add(i);
-		}
-	}
+        }
 	
 	//Getters should only be run when ChoiceBox is non-null (selection has been made)
 	public int getMonth() {
