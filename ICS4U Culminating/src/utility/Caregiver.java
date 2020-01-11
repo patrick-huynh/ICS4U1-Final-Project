@@ -24,9 +24,9 @@ public class Caregiver extends Person {
      * @param ntotalHoursWorked - The total hours worked.
      * @param assignedSenior - The assigned senior to the care giver.
      */
-    public Caregiver(String fname, String lname, String dob, double age, double height, double weight, String gender,
+    public Caregiver(String fname, String lname, String dob, int age, double height, double weight, String gender,
             long empnum, String ntype, int ntimeClockIn, int ntimeClockOut, int ntotalHoursWorked, Senior assignedSenior) {
-        super(fname, lname, dob, age, height, weight,gender);
+        super(fname, lname, dob, age, height, weight, gender);
 
         type = new SimpleStringProperty();
         type.set(ntype);
@@ -42,9 +42,30 @@ public class Caregiver extends Person {
 
         totalHoursWorked = new SimpleIntegerProperty();
         totalHoursWorked.set(ntotalHoursWorked);
-        
+
         WAGE = new SimpleDoubleProperty();
         WAGE.set(14);
+    }
+
+    public Caregiver(String fname, String lname, String dob, int age, double height, double weight, String gender,
+            long empnum, String ntype, int ntotalHoursWorked, Senior assignedSenior) {
+        super(fname, lname, dob, age, height, weight, gender);
+
+        type = new SimpleStringProperty();
+        type.set(ntype);
+
+        employee_number = new SimpleLongProperty();
+        employee_number.set(empnum);
+
+        totalHoursWorked = new SimpleIntegerProperty();
+        totalHoursWorked.set(ntotalHoursWorked);
+
+        WAGE = new SimpleDoubleProperty();
+        WAGE.set(14);
+    }
+
+    public long getEmp() {
+        return employee_number.get();
     }
 
     /**
@@ -85,6 +106,10 @@ public class Caregiver extends Person {
      */
     public Senior getAssigned() {
         return assignedSenior;
+    }
+
+    public void setEmp(long empNum) {
+        employee_number.set(empNum);
     }
 
     /**
@@ -152,4 +177,12 @@ public class Caregiver extends Person {
         name.totalHoursWorked.set(name.totalHoursWorked.get() + hours);
     }
 
+    public String toString() {
+        return super.toString() + "\n"
+                + "Employee Number: " + getEmp() + "\n"
+                + "Type (Day/Night): " + getType() + "\n"
+                + "Total Hours Worked: " + getTotalHoursWorked() + "\n"
+                + "Assigned Seniors: " + getAssigned().getFullName();
+
+    }
 }
