@@ -74,16 +74,33 @@ public class Supplier {
 		phone.set(sPhone);
 	}
 	
+	/**Gets the price set by this Supplier for one standard purchase of their items.
+	 * @return double*/
 	public double getSTDCost() {
 		return std_cost.get();
 	}
 	
+	/**Gets the quantity of items this Supplier packs in one standard purchase.
+	 * @return int*/
 	public int getSTDQty() {
 		return std_qty.get();
 	}
 	
+	/**Gets the flat fee issued by this Supplier for all purchases.
+	 * @return double*/
 	public double getFee() {
 		return flat_fee.get();
 	}
 	
+	@Override
+	/**Returns a String representation of this Supplier object. Overrides java.lang.Object.toString().
+	 * @return String*/
+	public String toString() {
+		return "Supplier Name: " + name.get()
+			+ "\nAddress: " + address.get() 
+			+ "\nPhone: " + phone.get()
+			+ "\nStandard Quantity: " + std_qty.get() 
+			+ "\nStandard Cost: " + std_cost.get() 
+			+ "\nFlat Fee: " + flat_fee.get();
+	}
 }
