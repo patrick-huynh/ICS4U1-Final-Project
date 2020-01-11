@@ -2,10 +2,12 @@ package utility;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 public class Supplier {
 	private SimpleStringProperty name, address, phone;
-	private final SimpleDoubleProperty ship_rate, std_cost, std_qty, flat_fee;
+	private final SimpleDoubleProperty std_cost, flat_fee;
+	private SimpleIntegerProperty std_qty;
 	
 	/**Creates a new Supplier object with known contact information and applicable standard rates.
 	 * @param sName - The name of the Supplier object.
@@ -14,8 +16,8 @@ public class Supplier {
 	 * @param rate - The standard shipping rate for the Supplier.
 	 * @param cost - The standard cost per standard purchase of the Supplier.
 	 * @param quantity - The standard quantity of FoodItem objects in a standard purchase.
-	 * @param flat_fee - The base fee due when a standard purchase is made.*/
-	public Supplier(String sName, String sAddress, String sPhone, double rate, double cost, double quantity, 
+	 * @param fee - The base fee due when a standard purchase is made.*/
+	public Supplier(String sName, String sAddress, String sPhone, double cost, int quantity, 
 			double fee) {
 		name = new SimpleStringProperty();
 		name.set(sName);
@@ -26,31 +28,62 @@ public class Supplier {
 		phone = new SimpleStringProperty();
 		phone.set(sPhone);
 		
-		ship_rate = new SimpleDoubleProperty();
-		ship_rate.set(rate);
-		
 		std_cost = new SimpleDoubleProperty();
 		std_cost.set(cost);
 		
-		std_qty = new SimpleDoubleProperty();
+		std_qty = new SimpleIntegerProperty();
 		std_qty.set(quantity);
 		
 		flat_fee = new SimpleDoubleProperty();
 		flat_fee.set(fee);
 	}
 	
-	/***/
+	/**Gets the name of this Supplier.
+	 * @return String*/
 	public String getSupplierName() {
 		return name.get();
 	}
 	
+	/**Sets the name of this Supplier.
+	 * @param sName - String*/
 	public void setSupplierName(String sName) {
 		name.set(sName);
 	}
 	
+	/**Gets the address of this Supplier.
+	 * @return String*/
 	public String getAddress() {
 		return address.get();
 	}
 	
+	/**Sets the address of this Supplier.
+	 * @param sAddress - String*/
+	public void setAddress(String sAddress) {
+		address.set(sAddress);
+	}
+	
+	/**Gets the phone number of this Supplier.
+	 * @return String*/
+	public String getPhoneNumber() {
+		return phone.get();
+	}
+	
+	/**Sets the phone number of this Supplier.
+	 * @param sPhone - String*/
+	public void setPhoneNumber(String sPhone) {
+		phone.set(sPhone);
+	}
+	
+	public double getSTDCost() {
+		return std_cost.get();
+	}
+	
+	public int getSTDQty() {
+		return std_qty.get();
+	}
+	
+	public double getFee() {
+		return flat_fee.get();
+	}
 	
 }
