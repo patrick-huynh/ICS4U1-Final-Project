@@ -38,4 +38,11 @@ public class FoodGroup {
 	public void setSupplier(Supplier supplier) {
 		this.supplier = supplier;
 	}
+	
+	//WILL CONTINUE THIS METHOD
+	@Override
+	public String toString() {
+		return "Name: " + name.get() + "\n"
+				+ "Supplier";
+	}
 }
