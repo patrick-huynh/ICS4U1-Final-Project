@@ -39,10 +39,11 @@ public class FoodGroup {
 		this.supplier = supplier;
 	}
 	
-	//WILL CONTINUE THIS METHOD
 	@Override
+	/**Returns a String representation of this FoodGroup.
+	 * @return String*/
 	public String toString() {
-		return "Name: " + name.get() + "\n"
-				+ "Supplier";
+		return "Food Group Name: " + name.get() + "\n"
+				+ supplier.toString();
 	}
 }
