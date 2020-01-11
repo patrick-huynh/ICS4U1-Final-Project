@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.time.LocalDate;
 
 public class FoodItem {
-	private SimpleStringProperty name; // change exp_date to DateTimeFormatter
+	private SimpleStringProperty name;
 	private LocalDate expiry_date;
 	private FoodGroup group;
 	private SimpleIntegerProperty quantity, stock;
