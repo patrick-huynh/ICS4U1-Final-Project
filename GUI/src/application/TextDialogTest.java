@@ -21,7 +21,6 @@ public class TextDialogTest extends Application {
 		dialog.setHeaderContent("Add New Row: Person");
 		
 		DateBox date = new DateBox();
-		date.setYearConstraints(1925, 1955);
 		
 		dialog.addOpenedPair(new Label("First Name: "), true, new TextField(), false);
 		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField(), false);
@@ -49,3 +48,4 @@ public class TextDialogTest extends Application {
 	}
 
 }
+
