@@ -1,16 +1,30 @@
 package utility;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javafx.beans.property.SimpleDoubleProperty;
 
 public class Inventory {
+	private SimpleDoubleProperty month_budget; 
 	private FoodItem[] inventory;
 	private int size;
+	private LocalDateTime orderTimestamp;
 	
+	/**Creates an empty Inventory object.*/
 	public Inventory() {
 		inventory = new FoodItem[0];
 		size = 0;
 	}
 	
+	/**Creates an empty Inventory object with a monthly-budget.
+	 * @param month_budget The monthly budget allocated to dining and food services.*/
+	public Inventory(double month_budget) {
+		this();
+		this.month_budget.set(month_budget);
+	}
+	
+	/**Gets the size of the inventory.
+	 * @return int*/
 	public int getSize() {
 		return size;
 	}
@@ -24,6 +38,13 @@ public class Inventory {
 		return false;
 	}
 	
+	/**Adds a FoodItem to the Inventory.
+	 * @param item_name - The name of the FoodItem.
+	 * @param item-expiry - The expiry date of the FoodItem.
+	 * @param group - The name of the FoodGroup for the FoodItem.
+	 * @param item_quantity - The current quantity for the FoodItem.
+	 * @param item_stock - The expected stock of the FoodItem in the Inventory.
+	 * @return boolean*/
 	public boolean addItem(String item_name, LocalDate item_expiry, FoodGroup group, int item_quantity, int item_stock) {
 		if (!itemExists(item_name)) {
 			FoodItem[] copy = inventory.clone();
@@ -42,6 +63,8 @@ public class Inventory {
 		}
 	}
 	
+	/**Removes a FoodItem from the Inventory.
+	 * @param item_name - The name of the FoodItem to be removed.*/
 	public boolean removeItem(String item_name) {
 		for (int i = 0; i < size; i++) {
 			if (inventory[i].getItemName().equalsIgnoreCase(item_name)) {
@@ -54,6 +77,9 @@ public class Inventory {
 		return false;
 	}
 	
+	/**Checks the Inventory and returns a FoodItem array containing all FoodItem objects with quantity less than expected
+	 * stock.
+	 * @return FoodItem[]*/
 	public FoodItem[] belowExpected() {
 		FoodItem[] below_stock = new FoodItem[0];
 		
@@ -72,11 +98,12 @@ public class Inventory {
 		return below_stock;
 	}
 	
-	public FoodItem[] toExpire() {
+	/**Checks the Inventory and returns a FoodItem array containing FoodItem objects to expire at the given date.*/
+	public FoodItem[] toExpire(LocalDate time) {
 		FoodItem[] to_expire = new FoodItem[0];
 		
 		for (int i = 0; i < size; i++) {
-			if (inventory[i] != null && inventory[i].getExpiryDate().equals(LocalDate.now())) {
+			if (inventory[i] != null && inventory[i].getExpiryDate().equals(time)) {
 				FoodItem[] copy = to_expire.clone();
 				
 				for (int j = 0; j < copy.length; j++) {
@@ -89,6 +116,8 @@ public class Inventory {
 		return to_expire;
 	}
 	
+	/**Gets the FoodItem in the inventory that has the greatest current stock.
+	 * @return FoodItem*/
 	public FoodItem hasMostInStock() {
 		FoodItem mostInStock = inventory[0];
 		
@@ -101,6 +130,8 @@ public class Inventory {
 		return mostInStock;
 	}
 	
+	/**Gets the FoodItem that has the highest cost.
+	 * @return FoodItem*/
 	public FoodItem isMostExpensive() {
 		FoodItem mostExpensive = inventory[0];
 		
@@ -113,6 +144,8 @@ public class Inventory {
 		return mostExpensive;
 	}
 	
+	/**Checks the Inventory and returns a FoodItem array containing FoodItem objects that are instances of the 
+	 * specified FoodGroup.*/
 	public FoodItem[] getAllInstancesOf(FoodGroup group) {
 		FoodItem[] instances = new FoodItem[0];
 		
@@ -131,6 +164,8 @@ public class Inventory {
 		return instances;
 	}
 	
+	/**Computes the mean cost for all the FoodItem objects in the Inventory to two decimal places.
+	 * @return double*/
 	public double computeMeanCost() {
 		double mean_cost = 0.00d;
 		
@@ -138,6 +173,29 @@ public class Inventory {
 			mean_cost += inventory[i].computeSTDCost();
 		}
 		
-		return mean_cost / size; 
+		return Math.round(mean_cost / size * 100.0) / 100.0; 
 	}
+	
+	/**Returns the timestamp as a String.
+	 * @return String*/
+	public String getTimeAsString() {
+		return orderTimestamp.toString();
+	}
+	
+	/**Gets the timestamp as a LocalDateTime object.
+	 * @return LocalDateTime*/
+	public LocalDateTime getTime() {
+		return orderTimestamp;
+	}
+	
+	/*public boolean order() {
+	 * cost box with radio buttons
+	 * check all checked, map each choice with a food item
+	 * get food item, get supplier, computeSTD cost
+	 * add to running total
+	 * compare total to month budget
+	 * if less, allow
+	 * ask to remove so that less
+		sets the order time stamp as well
+	}*/
 }
