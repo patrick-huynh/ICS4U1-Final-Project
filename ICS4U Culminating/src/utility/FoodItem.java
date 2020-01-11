@@ -5,7 +5,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.time.LocalDate;
 
 public class FoodItem {
-	private SimpleStringProperty name, expiry_date; // change exp_date to DateTimeFormatter
+	private SimpleStringProperty name; // change exp_date to DateTimeFormatter
+	private LocalDate expiry_date;
 	private FoodGroup group;
 	private SimpleIntegerProperty quantity, stock;
 	
@@ -15,12 +16,11 @@ public class FoodItem {
 	 * @param group - The FoodGroup of the FoodItem.
 	 * @param item_quantity - The quantity of products of this FoodItem currently in stock.
 	 * @param item_stock - The expected number of products of this FoodItem to be in stock.*/
-	public FoodItem(String item_name, String item_expiry, FoodGroup group, int item_quantity, int item_stock) {
+	public FoodItem(String item_name, LocalDate expiry_date, FoodGroup group, int item_quantity, int item_stock) {
 		name = new SimpleStringProperty();
 		name.set(item_name);
 		
-		expiry_date = new SimpleStringProperty();
-		expiry_date.set(item_expiry);
+		this.expiry_date = expiry_date;
 		
 		this.group = group;
 		
@@ -45,14 +45,14 @@ public class FoodItem {
 	
 	/**Gets the String version of the LocalDate for the expiry of this FoodItem.
 	 * @return LocalDate*/
-	public String getExpiryDate() {
-		return expiry_date.get();
+	public LocalDate getExpiryDate() {
+		return expiry_date;
 	}
 	
 	/**Sets the expiry date of this FoodItem.
 	 * @param item_expiry - LocalDate*/
-	public void setExpiryDate(LocalDate item_expiry) {
-		expiry_date.set(item_expiry.toString());
+	public void setExpiryDate(LocalDate expiry_date) {
+		this.expiry_date = expiry_date;
 	}
 	
 	/**Gets the FoodGroup of this FoodItem.
@@ -99,5 +99,12 @@ public class FoodItem {
 			return true;
 		}
 		return false;
+	}
+	
+	/**Computes the cost for one standard purchase of this FoodItem.
+	 * @return double*/
+	public double computeSTDCost() {
+		Supplier supplier = group.getSupplier();
+		return supplier.getFee() + supplier.getSTDQty() * supplier.getSTDCost();
 	}
 }
