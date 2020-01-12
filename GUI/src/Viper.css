@@ -16,7 +16,7 @@
     -fx-font-size: 24;
     -fx-font-family: 'serif';
 }
-.button,.button-blue:hover{
+.button:hover, .button-blue:hover{
     -fx-background-color: #36cf3c;
     
 }
