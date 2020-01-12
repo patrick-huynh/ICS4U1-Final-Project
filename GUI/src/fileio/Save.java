@@ -51,6 +51,8 @@ public class Save {
 		String content = "Hello World!";
 		copy(new File("recent.txt"), new File("previous.txt"));
 		write(content);
+		copy(new File("recent.txt"), new File("previous.txt"));
+		write("This will not work");
 	}
 
 }

@@ -1,9 +1,21 @@
 package application;
 
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.URISyntaxException;
+import java.nio.channels.FileChannel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javafx.application.Application;
+import javafx.application.HostServices;
 
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
@@ -20,12 +32,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 
@@ -43,6 +58,9 @@ public class NewPersonTable extends Application {
 	HBox div;
 	TableView<Person> table;
 	ObservableList<Person> people;
+	FilteredList<Person> filtered_list;
+	SortedList<Person> sorted_list;
+	
 	ContextMenu tablectx;
 	
 	@Override
@@ -54,14 +72,50 @@ public class NewPersonTable extends Application {
 		box.setPadding(new Insets(10, 0, 0, 10));
 		scene = new Scene(box, screen.getWidth(), screen.getHeight());
 		
+		File rec = new File("recent.txt");
+		File pre = new File("previous.txt");
+		
+		//MENUBAR SETUP	
+		MenuItem save = new MenuItem("Save");
+		save.setOnAction(event -> {
+			save(rec, pre);
+		});
+		
+		MenuItem load = new MenuItem("Load");
+		load.setOnAction(event -> {
+			load(rec);
+		});
+		
+		MenuItem reload = new MenuItem("Reload");
+		reload.setOnAction(event -> {
+			reload(rec, pre);
+		});
+		
+		MenuItem retrieve = new MenuItem("Retrieve");
+	
+		MenuButton button = new MenuButton("");
+		
+		try {
+			ImageView image = new ImageView(new Image(getClass().getResource(
+					"/IMAGES/hamburger.png").toURI().toString()));
+			image.setFitHeight(25);
+			image.setFitWidth(25);
+			button.setGraphic(image);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		
+		button.getItems().addAll(save, load, reload, retrieve);
+		
+		
 		//TABLE SETUP
 		table = new TableView<>();
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		setTableEditable();
 		
 		people = FXCollections.observableArrayList();
-		people.addAll(new Person("A", "D", "12/12/2002", 2), new Person("B", "E", "12/12/2002", 3), 
-				new Person("C", "F", "12/12/2002", 4.098));
+		/*people.addAll(new Person("A", "D", "12/12/2002", 2), new Person("B", "E", "12/12/2002", 3), 
+				new Person("C", "F", "12/12/2002", 4.098));*/
 		
 		//TABLE COLUMNS
 		TableColumn<Person, String> firstName = new TableColumn<>("First Name");
@@ -116,7 +170,7 @@ public class NewPersonTable extends Application {
 		table.getColumns().add(age);
 		
 		//SEARCH BAR AND TRANSFER FROM OBSERVABLEARRAYLIST TO SORTEDLIST WRAPPING FILTEREDLIST
-		FilteredList<Person> filtered_list = new FilteredList<>(people, p-> true);
+		filtered_list = new FilteredList<>(people, p-> true);
 		TextField field = new TextField();
 		field.setPromptText("Search here");
 		
@@ -138,7 +192,7 @@ public class NewPersonTable extends Application {
 			});
 		});
 		
-		SortedList<Person> sorted_list = new SortedList<>(filtered_list);
+		sorted_list = new SortedList<>(filtered_list);
 		sorted_list.comparatorProperty().bind(table.comparatorProperty());
 		table.setItems(sorted_list);
 		
@@ -147,7 +201,7 @@ public class NewPersonTable extends Application {
 		HBox div = new HBox(field);
 		div.setAlignment(Pos.CENTER);
 		
-		box.getChildren().addAll(table, div);
+		box.getChildren().addAll(table, div, button);
 		
 		//CONTEXTMENU SETUP
 		tablectx = new ContextMenu();
@@ -271,5 +325,75 @@ public class NewPersonTable extends Application {
 	private void deleteRow() {
 		people.remove(people.size() - 1);
 		table.refresh();	//if obslist does not refresh, can create a custom repopulation method
+	}
+	
+	
+	private void copy(File source, File destination) {
+		
+		try (FileInputStream in = new FileInputStream(source);
+			 FileOutputStream out = new FileOutputStream(destination);
+			 FileChannel from = in.getChannel();
+		     FileChannel to = out.getChannel();
+			 ) {
+			
+			to.transferFrom(from, 0, from.size());
+			System.out.println("File copied successfully.");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void swap(File source, File target) {
+		File temp = new File("temp.txt");
+		copy(target, temp);
+		copy(source, target);
+		copy(temp, source);
+	}
+	
+	private void save(File source, File destination) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
+				) {
+			copy(source, destination);
+			
+			for (Person person : people) {
+				if (person != null) {
+					writer.write(person.getFirstName());
+					writer.write(System.getProperty("line.separator"));
+					writer.write(person.getLastName());
+					writer.write(System.getProperty("line.separator"));
+					writer.write(person.getBirthDate());
+					writer.write(System.getProperty("line.separator"));
+					writer.write(String.valueOf(person.getAge()));
+					writer.write(System.getProperty("line.separator"));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void load(File source) {
+		people.removeAll(people);
+		
+		try (BufferedReader reader = new BufferedReader(new FileReader(source));
+				) {
+			String line;
+			
+			while ((line = reader.readLine()) != null) {
+				people.add(new Person(line, reader.readLine(), reader.readLine(), Double.parseDouble(reader.readLine())));
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void reload(File source, File target) {
+		people.removeAll(people);
+		swap(source, target);
+		load(source);
 	}
 }
