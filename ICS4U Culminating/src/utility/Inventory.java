@@ -31,7 +31,7 @@ public class Inventory {
 	
 	private boolean itemExists(String item_name) {
 		for (int i = 0; i < size; i++) {
-			if (inventory[i].getItemName().equalsIgnoreCase(item_name)) {
+			if (inventory[i].getName().equalsIgnoreCase(item_name)) {
 				return true;
 			}
 		}
@@ -45,7 +45,7 @@ public class Inventory {
 	 * @param item_quantity - The current quantity for the FoodItem.
 	 * @param item_stock - The expected stock of the FoodItem in the Inventory.
 	 * @return boolean*/
-	public boolean addItem(String item_name, LocalDate item_expiry, FoodGroup group, int item_quantity, int item_stock) {
+	public boolean addItem(String item_name, String item_expiry, FoodGroup group, int item_quantity, int item_stock) {
 		if (!itemExists(item_name)) {
 			FoodItem[] copy = inventory.clone();
 			inventory = new FoodItem[copy.length + 1];
@@ -67,7 +67,7 @@ public class Inventory {
 	 * @param item_name - The name of the FoodItem to be removed.*/
 	public boolean removeItem(String item_name) {
 		for (int i = 0; i < size; i++) {
-			if (inventory[i].getItemName().equalsIgnoreCase(item_name)) {
+			if (inventory[i].getName().equalsIgnoreCase(item_name)) {
 				inventory[i] = null;
 				size--;
 				return true;
@@ -150,7 +150,7 @@ public class Inventory {
 		FoodItem[] instances = new FoodItem[0];
 		
 		for (int i = 0; i < size; i++) {
-			if (inventory[i] != null && inventory[i].getFoodGroup().getGroupName().equalsIgnoreCase(group.getGroupName())) {
+			if (inventory[i] != null && inventory[i].getGroup().getGroupName().equalsIgnoreCase(group.getGroupName())) {
 				FoodItem[] copy = instances.clone();
 				
 				for (int j = 0; j < copy.length; j++) {
