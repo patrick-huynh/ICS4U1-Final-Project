@@ -7,31 +7,32 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 public class Activity {
 
-    private SimpleStringProperty name;
+    private SimpleStringProperty name, startTime, endTime;
     private SimpleBooleanProperty outdoor;
-    private LocalTime startTime, endTime;
 
     private Caregiver coordinator;
     private Senior[] participants;
 
     /**
-     * 
+     *
      * @param aname - The name of the activity.
-     * @param aoutdoor - Whether the activity is hosted outdoors, otherwise indoors.
+     * @param aoutdoor - Whether the activity is hosted outdoors, otherwise
+     * indoors.
      * @param astartTime - The start time of the activity.
      * @param aendTime - The end time of the activity.
-     * @param acoordinator  - The Caregiver that is coordinating the activity.
-     * @param aparticipants  - The Seniors that are participating in the activity.
+     * @param acoordinator - The Caregiver that is coordinating the activity.
+     * @param aparticipants - The Seniors that are participating in the
+     * activity.
      */
-    public Activity(String aname, boolean aoutdoor, LocalTime astartTime, LocalTime aendTime, Caregiver acoordinator, Senior aparticipants[]) {
+    public Activity(String aname, boolean aoutdoor, String astartTime, String aendTime, Caregiver acoordinator, Senior aparticipants[]) {
         name = new SimpleStringProperty();
         name.set(aname);
 
         outdoor = new SimpleBooleanProperty();
         outdoor.set(aoutdoor);
 
-        startTime = astartTime;
-        endTime = aendTime;
+        startTime = new SimpleStringProperty();
+        endTime = new SimpleStringProperty();
         coordinator = acoordinator;
         participants = aparticipants;
 
@@ -48,14 +49,14 @@ public class Activity {
      * @return String - Start time of the activity (24-hour clock.
      */
     public String getStartTime() {
-        return startTime.toString();
+        return startTime;
     }
 
     /**
      * @return String - End time of the activity (24-hour clock).
      */
     public String getEndTime() {
-        return endTime.toString();
+        return endTime;
 
     }
 
@@ -114,7 +115,8 @@ public class Activity {
     }
 
     /**
-     * @param participants - The array of Senior that are all participating in this activity.
+     * @param participants - The array of Senior that are all participating in
+     * this activity.
      */
     public void setParticipants(Senior[] participants) {
         this.participants = participants;
