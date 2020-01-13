@@ -105,7 +105,7 @@ public class NewPersonTable extends Application {
 			e.printStackTrace();
 		}
 		
-		button.getItems().addAll(save, load, reload, retrieve);
+		button.getItems().addAll(save, load, reload);
 		
 		
 		//TABLE SETUP
@@ -217,7 +217,12 @@ public class NewPersonTable extends Application {
 			deleteRow();
 		});
 		
-		tablectx.getItems().addAll(addRow, deleteRow);
+		MenuItem deleteLastRow = new MenuItem("Delete Last Row");
+		deleteLastRow.setOnAction(event -> {
+			deleteLastRow();
+		});
+		
+		tablectx.getItems().addAll(addRow, deleteRow, deleteLastRow);
 		table.setOnContextMenuRequested(event -> {
 			tablectx.show(table, event.getScreenX(), event.getScreenY());
 		});
@@ -322,9 +327,18 @@ public class NewPersonTable extends Application {
         }
 	}
 	
+	private void deleteLastRow() {
+		if (people.size() > 0) {
+			people.remove(people.size() - 1);
+			table.refresh();
+		}
+	//if obslist does not refresh, can create a custom repopulation method
+	}
+	
 	private void deleteRow() {
-		people.remove(people.size() - 1);
-		table.refresh();	//if obslist does not refresh, can create a custom repopulation method
+		people.removeAll(
+				table.getSelectionModel().getSelectedItems());
+		table.refresh();
 	}
 	
 	
@@ -337,7 +351,6 @@ public class NewPersonTable extends Application {
 			 ) {
 			
 			to.transferFrom(from, 0, from.size());
-			System.out.println("File copied successfully.");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -354,10 +367,10 @@ public class NewPersonTable extends Application {
 	}
 	
 	private void save(File source, File destination) {
+		copy(source, destination);
+		
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
 				) {
-			copy(source, destination);
-			
 			for (Person person : people) {
 				if (person != null) {
 					writer.write(person.getFirstName());
