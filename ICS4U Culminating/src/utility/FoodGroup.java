@@ -6,12 +6,18 @@ public class FoodGroup {
 	private SimpleStringProperty name;
 	private Supplier supplier;
 	
+	/**Creates a new FoodGroup object with a known name and no assigned Supplier.
+	 * @param group - The name of this FoodGroup.*/
+	public FoodGroup(String group) {
+		name = new SimpleStringProperty();
+		name.set(group);
+	}
+	
 	/**Creates a new FoodGroup object with a known group name and Supplier.
 	 * @param group - The name of the FoodGroup.
 	 * @param supplier - The Supplier distributing items from this FoodGroup.*/
 	public FoodGroup(String group, Supplier supplier) {
-		name = new SimpleStringProperty();
-		name.set(group);
+		this(group);
 		this.supplier = supplier;
 	}
 	
