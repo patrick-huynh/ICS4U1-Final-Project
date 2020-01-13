@@ -24,15 +24,15 @@ public class Activity {
      * @param aparticipants - The Seniors that are participating in the
      * activity.
      */
-    public Activity(String aname, boolean aoutdoor, String astartTime, String aendTime, Caregiver acoordinator, Senior aparticipants[]) {
+    public Activity(String aname, boolean aoutdoor, LocalTime astartTime, LocalTime aendTime, Caregiver acoordinator, Senior aparticipants[]) {
         name = new SimpleStringProperty();
         name.set(aname);
 
         outdoor = new SimpleBooleanProperty();
         outdoor.set(aoutdoor);
 
-        startTime = new SimpleStringProperty();
-        endTime = new SimpleStringProperty();
+        startTime = astartTime;
+        endTime = aendTime;
         coordinator = acoordinator;
         participants = aparticipants;
 
@@ -49,14 +49,14 @@ public class Activity {
      * @return String - Start time of the activity (24-hour clock.
      */
     public String getStartTime() {
-        return startTime;
+        return startTime.toString();
     }
 
     /**
      * @return String - End time of the activity (24-hour clock).
      */
     public String getEndTime() {
-        return endTime;
+        return endTime.toString();
 
     }
 
