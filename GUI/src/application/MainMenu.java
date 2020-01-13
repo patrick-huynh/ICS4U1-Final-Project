@@ -62,18 +62,33 @@ public class MainMenu extends Application {
         grid.setAlignment(Pos.BOTTOM_CENTER);
         grid.setVgap(10);
         grid.setHgap(10);
-        
+        //Add Logo
         Image logo = new Image("fullLogoWhite.png");
         ImageView logoImage = new ImageView(logo);
         logoImage.setFitHeight(180);
         logoImage.setPreserveRatio(true);
         
+        Button logOut = new Button("Logout");
+        logOut.getStyleClass().add("button-blue");
+        logOut.setOnAction(actionEvent ->  {
+            primaryStage.hide();
+            LogInPage logIn = new LogInPage();
+            try {
+				logIn.start(primaryStage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			};
+        });
+        
         BorderPane pane = new BorderPane();
+        pane.setRight(logOut);
         pane.setCenter(logoImage);
-        //pane.setCenter(name);
         GridPane.setConstraints(pane, 0, 0);
         
         
+        
+        
+        //Senior Button
         Button seniorBtn = new Button("Seniors");
         seniorBtn.setPrefSize(190, 50);
         seniorBtn.getStyleClass().add("button-blue");
@@ -85,16 +100,19 @@ public class MainMenu extends Application {
             testdialog.start(primaryStage);
         });
         
+        //Inventory Button
         Button inventoryBtn = new Button("Inventory");
         inventoryBtn.setPrefSize(190, 50);
         inventoryBtn.getStyleClass().add("button-blue");
         GridPane.setConstraints(inventoryBtn, 0, 2);
         
+        //Caregiver Button
         Button caregiverBtn = new Button("Caregiver");
         caregiverBtn.setPrefSize(190, 50);
         caregiverBtn.getStyleClass().add("button-blue");
         GridPane.setConstraints(caregiverBtn, 1, 1);
         
+        //Suite Button
         Button suite = new Button("Suite");
         suite.setPrefSize(190, 50);
         suite.getStyleClass().add("button-blue");
