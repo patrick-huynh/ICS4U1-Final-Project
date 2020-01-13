@@ -212,6 +212,11 @@ public class NewPersonTable extends Application {
 			addRow(stage);
 		});
 		
+		MenuItem addDefaultRow = new MenuItem("Add Default Row");
+		addDefaultRow.setOnAction(event -> {
+			addDefaultRow();
+		});
+		
 		MenuItem deleteRow = new MenuItem("Delete Row");
 		deleteRow.setOnAction(event -> {
 			deleteRow();
@@ -222,7 +227,7 @@ public class NewPersonTable extends Application {
 			deleteLastRow();
 		});
 		
-		tablectx.getItems().addAll(addRow, deleteRow, deleteLastRow);
+		tablectx.getItems().addAll(addRow, addDefaultRow, deleteRow, deleteLastRow);
 		table.setOnContextMenuRequested(event -> {
 			tablectx.show(table, event.getScreenX(), event.getScreenY());
 		});
@@ -325,6 +330,10 @@ public class NewPersonTable extends Application {
             Person person = new Person(fName, lName, dob, nAge);
             people.add(person);
         }
+	}
+	
+	private void addDefaultRow() {
+		people.add(people.size(), new Person("", " ", "", 0.0));
 	}
 	
 	private void deleteLastRow() {
