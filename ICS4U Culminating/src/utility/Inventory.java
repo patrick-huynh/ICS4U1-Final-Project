@@ -188,6 +188,13 @@ public class Inventory {
 		return orderTimestamp;
 	}
 	
+	public FoodItem from (int index) {
+		if (index < size) {
+			return inventory.get(index);
+		}
+		return null;
+	}
+	
 	/*public boolean order() {
 	 * cost box with radio buttons
 	 * check all checked, map each choice with a food item
