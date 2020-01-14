@@ -171,6 +171,17 @@ public class InventoryModule extends Application {
         sorted_items = new SortedList<>(filtered_items);
         sorted_items.comparatorProperty().bind(food_items.comparatorProperty());
         
+        //CONTEXTMENU FOR FOOD ITEMS 
+        itemsCtx = new ContextMenu();
+        MenuItem items_addRow = new MenuItem("Add Row");
+        MenuItem items_addEmptyRow = new MenuItem("Add Empty Row");
+        MenuItem items_deleteRow = new MenuItem("Delete Row");
+        MenuItem items_deleteLastRow = new MenuItem("Delete Last Row");
+        
+        itemsCtx.getItems().addAll(items_addRow, items_addEmptyRow, items_deleteRow, 
+                items_deleteLastRow);
+	
+	
         //CART SETUP
         cart = new TableView<>();
         cart.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -199,7 +210,7 @@ public class InventoryModule extends Application {
         
         //Update cart choices
         ChoiceBox<String> cart_choices = new ChoiceBox<>();
-        
+
         //SCROLLPANE SETUP
         ScrollPane window = new ScrollPane();
         window.setContent(cart);
@@ -208,30 +219,19 @@ public class InventoryModule extends Application {
         Label costLabel = new Label("0.0");
         Button addToCart = new Button("Add to Cart");
         addToCart.setOnAction(e -> {
-            double cost = 0.0d;
-            
-            for (FoodItem item : items) {
-                cost += items.computeSTDCost();
-            }
-
+            double cost = String.valueOf(costLabel.getText());
+            //cost += items.get(
             costLabel.setText(Double.toString(cost)); 
         });
-        
-        
-        //CONTEXTMENU FOR FOOD ITEMS 
-        itemsCtx = new ContextMenu();
-        MenuItem items_addRow = new MenuItem("Add Row");
-        MenuItem items_addEmptyRow = new MenuItem("Add Empty Row");
-        MenuItem items_deleteRow = new MenuItem("Delete Row");
-        MenuItem items_deleteLastRow = new MenuItem("Delete Last Row");
-        
-        itemsCtx.getItems().addAll(items_addRow, items_addEmptyRow, items_deleteRow, 
-                items_deleteLastRow);
-        
-        
+       
         //CONTEXTMENU FOR CART ITEMS
         addedCtx = new ContextMenu();
         MenuItem cart_deleteRow = new MenuItem("Delete Row");
+	cart_deleteRow.setOnAction(e -> {
+		FoodItem removed = cart.getSelectionModel().getSelectedItem();
+		added.removeAll(removed);
+		costLabel.setText(Double.toString(String.valueOf(costLabel.getText()) - removed.computeSTD()));
+	});
         
         addedCtx.getItems().add(cart_deleteRow);
         
