@@ -57,6 +57,12 @@ public class Caregiver extends Person {
         employee_number = new SimpleLongProperty();
         employee_number.set(empnum);
 
+        timeClockIn = new SimpleIntegerProperty();
+        timeClockIn.set(0);
+
+        timeClockOut = new SimpleIntegerProperty();
+        timeClockOut.set(0);
+        
         totalHoursWorked = new SimpleIntegerProperty();
         totalHoursWorked.set(ntotalHoursWorked);
 
