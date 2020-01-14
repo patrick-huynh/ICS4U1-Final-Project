@@ -213,7 +213,9 @@ public class TextDialog {
 	public void display() {
 		modal.showAndWait();
 	}
-	
+	public void hide(){
+            	modal.hide();
+        }
 	public ArrayList<Label> getLabels() {
 		return label_container;
 	}
