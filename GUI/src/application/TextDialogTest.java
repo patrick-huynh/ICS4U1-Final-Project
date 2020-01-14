@@ -1,7 +1,5 @@
 package application;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -23,7 +21,6 @@ public class TextDialogTest extends Application {
 		dialog.setHeaderContent("Add New Row: Person");
 		
 		DateBox date = new DateBox();
-		//date.setYearConstraints(1925, 1955);
 		
 		dialog.addOpenedPair(new Label("First Name: "), true, new TextField(), false);
 		dialog.addOpenedPair(new Label("Last Name: "), true, new TextField(), false);
@@ -31,32 +28,16 @@ public class TextDialogTest extends Application {
 		dialog.addDateBox(new Label("Date of Birth"));
 		
 		Button button = new Button("Click to open modal.");
-                button.setId("button");
 		button.setOnAction(event -> {
-                    dialog.display();
+			dialog.display();
 		});
-                //home button
-		Button home = new Button("Home");
-                home.setId("button");
-                home.setOnAction(event->{
-                    dialog.hide();
-                    MainMenu returnToMenu = new MainMenu();
-                    try {
-                        returnToMenu.start(stage);
-                    } catch (Exception ex) {
-                        Logger.getLogger(TextDialogTest.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
-                
+		
 		dialog.primeButtons();
 		
 		Pane pane = new Pane();
-		pane.getChildren().addAll(button, home);
-                
-                
+		pane.getChildren().add(button);
+		
 		Scene scene = new Scene(pane, 500, 500);
-                scene.getStylesheets().add("Viper.css");
-                
 		stage.setScene(scene);
 		stage.setTitle("TextDialogTest");
 		stage.show();
@@ -67,3 +48,4 @@ public class TextDialogTest extends Application {
 	}
 
 }
+
