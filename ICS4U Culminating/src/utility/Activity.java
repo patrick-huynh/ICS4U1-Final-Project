@@ -1,15 +1,19 @@
 package utility;
 
 import java.time.Duration;
-import java.time.LocalTime;
+import java.time.*;
+import java.time.format.*;
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import java.text.SimpleDateFormat;
+import static java.time.temporal.ChronoField.MINUTE_OF_DAY;
 
 public class Activity {
 
-    private SimpleStringProperty name, startTime, endTime;
+    private SimpleStringProperty name;
     private SimpleBooleanProperty outdoor;
-
+    private LocalTime startTime, endTime;
     private Caregiver coordinator;
     private Senior[] participants;
 
@@ -128,4 +132,69 @@ public class Activity {
     public boolean isOutDoor() {
         return outdoor.get();
     }
+
+    /**
+     * This method sorts the list of activities by time (sorts from most closest
+     * to most furthest.)
+     *
+     * @param activities - Array of unsorted activities.
+     */
+    public static void sortTime(Activity[] activities) {
+        for (int i = 0; i < activities.length; i++) {
+            Activity holder = activities[i];
+            int j = i - 1;
+            while ((j >= 0) && activities[j].startTime.get(MINUTE_OF_DAY) > holder.startTime.get(MINUTE_OF_DAY)) {
+                activities[j + 1] = activities[j];
+                j--;
+            }
+            activities[j + 1] = holder;
+        }
+    }
+
+    public static void sortAlpha(Activity[] activities) {
+        for (int i = 0; i < activities.length; i++) {
+            Activity holder = activities[i];
+            int j = i - 1;
+            while ((j >= 0) && activities[j].getName().charAt(0) > holder.getName().charAt(0)) {
+                activities[j + 1] = activities[j];
+                j--;
+            }
+            activities[j + 1] = holder;
+        }
+    }
+
+    /**
+     * Searches for an activity within an array of activity by the name. If no
+     * activity is found with that name, will return null.
+     *
+     * @param name - Name of the activity.
+     * @param activities - Array of activities.
+     * @return
+     */
+    public static Activity findByName(String name, Activity[] activities) {
+        for (int i = 0; i < activities.length; i++) {
+            if (name.equalsIgnoreCase(activities[i].getName())) {
+                return activities[i];
+            }
+        }
+        return null;
+    }
+
+    public String toString() {
+        String type;
+        if (isOutDoor()) {
+            type = "Outdoor";
+        } else {
+            type = "Indoor";
+        }
+
+        return "Name: " + getName() + "\n"
+                + "Start Time: " + getStartTime() + "\n"
+                + "End Time: " + getEndTime() + "\n"
+                + "Duration: " + getDuration() + "\n"
+                + "Type: " + type + "\n"
+                + "Coordinator: " + coordinator.getFullName();
+
+    }
+
 }
