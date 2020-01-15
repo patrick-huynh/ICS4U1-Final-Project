@@ -1,153 +1,81 @@
 package utility;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public abstract class Person {
 
     private final SimpleStringProperty fname, lname, dob;
     private SimpleIntegerProperty age;
-    private SimpleDoubleProperty height, weight;
-    private SimpleStringProperty gender;
-
+    
     /**
      * Constructor for abstract class Person.
      *
-     * @param nfname - The first name of the Person object.
-     * @param nlname - The last name of the Person object.
-     * @param ndob - The date of birth of the Person object.
-     * @param nage - The age of the Person object.
-     * @param nheight - The height of the Person object, in cm.
-     * @param nweight - The weight of the Person object, in kg.
-     * @param ngender - The gender of the Person object (M/F).
+     * @param fname - The first name of the Person object.
+     * @param lname - The last name of the Person object.
+     * @param dob - The date of birth of the Person object.
+     * @param age - The age of the Person object.
+     * @param height - The height of the Person object, in cm.
+     * @param weight - The weight of the Person object, in kg.
      */
-    public Person(String nfname, String nlname, String ndob, int nage, double nheight, double nweight, String ngender) {
-        fname = new SimpleStringProperty();
-        lname = new SimpleStringProperty();
-        dob = new SimpleStringProperty();
-        gender = new SimpleStringProperty();
-        age = new SimpleIntegerProperty();
-        height = new SimpleDoubleProperty();
-        weight = new SimpleDoubleProperty();
+    public Person(String fname, String lname, String dob, int age) {
+        this.fname = new SimpleStringProperty();
+        this.lname = new SimpleStringProperty();
+        this.dob = new SimpleStringProperty();
+        this.age = new SimpleIntegerProperty();
 
-        fname.set(nfname);
-        lname.set(nlname);
-        dob.set(ndob);
-        age.set(nage);
-        height.set(nheight);
-        weight.set(nweight);
-        gender.set(ngender);
+        this.fname.set(fname);
+        this.lname.set(lname);
+        this.dob.set(dob);
+        this.age.set(age);
     }
 
     /**
-     * Gets the value of the SimpleStringProperty fname.
-     *
-     * @return String - The wrapped String object representing the first name of
-     * the Person object.
+     * Gets the first name of this Person object.
+     * @return String 
      */
     public String getFirstName() {
         return fname.get();
     }
 
     /**
-     * Gets the value of the SimpleStringProperty lname.
-     *
-     * @return String - The wrapped String object representing the last name of
-     * the Person object.
+     * Gets the last name of this Person object.
+     * @return String 
      */
     public String getLastName() {
         return lname.get();
     }
 
     /**
-     * Gets the full name of the Person object.
-     *
-     * @return String - A String object concatenating the wrapped String objects
-     * for fnmae and lname.
+     * Gets the full name of this Person object.
+     * @return String
      */
     public String getFullName() {
         return fname.get() + " " + lname.get();
     }
 
     /**
-     * Gets the value of the SimpleDoubleProperty age.
-     *
-     * @return double - The wrapped double type representing the age of the
-     * Person object.
+     * Gets the age of this Person object.
+     * @return double 
      */
     public int getAge() {
         return age.get();
     }
 
     /**
-     * Sets the value of the SimpleIntegerProperty age.
-     *
-     * @param val - The new age of the Person object.
+     * Sets the age of this Person object
+     * @param age
      */
-    public void setAge(int val) {
-        age.set(val);
+    public void setAge(int age) {
+        this.age.set(age);
     }
 
-    /**
-     * Gets the value of the SimpleIntegerProperty height.
-     *
-     * @return double - The wrapped double type representing the height of the
-     * Person object.
-     */
-    public double getHeight() {
-        return height.get();
-    }
-
-    /**
-     * Sets the value of the SimpleDoubleProperty height.
-     *
-     * @param val - THe new height of the Person object.
-     */
-    public void setHeight(double val) {
-        height.set(val);
-    }
-
-    /**
-     * Gets the value of the SimpleDoubleProperty weight.
-     *
-     * @return double - The wrapped double type representing the weight of the
-     * Person object.
-     */
-    public double getWeight() {
-        return weight.get();
-    }
-
-    /**
-     *
-     * @return The gender of the person.
-     */
-    public String getGender() {
-        return gender.get();
-    }
-
-    /**
-     * Sets the value of the SimpleDoubleProperty weight.
-     *
-     * @param val - The new weight of the Person object.
-     */
-    public void setWeight(double val) {
-        weight.set(val);
-    }
-
-    /**
-     *
-     * @param g - The gender of the person.
-     */
-    public void setGender(String g) {
-        gender.set(g);
-    }
-
+    @Override
+    /**Returns a String representation of this Person object.
+     * @return String*/
     public String toString() {
         return "Name: " + getFullName() + "\n"
-                + "Gender: " + getGender() + "\n"
-                + "Age: " + getAge() + "\n"
-                + "Height: " + getHeight() + " cm" + "\n"
-                + "Weight: " + getWeight() + " kg";
+        		+ "Date of Birth: " + dob.get() + "\n"
+                + "Age: " + getAge() + "\n";
     }
 }
