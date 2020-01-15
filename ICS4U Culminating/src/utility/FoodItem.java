@@ -9,6 +9,7 @@ public class FoodItem {
 	private SimpleStringProperty expiryDate;
 	private FoodGroup group;
 	private IntegerProperty quantity, stock;
+	private SimpleStringProperty typeOfMeal;
 	
 	/**Creates a FoodItem with a name, expiry date, and FoodGroup, Lists the quantity to stock numbers.
 	 * @param item_name - The name of the FoodItem.
@@ -16,9 +17,12 @@ public class FoodItem {
 	 * @param group - The FoodGroup of the FoodItem.
 	 * @param item_quantity - The quantity of products of this FoodItem currently in stock.
 	 * @param item_stock - The expected number of products of this FoodItem to be in stock.*/
-	public FoodItem(String item_name, String expiry_date, FoodGroup group, int item_quantity, int item_stock) {
+	public FoodItem(String item_name, String typeOfMeal, String expiry_date, FoodGroup group, int item_quantity, int item_stock) {
 		name = new SimpleStringProperty();
 		name.set(item_name);
+		
+		this.typeOfMeal = new SimpleStringProperty();
+		this.typeOfMeal.set(typeOfMeal);
 		
 		this.expiryDate.set(expiry_date);
 		
@@ -41,6 +45,18 @@ public class FoodItem {
 	 * @param item_name - String*/
 	public void setName(String item_name) {
 		name.set(item_name);
+	}
+	
+	/**Gets the type of the FoodItem.
+	 * @return String*/
+	public String getType() {
+		return typeOfMeal.get();
+	}
+	
+	/**Sets the type of the FoodItem(eg. breakfast, lunch, diner).
+	 * @param typeOfMeal - String*/
+	public void setType(String type_of_meal) {
+		typeOfMeal.set(type_of_meal);
 	}
 	
 	/**Gets the String version of the LocalDate for the expiry of this FoodItem.
