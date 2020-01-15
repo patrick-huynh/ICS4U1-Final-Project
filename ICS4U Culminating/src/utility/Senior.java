@@ -101,6 +101,49 @@ public class Senior extends Person {
     public void resetHours() {
         careHours.set(0);
     }
+    /**
+     * 
+     * @param s - The array of seniors. 
+     */
+    public static void sortNum(Senior [] s) {
+        for (int i = 0; i < s.length; i++) {
+            Senior holder = s[i];
+            int j = i - 1;
+            while (j >= 0 && s[j].getHomeID() > holder.getHomeID()) {
+                s[j + 1] = s[j];
+                j--;
+            }
+            s[j + 1] = holder;
+        }
+    }
+    
+   /**
+    * 
+    * @param ID - The home ID you want to search for.
+    * @param s - The array of seniors.
+    * @param l - The farthest left of the senior array (usually 0).
+    * @param r - The farthest right of the senior array (usually length of array).
+    * @return Senior - The senior with the corresponding home ID.
+    */
+    public static Senior searchHomeID(long ID, Senior [] s, int l, int r){
+        Senior.sortNum(s);
+        if (r >= l) {
+            int mid = l + (r - l) / 2;
+            if (s[mid].getHomeID() == ID) {
+                return s[mid];  
+            }
+
+            if (s[mid].getHomeID() > ID ) {
+                return searchHomeID(ID,s, l,mid-1 );
+            }
+
+
+            return searchHomeID(ID, s,mid + 1, r);
+        }
+
+        return null;
+        
+    }
 
     public String toString() {
         return super.toString() + "\n"
