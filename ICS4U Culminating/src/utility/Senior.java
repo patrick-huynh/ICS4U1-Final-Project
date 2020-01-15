@@ -7,31 +7,23 @@ import javafx.beans.property.SimpleDoubleProperty;
 public class Senior extends Person {
 
     private final SimpleStringProperty DOE;
-    private final SimpleLongProperty hID, chequing;
-    private SimpleDoubleProperty careHours;	//number of hours of care to receive per week
-    //Maybe add bank account number,
+    private final SimpleLongProperty hID;
+    private SimpleDoubleProperty careHours;	
 
     /**
      * Constructor for class Senior.
-     *
-     * @param doe - The date of entry of the Senior object into the retirement
-     * residence.
-     * @param hID - The ID of the Senior object while in the retirement
-     * residence
-     * @param insurance - The Old Age Security (OAS) number of the Senior object
+     * @param doe - The date of entry of the Senior object into the retirement residence.
+     * @param hID - The ID of the Senior object while in the retirement residence.
      */
-    public Senior(String fname, String lname, String dob, int age, double height, double weight, String gender, String doe,
-            long hID, long chequing) {
-        super(fname, lname, dob, age, height, weight, gender);
+    public Senior(String fname, String lname, String dob, int age, String DOE,
+            long hID) {
+        super(fname, lname, dob, age);
 
-        DOE = new SimpleStringProperty();
-        DOE.set(doe);
+        this.DOE = new SimpleStringProperty();
+        this.DOE.set(DOE);
 
         this.hID = new SimpleLongProperty();
         this.hID.set(hID);
-
-        this.chequing = new SimpleLongProperty();
-        this.chequing.set(chequing);
 
         careHours = new SimpleDoubleProperty();
         careHours.set(0);
@@ -47,17 +39,24 @@ public class Senior extends Person {
     }
 
     /**
+     * @param date - The date of entry of the Senior.
+     */
+    public void setDOE(String DOE) {
+        this.DOE.set(DOE);
+    }
+    
+    /**
      * @return long - ID of the Senior.
      */
     public long getHomeID() {
         return hID.get();
     }
-
+    
     /**
-     * @return long - The chequing account number of the Senior.
+     * @param hID - The ID of the Senior.
      */
-    public long getAccountNumber() {
-        return chequing.get();
+    public void setHomeID(Number hID) {
+        this.hID.set(hID.longValue());
     }
 
     /**
@@ -68,31 +67,10 @@ public class Senior extends Person {
     }
 
     /**
-     * @param date - The date of entry of the Senior.
-     */
-    public void setDOE(String date) {
-        DOE.set(date);
-    }
-
-    /**
-     * @param hID - The ID of the Senior.
-     */
-    public void setHomeID(long hID) {
-        this.hID.set(hID);
-    }
-
-    /**
-     * @param chequing - The chequing account number of the Senior.
-     */
-    public void setAccountNumber(long chequing) {
-        this.chequing.set(chequing);
-    }
-
-    /**
      * @param hours - The number of hours the Senior is cared for.
      */
-    public void setHours(double hours) {
-        careHours.set(hours);
+    public void setHours(Number hours) {
+        careHours.set(hours.doubleValue());
     }
 
     /**
@@ -105,7 +83,7 @@ public class Senior extends Person {
      * 
      * @param s - The array of seniors. 
      */
-    public static void sortNum(Senior [] s) {
+    public static void sortHomeID(Senior[] s) {
         for (int i = 0; i < s.length; i++) {
             Senior holder = s[i];
             int j = i - 1;
@@ -126,7 +104,7 @@ public class Senior extends Person {
     * @return Senior - The senior with the corresponding home ID.
     */
     public static Senior searchHomeID(long ID, Senior [] s, int l, int r){
-        Senior.sortNum(s);
+        Senior.sortHomeID(s);
         if (r >= l) {
             int mid = l + (r - l) / 2;
             if (s[mid].getHomeID() == ID) {
@@ -145,13 +123,11 @@ public class Senior extends Person {
         
     }
 
+    @Override
     public String toString() {
         return super.toString() + "\n"
                 + "Date of Entry: " + getDOE() + "\n"
                 + "Home ID Number: " + getHomeID() + "\n"
-                + "Chequing Account: " + getAccountNumber() + "\n"
                 + "Hours Cared: " + getHours();
-
-        //SETTERS REQUIRED; FIELDS CANNOT BE FINAL
     }
 }
