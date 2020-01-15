@@ -14,9 +14,9 @@ public class Caregiver extends Person {
 	 * @param hours - The hours worked per week.
 	 * @param wage - The hourly wage.	
      */
-    public Caregiver(String fname, String lname, String dob, int age, int roomID,
+    public Caregiver(String fname, String lname, String DOB, int age, int roomID,
             long empNum, double hours, double wage) {
-        super(fname, lname, dob, age, roomID);
+        super(fname, lname, DOB, age, roomID);
 
         this.empNum = new SimpleLongProperty();
         this.empNum.set(empNum);
