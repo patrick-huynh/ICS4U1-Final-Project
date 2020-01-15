@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public abstract class Person {
 
-    private final SimpleStringProperty fname, lname, dob;
+    private final SimpleStringProperty fname, lname, DOB;
     private final SimpleIntegerProperty age, roomID;
     
     /**
@@ -15,19 +15,18 @@ public abstract class Person {
      * @param lname - The last name of the Person object.
      * @param dob - The date of birth of the Person object.
      * @param age - The age of the Person object.
-     * @param height - The height of the Person object, in cm.
-     * @param weight - The weight of the Person object, in kg.
+	 * @param roomID - The room ID of this Person.
      */
-    public Person(String fname, String lname, String dob, int age, int roomID) {
+    public Person(String fname, String lname, String DOB, int age, int roomID) {
         this.fname = new SimpleStringProperty();
         this.lname = new SimpleStringProperty();
-        this.dob = new SimpleStringProperty();
+        this.DOB = new SimpleStringProperty();
         this.age = new SimpleIntegerProperty();
         this.roomID = new SimpleIntegerProperty();
 
         this.fname.set(fname);
         this.lname.set(lname);
-        this.dob.set(dob);
+        this.DOB.set(DOB);
         this.age.set(age);
         this.roomID.set(roomID);
     }
@@ -55,7 +54,20 @@ public abstract class Person {
     public String getFullName() {
         return fname.get() + " " + lname.get();
     }
-
+    
+    /**
+     * Gets the date of birth of this Person.
+     * @return String*/
+    public String getDOB() {
+    	return DOB.get();
+    }
+    
+    /**
+     * Sets the date of birth of this Person.
+     * @param DOB*/
+    public void setDOB(String DOB) {
+    	this.DOB.set(DOB);
+    }
     /**
      * Gets the age of this Person object.
      * @return double 
@@ -91,7 +103,7 @@ public abstract class Person {
      * @return String*/
     public String toString() {
         return "Name: " + getFullName() + "\n"
-        		+ "Date of Birth: " + dob.get() + "\n"
+        		+ "Date of Birth: " + getDOB() + "\n"
                 + "Age: " + getAge() + "\n"
                 + "Room ID: " + getRoomID() + "\n";
     }
