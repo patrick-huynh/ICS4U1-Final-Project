@@ -124,6 +124,8 @@ public class Senior extends Person {
     }
 
     @Override
+    /**Returns a String representation of this Senior.
+     * @return String*/
     public String toString() {
         return super.toString() + "\n"
                 + "Date of Entry: " + getDOE() + "\n"
