@@ -28,6 +28,7 @@ import javafx.stage.Screen;
 
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
@@ -52,15 +53,13 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableCell;
-
 
 public class InventoryModule extends Application {
     
     Inventory inventory;
     
     VBox box;
-    HBox div, div_child;
+    HBox div, div_window, div_controls;
     Scene scene;
     Rectangle2D screen;
     
@@ -180,7 +179,10 @@ public class InventoryModule extends Application {
         
         itemsCtx.getItems().addAll(items_addRow, items_addEmptyRow, items_deleteRow, 
                 items_deleteLastRow);
-	
+        
+        food_items.setOnContextMenuRequested(e -> {
+        	itemsCtx.show(food_items, e.getScreenX(), e.getScreenY());
+        });
 	
         //CART SETUP
         cart = new TableView<>();
@@ -219,23 +221,29 @@ public class InventoryModule extends Application {
         Label costLabel = new Label("0.0");
         Button addToCart = new Button("Add to Cart");
         addToCart.setOnAction(e -> {
-            double cost = String.valueOf(costLabel.getText());
-            //cost += items.get(
+            double cost = Double.valueOf(costLabel.getText());
+            FoodItem addition = items.get(cart_choices.getItems().indexOf(cart_choices.getValue()));
+            added.add(addition);
+            cost += addition.computeSTDCost();
             costLabel.setText(Double.toString(cost)); 
         });
        
         //CONTEXTMENU FOR CART ITEMS
         addedCtx = new ContextMenu();
         MenuItem cart_deleteRow = new MenuItem("Delete Row");
-	cart_deleteRow.setOnAction(e -> {
-		FoodItem removed = cart.getSelectionModel().getSelectedItem();
-		added.removeAll(removed);
-		costLabel.setText(Double.toString(String.valueOf(costLabel.getText()) - removed.computeSTD()));
-	});
+	    cart_deleteRow.setOnAction(e -> {
+	    	FoodItem removed = cart.getSelectionModel().getSelectedItem();
+	    	added.removeAll(removed);
+	    	costLabel.setText(Double.toString(Double.valueOf(costLabel.getText()) - removed.computeSTDCost()));
+	    });
         
         addedCtx.getItems().add(cart_deleteRow);
+        cart.setOnContextMenuRequested(e -> {
+        	addedCtx.show(cart, e.getScreenX(), e.getScreenY());
+        });
         
-        
+        div = new HBox();
+        div.setAlignment(Pos.CENTER);
         
         stage.setScene(scene);
         stage.show();
