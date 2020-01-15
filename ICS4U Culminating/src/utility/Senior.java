@@ -8,7 +8,7 @@ public class Senior extends Person {
 
     private final SimpleStringProperty DOE;
     private final SimpleLongProperty hID;
-    private SimpleDoubleProperty careHours;	
+    private SimpleDoubleProperty hours;	
 
     /**
      * Constructor for class Senior.
@@ -25,8 +25,8 @@ public class Senior extends Person {
         this.hID = new SimpleLongProperty();
         this.hID.set(hID);
 
-        careHours = new SimpleDoubleProperty();
-        careHours.set(0);
+        hours = new SimpleDoubleProperty();
+        hours.set(0);
     }
 
     /**
@@ -48,14 +48,14 @@ public class Senior extends Person {
     /**
      * @return long - ID of the Senior.
      */
-    public long getHomeID() {
+    public long getHID() {
         return hID.get();
     }
     
     /**
      * @param hID - The ID of the Senior.
      */
-    public void setHomeID(Number hID) {
+    public void setHID(Number hID) {
         this.hID.set(hID.longValue());
     }
 
@@ -63,21 +63,21 @@ public class Senior extends Person {
      * @return double - The hours cared for the Senior.
      */
     public double getHours() {
-        return careHours.get();
+        return hours.get();
     }
 
     /**
      * @param hours - The number of hours the Senior is cared for.
      */
     public void setHours(Number hours) {
-        careHours.set(hours.doubleValue());
+        this.hours.set(hours.doubleValue());
     }
 
     /**
      * This method resets the number of hours cared for the citizen to 0.
      */
     public void resetHours() {
-        careHours.set(0);
+        hours.set(0);
     }
     /**
      * 
