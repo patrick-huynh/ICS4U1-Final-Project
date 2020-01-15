@@ -8,7 +8,7 @@ import javafx.beans.property.SimpleLongProperty;
 public class Caregiver extends Person {
 
     private SimpleStringProperty type;
-    private final SimpleLongProperty employee_number;
+    private final SimpleLongProperty empNum;
     private SimpleIntegerProperty timeClockIn;
     private SimpleIntegerProperty timeClockOut;
     private SimpleIntegerProperty totalHoursWorked;
@@ -31,8 +31,8 @@ public class Caregiver extends Person {
         type = new SimpleStringProperty();
         type.set(ntype);
 
-        employee_number = new SimpleLongProperty();
-        employee_number.set(empnum);
+        empNum = new SimpleLongProperty();
+        empNum.set(empnum);
 
         timeClockIn = new SimpleIntegerProperty();
         timeClockIn.set(ntimeClockIn);
@@ -54,8 +54,8 @@ public class Caregiver extends Person {
         type = new SimpleStringProperty();
         type.set(ntype);
 
-        employee_number = new SimpleLongProperty();
-        employee_number.set(empnum);
+        empNum = new SimpleLongProperty();
+        empNum.set(empnum);
 
         timeClockIn = new SimpleIntegerProperty();
         timeClockIn.set(0);
@@ -71,7 +71,7 @@ public class Caregiver extends Person {
     }
 
     public long getEmp() {
-        return employee_number.get();
+        return empNum.get();
     }
 
     /**
@@ -115,7 +115,7 @@ public class Caregiver extends Person {
     }
 
     public void setEmp(long empNum) {
-        employee_number.set(empNum);
+        this.empNum.set(empNum);
     }
 
     /**
