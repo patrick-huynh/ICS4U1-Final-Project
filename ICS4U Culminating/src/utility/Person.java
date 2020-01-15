@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 public abstract class Person {
 
     private final SimpleStringProperty fname, lname, dob;
-    private SimpleIntegerProperty age;
+    private final SimpleIntegerProperty age, roomID;
     
     /**
      * Constructor for abstract class Person.
@@ -18,16 +18,18 @@ public abstract class Person {
      * @param height - The height of the Person object, in cm.
      * @param weight - The weight of the Person object, in kg.
      */
-    public Person(String fname, String lname, String dob, int age) {
+    public Person(String fname, String lname, String dob, int age, int roomID) {
         this.fname = new SimpleStringProperty();
         this.lname = new SimpleStringProperty();
         this.dob = new SimpleStringProperty();
         this.age = new SimpleIntegerProperty();
+        this.roomID = new SimpleIntegerProperty();
 
         this.fname.set(fname);
         this.lname.set(lname);
         this.dob.set(dob);
         this.age.set(age);
+        this.roomID.set(roomID);
     }
 
     /**
@@ -63,11 +65,25 @@ public abstract class Person {
     }
 
     /**
-     * Sets the age of this Person object
+     * Sets the age of this Person object.
      * @param age
      */
     public void setAge(int age) {
         this.age.set(age);
+    }
+    
+    /**
+     * Gets the room ID of this Person object.
+     * @return int*/
+    public int getRoomID() {
+    	return roomID.get();
+    }
+    
+    /**
+     * Sets the room ID of this Person object.
+     * @param roomID*/
+    public void setRoomID(Number roomID) {
+    	this.roomID.set(roomID.intValue());
     }
 
     @Override
@@ -76,6 +92,7 @@ public abstract class Person {
     public String toString() {
         return "Name: " + getFullName() + "\n"
         		+ "Date of Birth: " + dob.get() + "\n"
-                + "Age: " + getAge() + "\n";
+                + "Age: " + getAge() + "\n"
+                + "Room ID: " + getRoomID() + "\n";
     }
 }
