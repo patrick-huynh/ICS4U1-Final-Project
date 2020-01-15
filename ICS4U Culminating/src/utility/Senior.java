@@ -87,7 +87,7 @@ public class Senior extends Person {
         for (int i = 0; i < s.length; i++) {
             Senior holder = s[i];
             int j = i - 1;
-            while (j >= 0 && s[j].getHomeID() > holder.getHomeID()) {
+            while (j >= 0 && s[j].getHID() > holder.getHID()) {
                 s[j + 1] = s[j];
                 j--;
             }
@@ -107,11 +107,11 @@ public class Senior extends Person {
         Senior.sortHomeID(s);
         if (r >= l) {
             int mid = l + (r - l) / 2;
-            if (s[mid].getHomeID() == ID) {
+            if (s[mid].getHID() == ID) {
                 return s[mid];  
             }
 
-            if (s[mid].getHomeID() > ID ) {
+            if (s[mid].getHID() > ID ) {
                 return searchHomeID(ID,s, l,mid-1 );
             }
 
@@ -127,7 +127,7 @@ public class Senior extends Person {
     public String toString() {
         return super.toString() + "\n"
                 + "Date of Entry: " + getDOE() + "\n"
-                + "Home ID Number: " + getHomeID() + "\n"
+                + "Home ID Number: " + getHID() + "\n"
                 + "Hours Cared: " + getHours();
     }
 }
