@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public abstract class Person {
 
-    private final SimpleStringProperty fname, lname, DOB;
+    private final SimpleStringProperty fName, lName, DOB;
     private final SimpleIntegerProperty age, roomID;
     
     /**
@@ -17,15 +17,15 @@ public abstract class Person {
      * @param age - The age of the Person object.
 	 * @param roomID - The room ID of this Person.
      */
-    public Person(String fname, String lname, String DOB, int age, int roomID) {
-        this.fname = new SimpleStringProperty();
-        this.lname = new SimpleStringProperty();
+    public Person(String fName, String lName, String DOB, int age, int roomID) {
+        this.fName = new SimpleStringProperty();
+        this.lName = new SimpleStringProperty();
         this.DOB = new SimpleStringProperty();
         this.age = new SimpleIntegerProperty();
         this.roomID = new SimpleIntegerProperty();
 
-        this.fname.set(fname);
-        this.lname.set(lname);
+        this.fName.set(fName);
+        this.lName.set(lName);
         this.DOB.set(DOB);
         this.age.set(age);
         this.roomID.set(roomID);
@@ -36,7 +36,7 @@ public abstract class Person {
      * @return String 
      */
     public String getFirstName() {
-        return fname.get();
+        return fName.get();
     }
 
     /**
@@ -44,7 +44,7 @@ public abstract class Person {
      * @return String 
      */
     public String getLastName() {
-        return lname.get();
+        return lName.get();
     }
 
     /**
@@ -52,7 +52,7 @@ public abstract class Person {
      * @return String
      */
     public String getFullName() {
-        return fname.get() + " " + lname.get();
+        return fName.get() + " " + lName.get();
     }
     
     /**
