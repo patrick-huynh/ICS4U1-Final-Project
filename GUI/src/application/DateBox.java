@@ -14,13 +14,13 @@ public final class DateBox {
 	public DateBox() {
 		month = new ChoiceBox<>();
 		
-		for (int i = 1; i < MONTH_MAX; i++) {
+		for (int i = 1; i <= MONTH_MAX; i++) {
 			month.getItems().add(i);
 		}
 		
 		day = new ChoiceBox<>();
 		
-		for (int i = 0; i < DAY_MAX; i++) {
+		for (int i = 1; i <= DAY_MAX; i++) {
 			day.getItems().add(i);
 		}
 		
@@ -51,4 +51,10 @@ public final class DateBox {
 	public int getYear() {
 		return year.getValue();
 	}
+        
+        public void setYearConstrains(int lower, int upper) {
+            for (int i = lower; i < upper; i++) {
+                year.getItems().add(i);
+            }
+        }
 }
