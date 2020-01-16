@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package application;
-
+import utility.Inventory;
 
 import java.io.FileInputStream;
 import javafx.application.Application;
@@ -69,7 +69,7 @@ public class MainMenu extends Application {
         logoImage.setPreserveRatio(true);
         
         Button logOut = new Button("Logout");
-        logOut.getStyleClass().add("button-blue");
+        logOut.getStyleClass().add("logout");
         logOut.setOnAction(actionEvent ->  {
             primaryStage.hide();
             LogInPage logIn = new LogInPage();
@@ -89,12 +89,12 @@ public class MainMenu extends Application {
         
         
         //Senior Button
-        Button seniorBtn = new Button("Seniors");
-        seniorBtn.setPrefSize(190, 50);
-        seniorBtn.getStyleClass().add("button-blue");
-        GridPane.setConstraints(seniorBtn, 0,1);
+        Button suiteBtn = new Button("Suite");
+        suiteBtn.setPrefSize(190, 50);
+        suiteBtn.getStyleClass().add("button-blue");
+        GridPane.setConstraints(suiteBtn, 0,1);
         
-        seniorBtn.setOnAction(actionEvent ->  {
+        suiteBtn.setOnAction(actionEvent ->  {
             primaryStage.hide();
             TextDialogTest testdialog = new TextDialogTest();
             testdialog.start(primaryStage);
@@ -104,23 +104,16 @@ public class MainMenu extends Application {
         Button inventoryBtn = new Button("Inventory");
         inventoryBtn.setPrefSize(190, 50);
         inventoryBtn.getStyleClass().add("button-blue");
-        GridPane.setConstraints(inventoryBtn, 0, 2);
-        
-        //Caregiver Button
-        Button caregiverBtn = new Button("Caregiver");
-        caregiverBtn.setPrefSize(190, 50);
-        caregiverBtn.getStyleClass().add("button-blue");
-        GridPane.setConstraints(caregiverBtn, 1, 1);
-        
-        //Suite Button
-        Button suite = new Button("Suite");
-        suite.setPrefSize(190, 50);
-        suite.getStyleClass().add("button-blue");
-        GridPane.setConstraints(suite, 1, 2);
+        GridPane.setConstraints(inventoryBtn, 1, 1);
+        inventoryBtn.setOnAction(actionEvent ->  {
+            primaryStage.hide();
+            NewPersonTable inventoryTable = new NewPersonTable();
+            inventoryTable.start(primaryStage);
+        });
         
         //Add everything to grid
         grid.add(pane, 0, 0, 2, 1);
-        grid.getChildren().addAll(seniorBtn, inventoryBtn, caregiverBtn, suite);
+        grid.getChildren().addAll(suiteBtn, inventoryBtn);
 
         Scene scene = new Scene(grid, 400, 250);
         scene.getStylesheets().add("Viper.css");
