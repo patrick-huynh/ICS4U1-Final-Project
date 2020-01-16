@@ -4,7 +4,12 @@ import utility.Senior;
 import utility.Caregiver;
 import utility.Suite;
 
+
+import application.TextDialog;
+import application.LimitedTextField;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javafx.util.converter.NumberStringConverter;
 import javafx.application.Application;
@@ -78,6 +83,7 @@ public class SuiteModule extends Application {
 		tab_senior = new Tab("Senior");
 		table_senior = new TableView<>();
 		table_senior.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+                table_senior.setEditable(true);
 		list_senior = FXCollections.observableArrayList();
 		
 		//SENIOR COLUMNS
@@ -103,14 +109,6 @@ public class SuiteModule extends Application {
 		dob_senior.setOnEditCommit(e -> {
 			((Senior) e.getTableView().getItems().get(
 						e.getTablePosition().getRow())).setDOB(e.getNewValue());
-		});
-		
-		TableColumn<Senior, String> doe_senior = new TableColumn<>("Date of Entry");
-		doe_senior.setCellValueFactory(new PropertyValueFactory<>("DOE"));
-		doe_senior.setCellFactory(TextFieldTableCell.forTableColumn());
-		doe_senior.setOnEditCommit(e -> {
-			((Senior) e.getTableView().getItems().get(
-						e.getTablePosition().getRow())).setDOE(e.getNewValue());
 		});
 		
 		TableColumn<Senior, Number> age_senior = new TableColumn<>("Age");
@@ -143,7 +141,7 @@ public class SuiteModule extends Application {
 			}
 		});
 		
-		table_senior.getColumns().addAll(fName_senior, lName_senior, dob_senior, doe_senior, age_senior, roomid_senior,
+		table_senior.getColumns().addAll(fName_senior, lName_senior, dob_senior, age_senior, roomid_senior,
 				homeid_senior);
 		
 		//SENIOR SEARCH BAR: FILTERED AND SORTED LISTS
@@ -179,12 +177,12 @@ public class SuiteModule extends Application {
 		
 		add_senior = new MenuItem("Add Senior");
 		add_senior.setOnAction(e -> {
-			
+			addRowSenior(stage);
 		});
 		
 		delete_senior = new MenuItem("Delete Senior");
 		delete_senior.setOnAction(e -> {
-			
+			deleteRowSenior();
 		});
 		
 		ctx_senior.getItems().addAll(add_senior, delete_senior);
@@ -332,12 +330,12 @@ public class SuiteModule extends Application {
 		
 		add_caregiver = new MenuItem("Add Caregiver");
 		add_caregiver.setOnAction(e -> {
-			
+			addRowCaregiver(stage);
 		});
 		
 		delete_caregiver = new MenuItem("Delete Caregiver");
 		delete_caregiver.setOnAction(e -> {
-			
+			deleteRowCaregiver();
 		});
 		
 		ctx_caregiver.getItems().addAll(add_caregiver, delete_caregiver);
@@ -423,4 +421,138 @@ public class SuiteModule extends Application {
 		launch(args);
 	}
 
+        private void addRowSenior(Stage stage) {
+            TextDialog dialog_senior = new TextDialog(stage);
+            dialog_senior.setHeaderContent("Add a Senior to the Table");
+            dialog_senior.setWindowTitle("Add Row");
+            
+            LimitedTextField fNameField_senior = new LimitedTextField();
+            fNameField_senior.setAsAlphaOnly();
+            dialog_senior.addOpenedPair(new Label("First Name"), true, fNameField_senior, false);
+            
+            LimitedTextField lNameField_senior = new LimitedTextField();
+            lNameField_senior.setAsAlphaOnly();
+            dialog_senior.addOpenedPair(new Label("Last Name"), true, lNameField_senior, false);
+            
+            LimitedTextField ageField_senior = new LimitedTextField();
+            ageField_senior.setAsNumericOnly();
+            ageField_senior.setMaxLength(3);
+            dialog_senior.addOpenedPair(new Label("Age"), true, ageField_senior, true);
+            
+            dialog_senior.addDateBox(new Label("Date of Birth"));
+            
+            LimitedTextField roomidField_senior = new LimitedTextField();
+            roomidField_senior.setAsNumericOnly();
+            roomidField_senior.setMaxLength(2);
+            dialog_senior.addOpenedPair(new Label("Room ID"), true, roomidField_senior, false);
+            
+            LimitedTextField homeidField_senior = new LimitedTextField();
+            homeidField_senior.setAsNumericOnly();
+            homeidField_senior.setMaxLength(4);
+            dialog_senior.addOpenedPair(new Label("Home ID"), true, homeidField_senior, false);
+            
+            dialog_senior.primeButtons();
+            dialog_senior.display();
+            
+            if (dialog_senior.isSubmitPressed) {
+                ArrayList<HashMap<TextField, String>> resp = dialog_senior.getResponses();
+                String fName_resp = resp.get(0).get(dialog_senior.getFields().get(0));
+                String lName_resp = resp.get(1).get(dialog_senior.getFields().get(1));
+                int age_resp = Integer.parseInt(resp.get(2).get(dialog_senior.getFields().get(2)));
+                
+                int month_resp = dialog_senior.getDateBox().getMonthBox().getValue();
+                int day_resp = dialog_senior.getDateBox().getDayBox().getValue();
+                int year_resp = dialog_senior.getDateBox().getYearBox().getValue();
+                
+                String dob_resp = Integer.toString(month_resp) + "/" + Integer.toString(day_resp)
+                        + "/" + Integer.toString(year_resp);
+                
+                int roomid_resp = Integer.parseInt(resp.get(3).get(dialog_senior.getFields().get(3)));
+                long homeid_resp = Long.parseLong(resp.get(4).get(dialog_senior.getFields().get(4)));
+                
+                list_senior.add(new Senior(fName_resp, lName_resp, dob_resp, age_resp, roomid_resp, 
+                    homeid_resp));
+                table_senior.refresh();
+            }
+        }
+        
+        private void deleteRowSenior() {
+            list_senior.removeAll(
+                table_senior.getSelectionModel().getSelectedItems());
+            table_senior.refresh();
+           
+        }
+        
+        private void addRowCaregiver(Stage stage) {
+            TextDialog dialog_caregiver = new TextDialog(stage);
+            dialog_caregiver.setHeaderContent("Add a Caregiver to the Table");
+            dialog_caregiver.setWindowTitle("Add Row");
+            
+            LimitedTextField fNameField_caregiver = new LimitedTextField();
+            fNameField_caregiver.setAsAlphaOnly();
+            dialog_caregiver.addOpenedPair(new Label("First Name"), true, fNameField_caregiver, false);
+            
+            LimitedTextField lNameField_caregiver = new LimitedTextField();
+            lNameField_caregiver.setAsAlphaOnly();
+            dialog_caregiver.addOpenedPair(new Label("Last Name"), true, lNameField_caregiver, false);
+            
+            LimitedTextField ageField_caregiver = new LimitedTextField();
+            ageField_caregiver.setAsNumericOnly();
+            ageField_caregiver.setMaxLength(3);
+            dialog_caregiver.addOpenedPair(new Label("Age"), true, ageField_caregiver, true);
+            
+            dialog_caregiver.addDateBox(new Label("Date of Birth"));
+            
+            LimitedTextField roomidField_caregiver = new LimitedTextField();
+            roomidField_caregiver.setAsNumericOnly();
+            roomidField_caregiver.setMaxLength(2);
+            dialog_caregiver.addOpenedPair(new Label("Room ID"), true, roomidField_caregiver, false);
+            
+            LimitedTextField empNumField_caregiver = new LimitedTextField();
+            empNumField_caregiver.setAsNumericOnly();
+            empNumField_caregiver.setMaxLength(4);
+            dialog_caregiver.addOpenedPair(new Label("Employee #"), true, empNumField_caregiver, false);
+            
+            LimitedTextField hoursField_caregiver = new LimitedTextField();
+            hoursField_caregiver.setAsNumericOnly();
+            hoursField_caregiver.setMaxLength(3);
+            dialog_caregiver.addOpenedPair(new Label("Weekly Hours"), true, hoursField_caregiver, false);
+            
+            LimitedTextField wageField_caregiver = new LimitedTextField();
+            wageField_caregiver.setAsNumericOnly();
+            wageField_caregiver.setMaxLength(3);
+            dialog_caregiver.addOpenedPair(new Label("Hourly Wage"), true, wageField_caregiver, false);
+            
+            dialog_caregiver.primeButtons();
+            dialog_caregiver.display();
+            
+            if (dialog_caregiver.isSubmitPressed) {
+                ArrayList<HashMap<TextField, String>> resp = dialog_caregiver.getResponses();
+                String fName_resp = resp.get(0).get(dialog_caregiver.getFields().get(0));
+                String lName_resp = resp.get(1).get(dialog_caregiver.getFields().get(1));
+                int age_resp = Integer.parseInt(resp.get(2).get(dialog_caregiver.getFields().get(2)));
+                
+                int month_resp = dialog_caregiver.getDateBox().getMonthBox().getValue();
+                int day_resp = dialog_caregiver.getDateBox().getDayBox().getValue();
+                int year_resp = dialog_caregiver.getDateBox().getYearBox().getValue();
+                
+                String dob_resp = Integer.toString(month_resp) + "/" + Integer.toString(day_resp)
+                        + "/" + Integer.toString(year_resp);
+                
+                int roomid_resp = Integer.parseInt(resp.get(3).get(dialog_caregiver.getFields().get(3)));
+                long empNum_resp = Long.parseLong(resp.get(4).get(dialog_caregiver.getFields().get(4)));
+                double hours_resp = Double.parseDouble(resp.get(5).get(dialog_caregiver.getFields().get(5)));
+                double wage_resp = Double.parseDouble(resp.get(6).get(dialog_caregiver.getFields().get(6)));
+              
+                list_caregiver.add(new Caregiver(fName_resp, lName_resp, dob_resp, age_resp,
+                    roomid_resp, empNum_resp, hours_resp, wage_resp));
+                table_caregiver.refresh();
+            }
+        }
+        
+        private void deleteRowCaregiver() {
+            list_caregiver.removeAll(
+                table_caregiver.getSelectionModel().getSelectedItems());
+            table_caregiver.refresh();
+        }
 }
