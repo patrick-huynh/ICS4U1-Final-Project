@@ -65,7 +65,7 @@ public class Caregiver extends Person {
     }
 
     @Override
-    /**Retrusn a String representation of this Caregiver.
+    /**Returns a String representation of this Caregiver.
      * @return String*/
     public String toString() {
         return super.toString() + "\n"
