@@ -9,6 +9,9 @@
     -fx-text-fill: #FFFFFF;
     -fx-background-radius: 4;
 }
+.button:hover{
+	-fx-background-color: #D6615C;
+}
 .button-blue{
     -fx-background-color: #7cafc2;
     -fx-text-fill: #FFFFFF;
