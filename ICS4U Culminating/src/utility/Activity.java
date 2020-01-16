@@ -24,11 +24,8 @@ public class Activity {
      * indoors.
      * @param astartTime - The start time of the activity.
      * @param aendTime - The end time of the activity.
-     * @param acoordinator - The Caregiver that is coordinating the activity.
-     * @param aparticipants - The Seniors that are participating in the
-     * activity.
      */
-    public Activity(String aname, boolean aoutdoor, LocalTime astartTime, LocalTime aendTime, Caregiver acoordinator, Senior aparticipants[]) {
+    public Activity(String aname, boolean aoutdoor, LocalTime astartTime, LocalTime aendTime) {
         name = new SimpleStringProperty();
         name.set(aname);
 
@@ -37,8 +34,6 @@ public class Activity {
 
         startTime = astartTime;
         endTime = aendTime;
-        coordinator = acoordinator;
-        participants = aparticipants;
 
     }
 
