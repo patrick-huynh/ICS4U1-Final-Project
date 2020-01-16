@@ -1,0 +1,426 @@
+package gui;
+
+import utility.Senior;
+import utility.Caregiver;
+import utility.Suite;
+
+import java.util.ArrayList;
+
+import javafx.util.converter.NumberStringConverter;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.stage.Screen;
+
+import javafx.geometry.Rectangle2D;
+import javafx.geometry.Pos;
+import javafx.geometry.Insets;
+
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TablePosition;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+
+public class SuiteModule extends Application {
+
+	Rectangle2D screen;
+	Scene scene;
+	TabPane main;
+	Tab tab_senior, tab_caregiver, tab_suite;
+	VBox box_senior, box_caregiver, box_suite;
+	HBox div_senior, div_caregiver, div_suite;
+	TextField field_senior, field_caregiver;
+	MenuButton file_senior, file_caregiver, table_options;
+	MenuItem save_senior, load_senior, save_caregiver, load_caregiver, option_add, option_remove, option_meal;
+	ContextMenu ctx_senior, ctx_caregiver;
+	MenuItem add_senior, add_caregiver, delete_senior, delete_caregiver;
+	
+	TableView<Senior> table_senior;
+	ObservableList<Senior> list_senior;
+	FilteredList<Senior> filtered_senior;
+	SortedList<Senior> sorted_senior;
+	
+	TableView<Caregiver> table_caregiver;
+	ObservableList<Caregiver> list_caregiver;
+	FilteredList<Caregiver> filtered_caregiver;
+	SortedList<Caregiver> sorted_caregiver;
+	
+	final Suite[] rooms = new Suite[12];
+	TableView<Suite> table_suite;
+	ObservableList<Suite> list_suite;
+	
+	@Override
+	public void start(Stage stage) {
+		screen = Screen.getPrimary().getVisualBounds();
+		main = new TabPane();
+		
+		//SENIOR MODULE START
+		tab_senior = new Tab("Senior");
+		table_senior = new TableView<>();
+		table_senior.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		list_senior = FXCollections.observableArrayList();
+		
+		//SENIOR COLUMNS
+		TableColumn<Senior, String> fName_senior = new TableColumn<>("First Name");
+		fName_senior.setCellValueFactory(new PropertyValueFactory<>("fName"));
+		fName_senior.setCellFactory(TextFieldTableCell.forTableColumn());
+		fName_senior.setOnEditCommit(e -> {
+			((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setFName(e.getNewValue());
+		});	
+		
+		TableColumn<Senior, String> lName_senior = new TableColumn<>("Last Name");
+		lName_senior.setCellValueFactory(new PropertyValueFactory<>("lName"));
+		lName_senior.setCellFactory(TextFieldTableCell.forTableColumn());
+		lName_senior.setOnEditCommit(e -> {
+			((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setLName(e.getNewValue());
+		});
+		
+		TableColumn<Senior, String> dob_senior = new TableColumn<>("Date of Birth");
+		dob_senior.setCellValueFactory(new PropertyValueFactory<>("DOB"));
+		dob_senior.setCellFactory(TextFieldTableCell.forTableColumn());
+		dob_senior.setOnEditCommit(e -> {
+			((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setDOB(e.getNewValue());
+		});
+		
+		TableColumn<Senior, String> doe_senior = new TableColumn<>("Date of Entry");
+		doe_senior.setCellValueFactory(new PropertyValueFactory<>("DOE"));
+		doe_senior.setCellFactory(TextFieldTableCell.forTableColumn());
+		doe_senior.setOnEditCommit(e -> {
+			((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setDOE(e.getNewValue());
+		});
+		
+		TableColumn<Senior, Number> age_senior = new TableColumn<>("Age");
+		age_senior.setCellValueFactory(new PropertyValueFactory<>("age"));
+		age_senior.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		age_senior.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setAge(e.getNewValue());
+			}
+		});
+		
+		TableColumn<Senior, Number> roomid_senior = new TableColumn<>("Room ID");
+		roomid_senior.setCellValueFactory(new PropertyValueFactory<>("roomID"));
+		roomid_senior.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		roomid_senior.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setRoomID(e.getNewValue());
+			}
+		});
+		
+		TableColumn<Senior, Number> homeid_senior = new TableColumn<>("Home ID");
+		homeid_senior.setCellValueFactory(new PropertyValueFactory<>("hID"));
+		homeid_senior.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		homeid_senior.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Senior) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setHID(e.getNewValue());
+			}
+		});
+		
+		table_senior.getColumns().addAll(fName_senior, lName_senior, dob_senior, doe_senior, age_senior, roomid_senior,
+				homeid_senior);
+		
+		//SENIOR SEARCH BAR: FILTERED AND SORTED LISTS
+		filtered_senior = new FilteredList<>(list_senior, p -> true);
+		field_senior = new TextField();
+		field_senior.setPromptText("Search here");
+		
+		field_senior.textProperty().addListener((observable, oldValue, newValue) -> {
+			filtered_senior.setPredicate(senior -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				
+				String lowerCaseFilter = newValue.toLowerCase().trim();
+				
+				if (senior.getFName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (senior.getLName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} 
+				
+				return false;
+			});
+		});
+		
+		sorted_senior = new SortedList<>(filtered_senior);
+		sorted_senior.comparatorProperty().bind(table_senior.comparatorProperty());
+		table_senior.setItems(sorted_senior);
+		
+		//SENIOR CONTEXTMENU
+		ctx_senior = new ContextMenu();
+		ctx_senior.setAutoHide(true);
+		
+		add_senior = new MenuItem("Add Senior");
+		add_senior.setOnAction(e -> {
+			
+		});
+		
+		delete_senior = new MenuItem("Delete Senior");
+		delete_senior.setOnAction(e -> {
+			
+		});
+		
+		ctx_senior.getItems().addAll(add_senior, delete_senior);
+		table_senior.setOnContextMenuRequested(e -> {
+			ctx_senior.show(table_senior, e.getScreenX(), e.getScreenY());
+		});
+		
+		//SENIOR FILE I/O MENUBUTTON
+		file_senior = new MenuButton("File");
+		save_senior = new MenuItem("Save");
+		save_senior.setOnAction(e -> {
+			
+		});
+		
+		load_senior = new MenuItem("Load");
+		load_senior.setOnAction(e -> {
+			
+		});
+		
+		file_senior.getItems().addAll(save_senior, load_senior);
+		
+		box_senior = new VBox();
+		box_senior.setSpacing(5);
+		box_senior.setPadding(new Insets(10, 0, 0, 10));
+		box_senior.getChildren().addAll(file_senior, table_senior, field_senior);
+		tab_senior.setContent(box_senior);
+		
+		
+		
+		
+		//CAREGIVER MODULE START
+		tab_caregiver = new Tab("Caregiver");
+		table_caregiver = new TableView<>();
+		table_caregiver.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		list_caregiver = FXCollections.observableArrayList();
+		
+		//CAREGIVER TABLE COLUMNS
+		TableColumn<Caregiver, String> fName_caregiver = new TableColumn<>("First Name");
+		fName_caregiver.setCellValueFactory(new PropertyValueFactory<>("fName"));
+		fName_caregiver.setCellFactory(TextFieldTableCell.forTableColumn());
+		fName_caregiver.setOnEditCommit(e -> {
+			((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setFName(e.getNewValue());
+		});	
+		
+		TableColumn<Caregiver, String> lName_caregiver = new TableColumn<>("Last Name");
+		lName_caregiver.setCellValueFactory(new PropertyValueFactory<>("lName"));
+		lName_caregiver.setCellFactory(TextFieldTableCell.forTableColumn());
+		lName_caregiver.setOnEditCommit(e -> {
+			((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setLName(e.getNewValue());
+		});	
+		
+		TableColumn<Caregiver, String> dob_caregiver = new TableColumn<>("Date of Birth");
+		dob_caregiver.setCellValueFactory(new PropertyValueFactory<>("DOB"));
+		dob_caregiver.setCellFactory(TextFieldTableCell.forTableColumn());
+		dob_caregiver.setOnEditCommit(e -> {
+			((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setDOB(e.getNewValue());
+		});	
+		
+		TableColumn<Caregiver, Number> age_caregiver = new TableColumn<>("Age");
+		age_caregiver.setCellValueFactory(new PropertyValueFactory<>("age"));
+		age_caregiver.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		age_caregiver.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setAge(e.getNewValue());
+			}
+		});
+		
+		TableColumn<Caregiver, Number> roomid_caregiver = new TableColumn<>("Room ID");
+		roomid_caregiver.setCellValueFactory(new PropertyValueFactory<>("roomID"));
+		roomid_caregiver.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		roomid_caregiver.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setRoomID(e.getNewValue());
+			}
+		});
+		
+		TableColumn<Caregiver, Number> empNum_caregiver = new TableColumn<>("Employee Number");
+		empNum_caregiver.setCellValueFactory(new PropertyValueFactory<>("empNum"));
+		empNum_caregiver.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		empNum_caregiver.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setEmpNum(e.getNewValue());
+			}
+		});
+		
+		TableColumn<Caregiver, Number> hours_caregiver = new TableColumn<>("Weekly Hours");
+		hours_caregiver.setCellValueFactory(new PropertyValueFactory<>("hours"));
+		hours_caregiver.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		hours_caregiver.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setHours(e.getNewValue());
+			}
+		});
+		
+		TableColumn<Caregiver, Number> wage_caregiver = new TableColumn<>("Hourly Wage");
+		wage_caregiver.setCellValueFactory(new PropertyValueFactory<>("wage"));
+		wage_caregiver.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		wage_caregiver.setOnEditCommit(e -> {
+			if (e.getNewValue() instanceof Number) {
+				((Caregiver) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setWage(e.getNewValue());
+			}
+		});
+		
+		table_caregiver.getColumns().addAll(fName_caregiver, lName_caregiver, dob_caregiver, age_caregiver,
+				roomid_caregiver, empNum_caregiver, hours_caregiver, wage_caregiver);
+		
+		//CAREGIVER SEARCH BAR: FILTERED AND SORTED LISTS
+		filtered_caregiver = new FilteredList<>(list_caregiver, p -> true);
+		field_caregiver = new TextField();
+		field_caregiver.setPromptText("Search here");
+		
+		field_caregiver.textProperty().addListener((observable, oldValue, newValue) -> {
+			filtered_caregiver.setPredicate(caregiver -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				
+				String lowerCaseFilter = newValue.toLowerCase().trim();
+				
+				if (caregiver.getFName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (caregiver.getLName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} 
+				
+				return false;
+			});
+		});
+		
+		sorted_caregiver = new SortedList<>(filtered_caregiver);
+		sorted_caregiver.comparatorProperty().bind(table_caregiver.comparatorProperty());
+		table_caregiver.setItems(sorted_caregiver);
+		
+		//CAREGIVER CONTEXTMENUS
+		ctx_caregiver = new ContextMenu();
+		ctx_caregiver.setAutoHide(true);
+		
+		add_caregiver = new MenuItem("Add Caregiver");
+		add_caregiver.setOnAction(e -> {
+			
+		});
+		
+		delete_caregiver = new MenuItem("Delete Caregiver");
+		delete_caregiver.setOnAction(e -> {
+			
+		});
+		
+		ctx_caregiver.getItems().addAll(add_caregiver, delete_caregiver);
+		table_caregiver.setOnContextMenuRequested(e -> {
+			ctx_caregiver.show(table_caregiver, e.getScreenX(), e.getScreenY());
+		});
+		
+		
+		file_caregiver = new MenuButton("File");
+		save_caregiver = new MenuItem("Save");
+		save_caregiver.setOnAction(e -> {
+			
+		});
+		
+		load_caregiver = new MenuItem("Load");
+		load_caregiver.setOnAction(e -> {
+			
+		});
+		
+		file_caregiver.getItems().addAll(save_caregiver, load_caregiver);
+		
+		box_caregiver = new VBox();
+		box_caregiver.setSpacing(5);
+		box_caregiver.setPadding(new Insets(10, 0, 0, 10));
+		box_caregiver.getChildren().addAll(file_caregiver, table_caregiver, field_caregiver);
+		tab_caregiver.setContent(box_caregiver);
+		
+		//SUITE MODULE SETUP
+		table_suite = new TableView<>();
+		table_suite.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		list_suite = FXCollections.observableArrayList();
+		
+		// SUITE COLUMNS
+		TableColumn<Suite, Number> number_suite = new TableColumn<>("Suite Number");
+		number_suite.setCellValueFactory(new PropertyValueFactory<>("suiteNumber"));
+		number_suite.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		
+		TableColumn<Suite, Number> cost_suite = new TableColumn<>("Monthly Cost");
+		cost_suite.setCellValueFactory(new PropertyValueFactory<>("monthlyCost"));
+		cost_suite.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		
+		TableColumn<Suite, String> style_suite = new TableColumn<>("Suite Style");
+		style_suite.setCellValueFactory(new PropertyValueFactory<>("styleName"));
+		style_suite.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		table_suite.getColumns().addAll(number_suite, cost_suite, style_suite);
+		
+		//SUITE TABLE OPTIONS
+		table_options = new MenuButton("Table Options");
+		option_add = new MenuItem("Add Person");
+		option_add.setOnAction(e -> {
+			
+		});
+		
+		option_remove = new MenuItem("Remove Person");
+		option_remove.setOnAction(e -> {
+			
+		});
+		
+		option_meal = new MenuItem("Cart Meal");
+		option_meal.setOnAction(e -> {
+			
+		});
+		
+		table_options.getItems().addAll(option_add, option_remove, option_meal);
+		
+		box_suite = new VBox();
+		box_suite.setSpacing(5);
+		box_suite.setPadding(new Insets(10, 0, 0, 10));
+		box_suite.getChildren().addAll(table_options, table_suite);
+		
+		tab_suite = new Tab("Suite");
+		tab_suite.setContent(box_suite);
+		
+		main.getTabs().addAll(tab_senior, tab_caregiver, tab_suite);
+		scene = new Scene(main, screen.getWidth(), screen.getHeight());
+		stage.setTitle("Suite Module");
+		stage.setScene(scene);
+		stage.show();
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+}
