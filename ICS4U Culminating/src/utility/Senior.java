@@ -1,12 +1,10 @@
 package utility;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Senior extends Person {
 
-    private final SimpleStringProperty DOE;
     private final SimpleLongProperty hID;
     private SimpleDoubleProperty hours;	
 
@@ -20,15 +18,11 @@ public class Senior extends Person {
     /**
      * Constructor for Senior class.
      * @param roomID - The room ID that the senior is staying in.
-     * @param DOE - The date of entry of the Senior object into the retirement residence.
      * @param hID - The ID of the Senior object while in the retirement residence.
      */
-    public Senior(String fname, String lname, String DOB, int age, int roomID, String DOE,
+    public Senior(String fname, String lname, String DOB, int age, int roomID, 
             long hID) {
         super(fname, lname, DOB, age, roomID);
-
-        this.DOE = new SimpleStringProperty();
-        this.DOE.set(DOE);
 
         this.hID = new SimpleLongProperty();
         this.hID.set(hID);
@@ -37,22 +31,6 @@ public class Senior extends Person {
         hours.set(0);
     }
 
-    /**
-     * Gets the date of entry of the Senior into the residence.
-     *
-     * @return long - The value of the property DOE.
-     */
-    public String getDOE() {
-        return DOE.get();
-    }
-
-    /**
-     * @param date - The date of entry of the Senior.
-     */
-    public void setDOE(String DOE) {
-        this.DOE.set(DOE);
-    }
-    
     /**
      * @return long - ID of the Senior.
      */
@@ -136,7 +114,6 @@ public class Senior extends Person {
      * @return String*/
     public String toString() {
         return super.toString() + "\n"
-                + "Date of Entry: " + getDOE() + "\n"
                 + "Home ID Number: " + getHID() + "\n"
                 + "Hours Cared: " + getHours();
     }
