@@ -35,18 +35,26 @@ public abstract class Person {
      * Gets the first name of this Person object.
      * @return String 
      */
-    public String getFirstName() {
+    public String getFName() {
         return fName.get();
     }
 
+    public void setFName(String fName) {
+    	this.fName.set(fName);
+    }
+    
     /**
      * Gets the last name of this Person object.
      * @return String 
      */
-    public String getLastName() {
+    public String getLName() {
         return lName.get();
     }
-
+    
+    public void setLName(String lName) {
+    	this.lName.set(lName);
+    }
+    
     /**
      * Gets the full name of this Person object.
      * @return String
