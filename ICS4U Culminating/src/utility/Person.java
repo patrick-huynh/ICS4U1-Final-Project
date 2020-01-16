@@ -7,7 +7,7 @@ public abstract class Person {
 
     private final SimpleStringProperty fName, lName, DOB;
     private final SimpleIntegerProperty age, roomID;
-    
+
     /**
      * Constructor for abstract class Person.
      *
@@ -15,7 +15,7 @@ public abstract class Person {
      * @param lname - The last name of the Person object.
      * @param dob - The date of birth of the Person object.
      * @param age - The age of the Person object.
-	 * @param roomID - The room ID of this Person.
+     * @param roomID - The room ID of this Person.
      */
     public Person(String fName, String lName, String DOB, int age, int roomID) {
         this.fName = new SimpleStringProperty();
@@ -33,52 +33,61 @@ public abstract class Person {
 
     /**
      * Gets the first name of this Person object.
-     * @return String 
+     *
+     * @return String
      */
     public String getFName() {
         return fName.get();
     }
 
     public void setFName(String fName) {
-    	this.fName.set(fName);
+        this.fName.set(fName);
     }
-    
+
     /**
      * Gets the last name of this Person object.
-     * @return String 
+     *
+     * @return String
      */
     public String getLName() {
         return lName.get();
     }
-    
+
     public void setLName(String lName) {
-    	this.lName.set(lName);
+        this.lName.set(lName);
     }
-    
+
     /**
      * Gets the full name of this Person object.
+     *
      * @return String
      */
     public String getFullName() {
         return fName.get() + " " + lName.get();
     }
-    
+
     /**
      * Gets the date of birth of this Person.
-     * @return String*/
+     *
+     * @return String
+     */
     public String getDOB() {
-    	return DOB.get();
+        return DOB.get();
     }
-    
+
     /**
      * Sets the date of birth of this Person.
-     * @param DOB*/
+     *
+     * @param DOB
+     */
     public void setDOB(String DOB) {
-    	this.DOB.set(DOB);
+        this.DOB.set(DOB);
     }
+
     /**
      * Gets the age of this Person object.
-     * @return double 
+     *
+     * @return double
      */
     public int getAge() {
         return age.get();
@@ -86,32 +95,40 @@ public abstract class Person {
 
     /**
      * Sets the age of this Person object.
+     *
      * @param age
      */
     public void setAge(Number age) {
         this.age.set(age.intValue());
     }
-    
+
     /**
      * Gets the room ID of this Person object.
-     * @return int*/
+     *
+     * @return int
+     */
     public int getRoomID() {
-    	return roomID.get();
+        return roomID.get();
     }
-    
+
     /**
      * Sets the room ID of this Person object.
-     * @param roomID*/
+     *
+     * @param roomID
+     */
     public void setRoomID(Number roomID) {
-    	this.roomID.set(roomID.intValue());
+        this.roomID.set(roomID.intValue());
     }
 
     @Override
-    /**Returns a String representation of this Person object.
-     * @return String*/
+    /**
+     * Returns a String representation of this Person object.
+     *
+     * @return String
+     */
     public String toString() {
         return "Name: " + getFullName() + "\n"
-        		+ "Date of Birth: " + getDOB() + "\n"
+                + "Date of Birth: " + getDOB() + "\n"
                 + "Age: " + getAge() + "\n"
                 + "Room ID: " + getRoomID() + "\n";
     }
