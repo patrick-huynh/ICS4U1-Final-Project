@@ -4,9 +4,21 @@ import utility.Senior;
 import utility.Caregiver;
 import utility.Suite;
 
-
 import application.TextDialog;
 import application.LimitedTextField;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +50,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
 
 import javafx.collections.FXCollections;
@@ -57,6 +68,7 @@ public class SuiteModule extends Application {
 	TextField field_senior, field_caregiver;
 	MenuButton file_senior, file_caregiver, table_options;
 	MenuItem save_senior, load_senior, save_caregiver, load_caregiver, option_add, option_remove, option_meal;
+        Label fileError_senior, fileError_caregiver;
 	ContextMenu ctx_senior, ctx_caregiver;
 	MenuItem add_senior, add_caregiver, delete_senior, delete_caregiver;
 	
@@ -194,15 +206,18 @@ public class SuiteModule extends Application {
 		file_senior = new MenuButton("File");
 		save_senior = new MenuItem("Save");
 		save_senior.setOnAction(e -> {
-			
+			saveSenior(new File("recent_senior.txt"), new File("previous_senior.txt"));
+                        fileError_senior.setText("Senior Data Saved.");
 		});
 		
 		load_senior = new MenuItem("Load");
 		load_senior.setOnAction(e -> {
-			
+			loadSenior(new File("recent_senior.txt"));
+                        fileError_senior.setText("Senior Data Loaded");
 		});
 		
 		file_senior.getItems().addAll(save_senior, load_senior);
+                fileError_senior = new Label("");
 		
 		box_senior = new VBox();
 		box_senior.setSpacing(5);
@@ -345,14 +360,18 @@ public class SuiteModule extends Application {
 		
 		
 		file_caregiver = new MenuButton("File");
+                fileError_caregiver = new Label("");
+                
 		save_caregiver = new MenuItem("Save");
 		save_caregiver.setOnAction(e -> {
-			
+			saveCaregiver(new File("recent_caregiver.txt"), new File("previous_caregiver.txt"));
+                        fileError_caregiver.setText("Caregiver Data Saved");
 		});
 		
 		load_caregiver = new MenuItem("Load");
 		load_caregiver.setOnAction(e -> {
-			
+			loadCaregiver(new File("recent_caregiver.txt"));
+                        fileError_caregiver.setText("Caregiver Data Loaded");
 		});
 		
 		file_caregiver.getItems().addAll(save_caregiver, load_caregiver);
@@ -421,6 +440,7 @@ public class SuiteModule extends Application {
 		launch(args);
 	}
 
+        //PRIVATE METHODS FOR CONTEXTMENUS IN THE SENIOR AND CAREGIVER MODULES
         private void addRowSenior(Stage stage) {
             TextDialog dialog_senior = new TextDialog(stage);
             dialog_senior.setHeaderContent("Add a Senior to the Table");
@@ -554,5 +574,125 @@ public class SuiteModule extends Application {
             list_caregiver.removeAll(
                 table_caregiver.getSelectionModel().getSelectedItems());
             table_caregiver.refresh();
+        }
+        
+        //FILE I/O FOR THE SENIOR AND CAREGIVER MODULES
+        
+        private void copy(File source, File target) {
+            try(FileInputStream in = new FileInputStream(source);
+                FileOutputStream out = new FileOutputStream(target);
+                FileChannel from = in.getChannel();
+                FileChannel to = out.getChannel();
+                    ){
+                
+                to.transferFrom(from, 0, from.size());
+                
+            } catch (IOException e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            } catch (Exception e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+        
+        private void saveSenior(File source, File target) {
+            copy(source, target);
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
+                    ) {
+                for (Senior senior : list_senior) {
+                    if (senior != null) {
+                        writer.write(senior.getFName());
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(senior.getLName());
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(senior.getDOB());
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Integer.toString(senior.getAge()));
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Integer.toString(senior.getRoomID()));
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Long.toString(senior.getHID()));
+                        writer.write(System.getProperty("line.separator"));
+                    }
+                }
+            } catch (IOException e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            } catch (Exception e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            }
+                
+        }
+        
+        private void loadSenior(File source) {
+            list_senior.removeAll(list_senior);
+            
+            try (BufferedReader reader = new BufferedReader(new FileReader(source));
+                    ) {
+                String line;
+                
+                while ((line = reader.readLine()) != null) {
+                    list_senior.add(new Senior(line, reader.readLine(), reader.readLine(), 
+                    Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()),
+                    Long.parseLong(reader.readLine())));
+                }
+                
+            } catch (IOException e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            } catch (Exception e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+        
+        private void saveCaregiver(File source, File target) {
+                        copy(source, target);
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
+                    ) {
+                for (Caregiver caregiver : list_caregiver) {
+                    if (caregiver != null) {
+                        writer.write(caregiver.getFName());
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(caregiver.getLName());
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(caregiver.getDOB());
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Integer.toString(caregiver.getAge()));
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Integer.toString(caregiver.getRoomID()));
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Long.toString(caregiver.getEmpNum()));
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Double.toString(caregiver.getHours()));
+                        writer.write(System.getProperty("line.separator"));
+                        writer.write(Double.toString(caregiver.getWage()));
+                        writer.write(System.getProperty("line.separator"));
+                    }
+                }
+            } catch (IOException e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            } catch (Exception e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+        
+        private void loadCaregiver(File source) {
+            list_caregiver.removeAll(list_caregiver);
+            
+            try (BufferedReader reader = new BufferedReader(new FileReader(source));
+                    ) {
+                String line;
+                
+                while ((line = reader.readLine()) != null) {
+                    list_caregiver.add(new Caregiver(line, reader.readLine(), reader.readLine(),
+                    Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()),
+                    Long.parseLong(reader.readLine()), Double.parseDouble(reader.readLine()),
+                    Double.parseDouble(reader.readLine())));
+                }
+                
+            } catch (IOException e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            } catch (Exception e) {
+                Logger.getLogger(SuiteModule.class.getName()).log(Level.SEVERE, null, e);
+            }
         }
 }
