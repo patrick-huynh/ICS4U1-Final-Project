@@ -52,7 +52,7 @@ public final class DateBox {
 		return year.getValue();
 	}
         
-        public void setYearConstrains(int lower, int upper) {
+        public void setYearConstraints(int lower, int upper) {
             for (int i = lower; i < upper; i++) {
                 year.getItems().add(i);
             }
