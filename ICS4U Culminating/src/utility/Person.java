@@ -88,8 +88,8 @@ public abstract class Person {
      * Sets the age of this Person object.
      * @param age
      */
-    public void setAge(int age) {
-        this.age.set(age);
+    public void setAge(Number age) {
+        this.age.set(age.intValue());
     }
     
     /**
