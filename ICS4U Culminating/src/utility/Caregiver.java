@@ -36,8 +36,8 @@ public class Caregiver extends Person {
 
     /**Sets the employee number of this Caregiver.
      * @param empNum*/
-    public void setEmpNum(long empNum) {
-        this.empNum.set(empNum);
+    public void setEmpNum(Number empNum) {
+        this.empNum.set(empNum.longValue());
     }
     
     /**Gets the number of weekly hours worked by this Caregiver.
