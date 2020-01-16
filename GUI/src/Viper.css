@@ -16,7 +16,13 @@
     -fx-font-size: 24;
     -fx-font-family: 'serif';
 }
-.button:hover, .button-blue:hover{
+.logout{
+	-fx-background-color: #AB4642;
+}
+.logout:hover{
+	-fx-background-color: #D6615C;
+}
+.button-blue:hover{
     -fx-background-color: #36cf3c;
     
 }
