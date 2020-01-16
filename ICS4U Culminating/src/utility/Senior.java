@@ -14,6 +14,14 @@ public class Senior extends Person {
      * Constructor for class Senior.
      * @param doe - The date of entry of the Senior object into the retirement residence.
      * @param hID - The ID of the Senior object while in the retirement residence.
+     * @param
+     */
+    
+    /**
+     * Constructor for Senior class.
+     * @param roomID - The room ID that the senior is staying in.
+     * @param DOE - The date of entry of the Senior object into the retirement residence.
+     * @param hID - The ID of the Senior object while in the retirement residence.
      */
     public Senior(String fname, String lname, String DOB, int age, int roomID, String DOE,
             long hID) {
