@@ -102,10 +102,10 @@ public class Caregiver extends Person {
     	}
     }
     
-    public static Caregiver searchEmpNum(long empNum, List<Caregiver> c) {
+    public static Caregiver searchEmpNum(long empNum, List<Caregiver> c, int l, int r) {
     	Caregiver.sortEmpNum(c);
-        int l = 0;
-        int r = c.size() - 1;
+        l = 0;
+        r = c.size() - 1;
         
         while (l<=r) {
             int mid = (l+r)/2;
