@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package application;
-import utility.Inventory;
+import utility.SuiteModule;
 
 import java.io.FileInputStream;
 import javafx.application.Application;
@@ -96,8 +96,8 @@ public class MainMenu extends Application {
         
         suiteBtn.setOnAction(actionEvent ->  {
             primaryStage.hide();
-            TextDialogTest testdialog = new TextDialogTest();
-            testdialog.start(primaryStage);
+            SuiteModule suiteModule = new SuiteModule();
+            suiteModule.start(primaryStage);
         });
         
         //Inventory Button
