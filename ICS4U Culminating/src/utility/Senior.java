@@ -1,6 +1,9 @@
 package utility;
 
 import javafx.beans.property.SimpleLongProperty;
+
+import java.util.List;
+
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Senior extends Person {
@@ -88,6 +91,18 @@ public class Senior extends Person {
         }
     }
     
+    public static void sortHomeID(List<Senior> s) {
+    	for (int i = 0; i < s.size(); i++) {
+    		Senior holder = s.get(i);
+    		int j = i - 1;
+    		while (j >- 0 && s.get(j).getHID() > holder.getHID()) {
+    			s.set(j + 1, s.get(j));
+    			j--;
+    		}
+    		s.set(j + 1, holder);
+    	}
+    }
+    
    /**
     * 
     * @param ID - The home ID you want to search for.
@@ -114,6 +129,23 @@ public class Senior extends Person {
 
         return null;
         
+    }
+    
+    public static Senior searchHomeID(long ID, List<Senior> s, int l, int r) {
+    	Senior.sortHomeID(s);
+    	if (r >= l) {
+    		int mid = l + (r - l) / 2;
+    		
+    		if (s.get(mid).getHID() == ID) {
+    			return s.get(mid);
+    		}
+    		
+    		if (s.get(mid).getHID() > ID) {
+    			return searchHomeID(ID, s, l, mid - 1);
+    		}
+    		return searchHomeID(ID, s, mid + 1, r);
+    	}
+    	return null;
     }
 
     @Override
