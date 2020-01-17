@@ -6,8 +6,7 @@ import javafx.beans.property.SimpleLongProperty;
 public class Caregiver extends Person {
 
     private final SimpleLongProperty empNum;
-    private final SimpleDoubleProperty wage, hours;
-
+    private final SimpleDoubleProperty wage, hours, weekly_pay, monthly_pay, annual_pay;
     /**
      * Constructor for class Caregiver.
      * @param empNum - The employee number.
@@ -26,6 +25,13 @@ public class Caregiver extends Person {
 
         this.wage = new SimpleDoubleProperty();
         this.wage.set(wage);
+        
+        weekly_pay = new SimpleDoubleProperty();
+        weekly_pay.set(0);
+
+        monthly_pay = new SimpleDoubleProperty();
+
+        annual_pay = new SimpleDoubleProperty();
     }
 
     /**Gets the employee number of this Caregiver.
@@ -63,7 +69,25 @@ public class Caregiver extends Person {
     public void setWage(Number wage) {
     	this.wage.set(wage.doubleValue());
     }
-
+    
+    public void calculateWeeklyPay() {
+    	weekly_pay.set(wage.get()*hours.get()*0.735);
+    }
+    public Double getWeeklyPay() {
+    	return weekly_pay.get();
+    }
+    public void calculateMonthlyPay() {
+    	monthly_pay.set(wage.get()*hours.get()*0.735*4.34);
+    }
+    public Double getMonthlyPay() {
+    	return monthly_pay.get();
+    }
+    public void calculateAnnualPay() {
+    	annual_pay.set(wage.get()*hours.get()*0.735*4.34*12.0);
+    }
+    public Double getAnnualPay() {
+    	return annual_pay.get();
+    }
     @Override
     /**Returns a String representation of this Caregiver.
      * @return String*/
