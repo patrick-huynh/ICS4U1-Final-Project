@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import java.text.SimpleDateFormat;
 import static java.time.temporal.ChronoField.MINUTE_OF_DAY;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Activity {
@@ -68,7 +69,7 @@ public class Activity {
      */
     public double getDuration() {
         Duration duration = Duration.between(endTime, startTime);
-        return duration.toHours();
+        return Math.abs(duration.toMinutes()/60.0);
     }
 
     /**
@@ -176,21 +177,23 @@ public class Activity {
         return null;
     }
 
-    public static List<Activity> randomGen(int numOfActivities) {
+    public static ArrayList<Activity> randomGen(int numOfActivities) {
         String[] names = {"Soccer", "Basketball", "Stretching", "Bingo", "Poker", "Speed Walking", "Flag Football", "Movies"};
         Boolean[] isOutdoor = {true, false, true, false, false, true, true, false};
-        String[] startTime = {"6:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+        String[] startTime = {"06:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+        ArrayList<Activity> a = new ArrayList<>();
         // Duration in minutes
+
         long[] duration = {30, 60, 90, 120};
         for (int i = 0; i < numOfActivities; i++) {
-            int namesIndex = (int) (Math.random() * (names.length + 1));
-            int startTimeIndex = (int) (Math.random() * (startTime.length + 1));
-            int durationIndex = (int) (Math.random() * (duration.length + 1));
+            int namesIndex = (int) (Math.random() * (names.length));
+            int startTimeIndex = (int) (Math.random() * (startTime.length));
+            int durationIndex = (int) (Math.random() * (duration.length));
             LocalTime start = LocalTime.parse(startTime[startTimeIndex]);
             LocalTime end = start.plusMinutes(duration[durationIndex]);
-            List<Activity> a;
-            a.add(new Activity(names[namesIndex], isOutdoor[namesIndex],start,end));
-            
+
+            a.add(new Activity(names[namesIndex], isOutdoor[namesIndex], start, end));
+
         }
         return a;
     }
@@ -207,8 +210,7 @@ public class Activity {
                 + "Start Time: " + getStartTime() + "\n"
                 + "End Time: " + getEndTime() + "\n"
                 + "Duration: " + getDuration() + "\n"
-                + "Type: " + type + "\n"
-                + "Coordinator: " + coordinator.getFullName();
+                + "Type: " + type + "\n";
 
     }
 
