@@ -22,6 +22,8 @@ import java.nio.channels.FileChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 import javafx.util.converter.NumberStringConverter;
 import javafx.application.Application;
@@ -29,9 +31,8 @@ import javafx.stage.Stage;
 import javafx.stage.Screen;
 
 import javafx.geometry.Rectangle2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Insets;
-
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -41,16 +42,15 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.control.TablePosition;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -64,11 +64,12 @@ public class SuiteModule extends Application {
 	TabPane main;
 	Tab tab_senior, tab_caregiver, tab_suite;
 	VBox box_senior, box_caregiver, box_suite;
-	HBox div_senior, div_caregiver, div_suite;
+	HBox div_senior, div_caregiver, div_suite, divSearch_senior, divSearch_caregiver, divCost_senior, divSalary_caregiver;
+	ChoiceBox<Long> choices_senior, choices_caregiver;
 	TextField field_senior, field_caregiver;
 	MenuButton file_senior, file_caregiver, table_options;
 	MenuItem save_senior, load_senior, save_caregiver, load_caregiver, option_add, option_remove, option_meal;
-        Label fileError_senior, fileError_caregiver;
+    Label fileError_senior, fileError_caregiver;
 	ContextMenu ctx_senior, ctx_caregiver;
 	MenuItem add_senior, add_caregiver, delete_senior, delete_caregiver;
 	
@@ -87,12 +88,14 @@ public class SuiteModule extends Application {
 	ObservableList<Suite> list_suite;
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void start(Stage stage) {
 		screen = Screen.getPrimary().getVisualBounds();
 		main = new TabPane();
 		
 		//SENIOR MODULE START
 		tab_senior = new Tab("Senior");
+		tab_senior.setClosable(false);
 		table_senior = new TableView<>();
 		table_senior.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
                 table_senior.setEditable(true);
@@ -203,26 +206,50 @@ public class SuiteModule extends Application {
 		});
 		
 		//SENIOR FILE I/O MENUBUTTON
+		fileError_senior = new Label("");
 		file_senior = new MenuButton("File");
 		save_senior = new MenuItem("Save");
 		save_senior.setOnAction(e -> {
 			saveSenior(new File("recent_senior.txt"), new File("previous_senior.txt"));
-                        fileError_senior.setText("Senior Data Saved.");
+                        fileError_senior.setText(" Senior Data Saved.");
 		});
 		
 		load_senior = new MenuItem("Load");
 		load_senior.setOnAction(e -> {
 			loadSenior(new File("recent_senior.txt"));
-                        fileError_senior.setText("Senior Data Loaded");
+                        fileError_senior.setText(" Senior Data Loaded");
 		});
 		
 		file_senior.getItems().addAll(save_senior, load_senior);
-                fileError_senior = new Label("");
+		
+        //SENIOR COST BOX
+		choices_senior = new ChoiceBox<>();
+        TextField costField_senior = new TextField();
+        costField_senior.setDisable(true);
+        Button compute_senior = new Button("Compute Monthly Cost");
+        compute_senior.setOnAction(e -> {
+        	Senior ofInterest = list_senior.get(choices_senior.getItems().indexOf(choices_senior.getValue()));
+        	costField_senior.setText(Double.toString(ofInterest.getMonthlyPayment()));
+
+        });
+        
+        divCost_senior = new HBox();
+        divCost_senior.getChildren().addAll(choices_senior, compute_senior, costField_senior);
+        
+                
+        //SENIOR ACTIVITY GENERATOR
+             
+                
+		div_senior = new HBox();
+		div_senior.getChildren().addAll(file_senior, fileError_senior);
+		divSearch_senior = new HBox();
+		divSearch_senior.getChildren().add(field_senior);
+		divSearch_senior.setAlignment(Pos.CENTER);
 		
 		box_senior = new VBox();
 		box_senior.setSpacing(5);
 		box_senior.setPadding(new Insets(10, 0, 0, 10));
-		box_senior.getChildren().addAll(file_senior, table_senior, field_senior);
+		box_senior.getChildren().addAll(div_senior, table_senior, divSearch_senior, divCost_senior);
 		tab_senior.setContent(box_senior);
 		
 		
@@ -230,6 +257,7 @@ public class SuiteModule extends Application {
 		
 		//CAREGIVER MODULE START
 		tab_caregiver = new Tab("Caregiver");
+		tab_caregiver.setClosable(false);
 		table_caregiver = new TableView<>();
 		table_caregiver.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		list_caregiver = FXCollections.observableArrayList();
@@ -365,58 +393,77 @@ public class SuiteModule extends Application {
 		save_caregiver = new MenuItem("Save");
 		save_caregiver.setOnAction(e -> {
 			saveCaregiver(new File("recent_caregiver.txt"), new File("previous_caregiver.txt"));
-                        fileError_caregiver.setText("Caregiver Data Saved");
+                        fileError_caregiver.setText(" Caregiver Data Saved");
 		});
 		
 		load_caregiver = new MenuItem("Load");
 		load_caregiver.setOnAction(e -> {
 			loadCaregiver(new File("recent_caregiver.txt"));
-                        fileError_caregiver.setText("Caregiver Data Loaded");
+                        fileError_caregiver.setText(" Caregiver Data Loaded");
 		});
 		
 		file_caregiver.getItems().addAll(save_caregiver, load_caregiver);
 		
+		//ACTIVITY SALARY BOX
+		choices_caregiver = new ChoiceBox<>();
+		TextField costField_caregiver = new TextField();
+		costField_caregiver.setDisable(true);
+		Button compute_caregiver = new Button("Compute Yearly Salary");
+		compute_caregiver.setOnAction(e -> {
+			Caregiver ofInterest = list_caregiver.get(choices_caregiver.getItems().indexOf(choices_caregiver.getValue()));
+			costField_caregiver.setText(Double.toString(ofInterest.computeYearlySalary()));
+		});
+		
+		
+		divSalary_caregiver = new HBox();
+		divSalary_caregiver.getChildren().addAll(choices_caregiver, compute_caregiver, costField_caregiver);
+		
+		divSearch_caregiver = new HBox();
+		divSearch_caregiver.getChildren().add(field_caregiver);
+		divSearch_caregiver.setAlignment(Pos.CENTER);
+		
+		div_caregiver = new HBox();
+		div_caregiver.getChildren().addAll(file_caregiver, fileError_caregiver);
+		
 		box_caregiver = new VBox();
 		box_caregiver.setSpacing(5);
 		box_caregiver.setPadding(new Insets(10, 0, 0, 10));
-		box_caregiver.getChildren().addAll(file_caregiver, table_caregiver, field_caregiver);
+		box_caregiver.getChildren().addAll(div_caregiver, table_caregiver, divSearch_caregiver, divSalary_caregiver);
 		tab_caregiver.setContent(box_caregiver);
 		
 		//SUITE MODULE SETUP
 		table_suite = new TableView<>();
 		table_suite.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		list_suite = FXCollections.observableArrayList();
+		buildSuite();
 		
 		// SUITE COLUMNS
 		TableColumn<Suite, Number> number_suite = new TableColumn<>("Suite Number");
 		number_suite.setCellValueFactory(new PropertyValueFactory<>("suiteNumber"));
 		number_suite.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
 		
-		TableColumn<Suite, Number> cost_suite = new TableColumn<>("Monthly Cost");
-		cost_suite.setCellValueFactory(new PropertyValueFactory<>("monthlyCost"));
-		cost_suite.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-		
 		TableColumn<Suite, String> style_suite = new TableColumn<>("Suite Style");
 		style_suite.setCellValueFactory(new PropertyValueFactory<>("styleName"));
 		style_suite.setCellFactory(TextFieldTableCell.forTableColumn());
 
-		table_suite.getColumns().addAll(number_suite, cost_suite, style_suite);
+		table_suite.getColumns().addAll(number_suite, style_suite);
+		table_suite.setItems(list_suite);
 		
 		//SUITE TABLE OPTIONS
 		table_options = new MenuButton("Table Options");
 		option_add = new MenuItem("Add Person");
 		option_add.setOnAction(e -> {
-			
+			addRowSuite(stage);
 		});
 		
 		option_remove = new MenuItem("Remove Person");
 		option_remove.setOnAction(e -> {
-			
+			removeRowSuite(stage);
 		});
 		
 		option_meal = new MenuItem("Cart Meal");
 		option_meal.setOnAction(e -> {
-			
+			cartMeal();
 		});
 		
 		table_options.getItems().addAll(option_add, option_remove, option_meal);
@@ -427,6 +474,7 @@ public class SuiteModule extends Application {
 		box_suite.getChildren().addAll(table_options, table_suite);
 		
 		tab_suite = new Tab("Suite");
+		tab_suite.setClosable(false);
 		tab_suite.setContent(box_suite);
 		
 		main.getTabs().addAll(tab_senior, tab_caregiver, tab_suite);
@@ -436,11 +484,31 @@ public class SuiteModule extends Application {
 		stage.show();
 	}
 	
+	
+	
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
 
         //PRIVATE METHODS FOR CONTEXTMENUS IN THE SENIOR AND CAREGIVER MODULES
+	
+		private void updateChoicesSenior(Senior senior, boolean add) {
+			if (add) {
+				choices_senior.getItems().add(senior.getHID());
+			} else {
+				choices_senior.getItems().remove(senior.getHID());
+			}
+		}
+		
+		private void updateChoicesCaregiver(Caregiver caregiver, boolean add) {
+			if (add) {
+				choices_caregiver.getItems().add(caregiver.getEmpNum());
+			} else {
+				choices_caregiver.getItems().remove(caregiver.getEmpNum());			
+			}
+		}
+	
         private void addRowSenior(Stage stage) {
             TextDialog dialog_senior = new TextDialog(stage);
             dialog_senior.setHeaderContent("Add a Senior to the Table");
@@ -466,6 +534,11 @@ public class SuiteModule extends Application {
             roomidField_senior.setMaxLength(2);
             dialog_senior.addOpenedPair(new Label("Room ID"), true, roomidField_senior, false);
             
+            LimitedTextField hourField_senior = new LimitedTextField();
+            hourField_senior.setAsNumericOnly();
+            hourField_senior.setMaxLength(2);
+            dialog_senior.addOpenedPair(new Label("Care Hours Per Day"), true, hourField_senior, false);
+            
             LimitedTextField homeidField_senior = new LimitedTextField();
             homeidField_senior.setAsNumericOnly();
             homeidField_senior.setMaxLength(4);
@@ -488,17 +561,23 @@ public class SuiteModule extends Application {
                         + "/" + Integer.toString(year_resp);
                 
                 int roomid_resp = Integer.parseInt(resp.get(3).get(dialog_senior.getFields().get(3)));
-                long homeid_resp = Long.parseLong(resp.get(4).get(dialog_senior.getFields().get(4)));
+                double hour_resp = Double.parseDouble(resp.get(4).get(dialog_senior.getFields().get(4)));
+                long homeid_resp = Long.parseLong(resp.get(5).get(dialog_senior.getFields().get(5)));
                 
-                list_senior.add(new Senior(fName_resp, lName_resp, dob_resp, age_resp, roomid_resp, 
-                    homeid_resp));
+                Senior add_senior = new Senior(fName_resp, lName_resp, dob_resp, age_resp, roomid_resp, 
+                		hour_resp, homeid_resp);
+                
+                list_senior.add(add_senior);
+                updateChoicesSenior(add_senior, true);
+                
                 table_senior.refresh();
             }
         }
         
         private void deleteRowSenior() {
-            list_senior.removeAll(
-                table_senior.getSelectionModel().getSelectedItems());
+        	Senior removed = table_senior.getSelectionModel().getSelectedItem();
+            list_senior.removeAll(removed);
+            updateChoicesSenior(removed, false);
             table_senior.refresh();
            
         }
@@ -564,16 +643,161 @@ public class SuiteModule extends Application {
                 double hours_resp = Double.parseDouble(resp.get(5).get(dialog_caregiver.getFields().get(5)));
                 double wage_resp = Double.parseDouble(resp.get(6).get(dialog_caregiver.getFields().get(6)));
               
-                list_caregiver.add(new Caregiver(fName_resp, lName_resp, dob_resp, age_resp,
-                    roomid_resp, empNum_resp, hours_resp, wage_resp));
+                Caregiver add_caregiver = new Caregiver(fName_resp, lName_resp, dob_resp, age_resp,
+                        roomid_resp, empNum_resp, hours_resp, wage_resp);
+                
+                list_caregiver.add(add_caregiver);
+                updateChoicesCaregiver(add_caregiver, true);
                 table_caregiver.refresh();
             }
         }
         
         private void deleteRowCaregiver() {
-            list_caregiver.removeAll(
-                table_caregiver.getSelectionModel().getSelectedItems());
+        	Caregiver removed = table_caregiver.getSelectionModel().getSelectedItem();
+            list_caregiver.removeAll(removed);
+            updateChoicesCaregiver(removed, false);
             table_caregiver.refresh();
+        }
+        
+        private void buildSuite() {
+        	for (int i = 0; i < 3; i++) {
+        		rooms[i] = new Suite(i + 1, Suite.Type.SINGLE);
+        	}
+        	
+        	for (int i = 3; i < 6; i++) {
+        		rooms[i] = new Suite(i + 1, Suite.Type.DOUBLE);
+        	}
+        	
+        	for (int i = 6; i < 9; i++) {
+        		rooms[i] = new Suite(i + 1, Suite.Type.SINGLE_KITCHEN);
+        	}
+        	
+        	for (int i = 9; i < 12; i++) {
+        		rooms[i] = new Suite(i + 1, Suite.Type.DOUBLE_KITCHEN);
+        	}
+        	
+        	for (int i = 0; i < rooms.length; i++) {
+        		list_suite.add(rooms[i]);
+        	}
+        }
+        
+        private void addRowSuite(Stage stage) {
+        	//ChoiceDialog
+        	String choice = "";
+        	
+        	List<String> choices = new ArrayList<String>();
+        	choices.add("Senior");
+        	choices.add("Caregiver");
+        	
+        	ChoiceDialog<String> choice_dialog = new ChoiceDialog<>("Senior", choices);
+        	choice_dialog.setTitle("Add Person");
+        	choice_dialog.setHeaderText("Add a person to the Suite.");
+        	choice_dialog.setContentText("Choose type: ");
+        	
+        	Optional<String> result = choice_dialog.showAndWait();
+        	if(result.isPresent()) {
+        		choice = result.get();
+        	}
+        	
+        	if (choice.equals("Senior")) {
+        		TextDialog seniorSuite_dialog = new TextDialog(stage);
+        		seniorSuite_dialog.setHeaderContent("Add a Senior to a Suite.");
+        		seniorSuite_dialog.setWindowTitle("Add Senior");
+        		
+        		LimitedTextField roomNumber_senior = new LimitedTextField();
+        		roomNumber_senior.setAsNumericOnly();
+        		roomNumber_senior.setMaxLength(2);
+        		seniorSuite_dialog.addOpenedPair(new Label("Room Number: "), true, roomNumber_senior, false);
+        		
+        		LimitedTextField homeid_senior = new LimitedTextField();
+        		homeid_senior.setAsNumericOnly();
+        		homeid_senior.setMaxLength(4);
+        		seniorSuite_dialog.addOpenedPair(new Label("Home ID: "), true, homeid_senior, false);
+        		
+        		LimitedTextField currentYear_senior = new LimitedTextField();
+        		currentYear_senior.setAsNumericOnly();
+        		currentYear_senior.setMaxLength(4);
+        		seniorSuite_dialog.addOpenedPair(new Label("Current Year: "), true, currentYear_senior, true);
+        		
+        		seniorSuite_dialog.addDateBox(new Label("Date Added: "));
+        		
+        		seniorSuite_dialog.primeButtons();
+        		seniorSuite_dialog.display();
+        		
+        		if (seniorSuite_dialog.isSubmitPressed) {
+        			ArrayList<HashMap<TextField, String>> resp = seniorSuite_dialog.getResponses();
+        			int roomNum = Integer.parseInt(resp.get(0).get(seniorSuite_dialog.getFields().get(0)));
+        			long homeid = Long.parseLong(resp.get(1).get(seniorSuite_dialog.getFields().get(1)));
+        			
+        			Senior searched = Senior.searchHomeID(homeid, list_senior, 0, list_senior.size());
+        			
+        			if (searched != null) {
+        				rooms[roomNum - 1].addOccupant(searched);
+        			}
+        		}
+        	} else {
+        		TextDialog caregiver_dialog = new TextDialog(stage);
+        		caregiver_dialog.setHeaderContent("Add a Caregiver to the Suite.");
+        		caregiver_dialog.setWindowTitle("Add Caregiver");
+        		
+        		LimitedTextField roomNumber_caregiver = new LimitedTextField();
+        		roomNumber_caregiver.setAsNumericOnly();
+        		roomNumber_caregiver.setMaxLength(2);
+        		caregiver_dialog.addOpenedPair(new Label("Room Number: "), true, roomNumber_caregiver, false);
+        		
+        		LimitedTextField empNum_caregiver = new LimitedTextField();
+        		empNum_caregiver.setAsNumericOnly();
+        		empNum_caregiver.setMaxLength(4);
+        		caregiver_dialog.addOpenedPair(new Label("Home ID: "), true, empNum_caregiver, false);
+        		
+        		LimitedTextField currentYear_senior = new LimitedTextField();
+        		currentYear_senior.setAsNumericOnly();
+        		currentYear_senior.setMaxLength(4);
+        		caregiver_dialog.addOpenedPair(new Label("Current Year: "), true, currentYear_senior, true);
+        		
+        		caregiver_dialog.addDateBox(new Label("Date Added: "));
+        		caregiver_dialog.primeButtons();
+        		caregiver_dialog.display();
+        		
+        		if (caregiver_dialog.isSubmitPressed) {
+        			ArrayList<HashMap<TextField, String>> resp = caregiver_dialog.getResponses();
+        			int roomNum = Integer.parseInt(resp.get(0).get(caregiver_dialog.getFields().get(0)));
+        			long empnum = Long.parseLong(resp.get(1).get(caregiver_dialog.getFields().get(1)));
+        			
+        			
+        			
+        			if (searched != null) {
+        				rooms[roomNum - 1].addOccupant(searched);
+        			}
+        		}
+        	}
+        }
+        
+        private void removeRowSuite(Stage stage) {
+        	//ChoiceDialog
+        	String choice = "";
+        	
+        	List<String> choices = new ArrayList<String>();
+        	choices.add("Senior");
+        	choices.add("Caregiver");
+        	
+        	ChoiceDialog<String> choice_dialog = new ChoiceDialog<>("Senior", choices);
+        	choice_dialog.setTitle("Remove Person");
+        	choice_dialog.setHeaderText("Remove a person from the Suite.");
+        	choice_dialog.setContentText("Choose type: ");
+        	
+        	Optional<String> result = choice_dialog.showAndWait();
+        	if(result.isPresent()) {
+        		choice = result.get();
+        	}
+        	
+        	if (choice.equals("Senior")) {
+        		
+        	}
+        }
+        
+        private void cartMeal() {
+        	
         }
         
         //FILE I/O FOR THE SENIOR AND CAREGIVER MODULES
@@ -611,6 +835,8 @@ public class SuiteModule extends Application {
                         writer.write(System.getProperty("line.separator"));
                         writer.write(Integer.toString(senior.getRoomID()));
                         writer.write(System.getProperty("line.separator"));
+                        writer.write(Double.toString(senior.getHours()));
+                        writer.write(System.getProperty("line.separator"));
                         writer.write(Long.toString(senior.getHID()));
                         writer.write(System.getProperty("line.separator"));
                     }
@@ -632,8 +858,8 @@ public class SuiteModule extends Application {
                 
                 while ((line = reader.readLine()) != null) {
                     list_senior.add(new Senior(line, reader.readLine(), reader.readLine(), 
-                    Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()),
-                    Long.parseLong(reader.readLine())));
+                    Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()), 
+                    Double.parseDouble(reader.readLine()), Long.parseLong(reader.readLine())));
                 }
                 
             } catch (IOException e) {
