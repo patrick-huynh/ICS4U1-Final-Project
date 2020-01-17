@@ -14,6 +14,7 @@ public class Senior extends Person {
     /**
      * Constructor for Senior class.
      * @param roomID - The room ID that the senior is staying in.
+     * @param hours - The number of care hours the Senior requires on a daily basis.
      * @param hID - The ID of the Senior object while in the retirement residence.
      */
     public Senior(String fname, String lname, String DOB, int age, int roomID, 
@@ -28,7 +29,7 @@ public class Senior extends Person {
         
         monthlyPayment = new SimpleDoubleProperty();
         
-        if (roomID <= 3) {
+        if (roomID > 0 && roomID <= 3) {
         	monthlyPayment.set(Suite.Type.SINGLE.getFeeMultiple() * hours * 30 + 
         				Suite.Type.SINGLE.getMonthlyCost());
         } else if (roomID > 3 && roomID <= 6) {
@@ -37,9 +38,11 @@ public class Senior extends Person {
         } else if (roomID > 6 && roomID <= 9) {
         	monthlyPayment.set(Suite.Type.SINGLE_KITCHEN.getFeeMultiple() * hours * 30 +
         			Suite.Type.SINGLE_KITCHEN.getMonthlyCost());
-        } else {
+        } else if (roomID > 9 && roomID <= 12){
         	monthlyPayment.set(Suite.Type.DOUBLE_KITCHEN.getFeeMultiple() * hours * 30 +
         			Suite.Type.DOUBLE_KITCHEN.getMonthlyCost());
+        } else {
+            System.out.println("Room ID does not exist.");
         }
     }
 
