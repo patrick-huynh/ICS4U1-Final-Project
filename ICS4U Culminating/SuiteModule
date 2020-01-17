@@ -149,13 +149,7 @@ public class SuiteModule extends Application {
 		TableColumn<Senior, Number> homeid_senior = new TableColumn<>("Home ID");
 		homeid_senior.setCellValueFactory(new PropertyValueFactory<>("hID"));
 		homeid_senior.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-		homeid_senior.setOnEditCommit(e -> {
-			if (e.getNewValue() instanceof Number) {
-				((Senior) e.getTableView().getItems().get(
-						e.getTablePosition().getRow())).setHID(e.getNewValue());
-			}
-		});
-		
+                
 		table_senior.getColumns().addAll(fName_senior, lName_senior, dob_senior, age_senior, roomid_senior,
 				homeid_senior);
 		
@@ -310,12 +304,6 @@ public class SuiteModule extends Application {
 		TableColumn<Caregiver, Number> empNum_caregiver = new TableColumn<>("Employee Number");
 		empNum_caregiver.setCellValueFactory(new PropertyValueFactory<>("empNum"));
 		empNum_caregiver.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-		empNum_caregiver.setOnEditCommit(e -> {
-			if (e.getNewValue() instanceof Number) {
-				((Caregiver) e.getTableView().getItems().get(
-						e.getTablePosition().getRow())).setEmpNum(e.getNewValue());
-			}
-		});
 		
 		TableColumn<Caregiver, Number> hours_caregiver = new TableColumn<>("Weekly Hours");
 		hours_caregiver.setCellValueFactory(new PropertyValueFactory<>("hours"));
@@ -411,7 +399,8 @@ public class SuiteModule extends Application {
 		Button compute_caregiver = new Button("Compute Yearly Salary");
 		compute_caregiver.setOnAction(e -> {
 			Caregiver ofInterest = list_caregiver.get(choices_caregiver.getItems().indexOf(choices_caregiver.getValue()));
-			costField_caregiver.setText(Double.toString(ofInterest.computeYearlySalary()));
+                        ofInterest.calculateAnnualPay();
+			costField_caregiver.setText(Double.toString(ofInterest.getAnnualPay()));
 		});
 		
 		
@@ -717,9 +706,9 @@ public class SuiteModule extends Application {
         		LimitedTextField currentYear_senior = new LimitedTextField();
         		currentYear_senior.setAsNumericOnly();
         		currentYear_senior.setMaxLength(4);
-        		seniorSuite_dialog.addOpenedPair(new Label("Current Year: "), true, currentYear_senior, true);
-        		
-        		seniorSuite_dialog.addDateBox(new Label("Date Added: "));
+        		seniorSuite_dialog.addOpenedPair(new Label("Difference: "), true, currentYear_senior, true);
+                    
+        		seniorSuite_dialog.addDateBox(new Label("Date of Entry: "));
         		
         		seniorSuite_dialog.primeButtons();
         		seniorSuite_dialog.display();
@@ -764,11 +753,10 @@ public class SuiteModule extends Application {
         			int roomNum = Integer.parseInt(resp.get(0).get(caregiver_dialog.getFields().get(0)));
         			long empnum = Long.parseLong(resp.get(1).get(caregiver_dialog.getFields().get(1)));
         			
-        			
+        			Caregiver searched = Caregiver.searchEmpNum(empnum, list_caregiver, 0, list_caregiver.size());
         			
         			if (searched != null) {
-        				rooms[roomNum - 1].addOccupant(searched);
-        			}
+        				rooms[roomNum - 1].setPresider(searched);
         		}
         	}
         }
@@ -857,9 +845,11 @@ public class SuiteModule extends Application {
                 String line;
                 
                 while ((line = reader.readLine()) != null) {
-                    list_senior.add(new Senior(line, reader.readLine(), reader.readLine(), 
+                    Senior toAdd = new Senior(line, reader.readLine(), reader.readLine(), 
                     Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()), 
-                    Double.parseDouble(reader.readLine()), Long.parseLong(reader.readLine())));
+                    Double.parseDouble(reader.readLine()), Long.parseLong(reader.readLine()));
+                    list_senior.add(toAdd);
+                    updateChoicesSenior(toAdd, true);
                 }
                 
             } catch (IOException e) {
