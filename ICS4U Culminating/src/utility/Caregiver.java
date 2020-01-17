@@ -1,5 +1,6 @@
 package utility;
 
+import java.util.List;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 
@@ -73,22 +74,55 @@ public class Caregiver extends Person {
     public void calculateWeeklyPay() {
     	weekly_pay.set(wage.get()*hours.get()*0.735);
     }
-    public Double getWeeklyPay() {
+    public double getWeeklyPay() {
     	return weekly_pay.get();
     }
     public void calculateMonthlyPay() {
     	monthly_pay.set(wage.get()*hours.get()*0.735*4.34);
     }
-    public Double getMonthlyPay() {
+    public double getMonthlyPay() {
     	return monthly_pay.get();
     }
     public void calculateAnnualPay() {
     	annual_pay.set(wage.get()*hours.get()*0.735*4.34*12.0);
     }
-    public Double getAnnualPay() {
+    public double getAnnualPay() {
     	return annual_pay.get();
     }
-    @Override
+    
+    public static void sortEmpNum(List<Caregiver> c){
+        for (int i = 0; i < c.size(); i++) {
+    		Caregiver holder = c.get(i);
+    		int j = i - 1;
+    		while (j >- 0 && c.get(j).getEmpNum() > holder.getEmpNum()) {
+    			c.set(j + 1, c.get(j));
+    			j--;
+    		}
+    		c.set(j + 1, holder);
+    	}
+    }
+    
+    public static Caregiver searchEmpNum(long empNum, List<Caregiver> c) {
+    	Caregiver.sortEmpNum(c);
+        int l = 0;
+        int r = c.size() - 1;
+        
+        while (l<=r) {
+            int mid = (l+r)/2;
+            if (empNum == c.get(mid).getEmpNum()) {
+                return c.get(mid);
+            } else if (empNum > c.get(mid).getEmpNum()) {
+                l = mid + 1;
+            } else {
+                r = mid - 1;
+            }
+            
+        }
+        return null;
+             
+    }
+    
+            @Override
     /**Returns a String representation of this Caregiver.
      * @return String*/
     public String toString() {
