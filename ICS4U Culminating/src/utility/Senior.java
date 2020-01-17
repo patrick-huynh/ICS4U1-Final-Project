@@ -6,14 +6,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 public class Senior extends Person {
 
     private final SimpleLongProperty hID;
-    private SimpleDoubleProperty hours;	
-
-    /**
-     * Constructor for class Senior.
-     * @param doe - The date of entry of the Senior object into the retirement residence.
-     * @param hID - The ID of the Senior object while in the retirement residence.
-     * @param
-     */
+    private SimpleDoubleProperty hours, monthlyPayment;	
     
     /**
      * Constructor for Senior class.
@@ -21,14 +14,30 @@ public class Senior extends Person {
      * @param hID - The ID of the Senior object while in the retirement residence.
      */
     public Senior(String fname, String lname, String DOB, int age, int roomID, 
-            long hID) {
+            double hours, long hID) {
         super(fname, lname, DOB, age, roomID);
 
         this.hID = new SimpleLongProperty();
         this.hID.set(hID);
 
-        hours = new SimpleDoubleProperty();
-        hours.set(0);
+        this.hours = new SimpleDoubleProperty();
+        this.hours.set(0);
+        
+        monthlyPayment = new SimpleDoubleProperty();
+        
+        if (roomID <= 3) {
+        	monthlyPayment.set(Suite.Type.SINGLE.getFeeMultiple() * hours * 30 + 
+        				Suite.Type.SINGLE.getMonthlyCost());
+        } else if (roomID > 3 && roomID <= 6) {
+        	monthlyPayment.set(Suite.Type.DOUBLE.getFeeMultiple() * hours * 30 +
+        			Suite.Type.DOUBLE.getMonthlyCost());
+        } else if (roomID > 6 && roomID <= 9) {
+        	monthlyPayment.set(Suite.Type.SINGLE_KITCHEN.getFeeMultiple() * hours * 30 +
+        			Suite.Type.SINGLE_KITCHEN.getMonthlyCost());
+        } else {
+        	monthlyPayment.set(Suite.Type.DOUBLE_KITCHEN.getFeeMultiple() * hours * 30 +
+        			Suite.Type.DOUBLE_KITCHEN.getMonthlyCost());
+        }
     }
 
     /**
@@ -51,12 +60,9 @@ public class Senior extends Person {
     public double getHours() {
         return hours.get();
     }
-
-    /**
-     * @param hours - The number of hours the Senior is cared for.
-     */
-    public void setHours(Number hours) {
-        this.hours.set(hours.doubleValue());
+    
+    public double getMonthlyPayment() {
+    	return monthlyPayment.get();
     }
 
     /**
@@ -65,6 +71,7 @@ public class Senior extends Person {
     public void resetHours() {
         hours.set(0);
     }
+    
     /**
      * 
      * @param s - The array of seniors. 
