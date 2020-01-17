@@ -2,6 +2,8 @@ package application;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
@@ -9,10 +11,13 @@ import javafx.scene.control.TextField;
 public class LimitedTextField extends TextField {
 	
 	private IntegerProperty maxLength;
+	private BooleanProperty isNumeric;
 	
 	public LimitedTextField() {
 		super();
 		maxLength = new SimpleIntegerProperty(255);
+		isNumeric = new SimpleBooleanProperty();
+		isNumeric.set(false);
 	}
 	
 	public LimitedTextField(String text) {
@@ -20,12 +25,16 @@ public class LimitedTextField extends TextField {
 		maxLength = new SimpleIntegerProperty(255);
 	}
 	
-	public IntegerProperty maxLentghProperty() {
+	public IntegerProperty maxLengthProperty() {
 		return maxLength;
 	}
 	
 	public final int getMaxLength() {
 		return maxLength.get();
+	}
+	
+	public final boolean isNumeric() {
+		return isNumeric.get();
 	}
 	
 	public final boolean setMaxLength(int maximum) {
