@@ -176,12 +176,16 @@ public class Activity {
         }
         return null;
     }
-
-    public static ArrayList<Activity> randomGen(int numOfActivities) {
+    /**
+     * 
+     * @param numOfActivities - The number of random activities you want to generate.
+     * @return 
+     */
+    public static List<Activity> randomGen(int numOfActivities) {
         String[] names = {"Soccer", "Basketball", "Stretching", "Bingo", "Poker", "Speed Walking", "Flag Football", "Movies"};
         Boolean[] isOutdoor = {true, false, true, false, false, true, true, false};
         String[] startTime = {"06:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
-        ArrayList<Activity> a = new ArrayList<>();
+        List<Activity> a = new ArrayList<>();
         // Duration in minutes
 
         long[] duration = {30, 60, 90, 120};
