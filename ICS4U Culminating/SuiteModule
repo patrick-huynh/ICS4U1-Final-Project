@@ -442,12 +442,12 @@ public class SuiteModule extends Application {
 		table_options = new MenuButton("Table Options");
 		option_add = new MenuItem("Add Person");
 		option_add.setOnAction(e -> {
-			addRowSuite(stage);
+			addRowSuite(stage, true);
 		});
 		
 		option_remove = new MenuItem("Remove Person");
 		option_remove.setOnAction(e -> {
-			removeRowSuite(stage);
+
 		});
 		
 		option_meal = new MenuItem("Cart Meal");
@@ -670,11 +670,10 @@ public class SuiteModule extends Application {
         	}
         }
         
-        private void addRowSuite(Stage stage) {
-        	//ChoiceDialog
+        private void addRowSuite(Stage stage, boolean add) {
         	String choice = "";
         	
-        	List<String> choices = new ArrayList<String>();
+        	List<String> choices = new ArrayList<>();
         	choices.add("Senior");
         	choices.add("Caregiver");
         	
@@ -739,12 +738,12 @@ public class SuiteModule extends Application {
         		empNum_caregiver.setMaxLength(4);
         		caregiver_dialog.addOpenedPair(new Label("Home ID: "), true, empNum_caregiver, false);
         		
-        		LimitedTextField currentYear_senior = new LimitedTextField();
-        		currentYear_senior.setAsNumericOnly();
-        		currentYear_senior.setMaxLength(4);
-        		caregiver_dialog.addOpenedPair(new Label("Current Year: "), true, currentYear_senior, true);
+        		LimitedTextField currentYear_caregiver = new LimitedTextField();
+        		currentYear_caregiver.setAsNumericOnly();
+        		currentYear_caregiver.setMaxLength(4);
+        		caregiver_dialog.addOpenedPair(new Label("Difference: "), true, currentYear_caregiver, true);
         		
-        		caregiver_dialog.addDateBox(new Label("Date Added: "));
+        		caregiver_dialog.addDateBox(new Label("Date of Entry: "));
         		caregiver_dialog.primeButtons();
         		caregiver_dialog.display();
         		
@@ -757,30 +756,8 @@ public class SuiteModule extends Application {
         			
         			if (searched != null) {
         				rooms[roomNum - 1].setPresider(searched);
+                                }
         		}
-        	}
-        }
-        
-        private void removeRowSuite(Stage stage) {
-        	//ChoiceDialog
-        	String choice = "";
-        	
-        	List<String> choices = new ArrayList<String>();
-        	choices.add("Senior");
-        	choices.add("Caregiver");
-        	
-        	ChoiceDialog<String> choice_dialog = new ChoiceDialog<>("Senior", choices);
-        	choice_dialog.setTitle("Remove Person");
-        	choice_dialog.setHeaderText("Remove a person from the Suite.");
-        	choice_dialog.setContentText("Choose type: ");
-        	
-        	Optional<String> result = choice_dialog.showAndWait();
-        	if(result.isPresent()) {
-        		choice = result.get();
-        	}
-        	
-        	if (choice.equals("Senior")) {
-        		
         	}
         }
         
@@ -899,10 +876,12 @@ public class SuiteModule extends Application {
                 String line;
                 
                 while ((line = reader.readLine()) != null) {
-                    list_caregiver.add(new Caregiver(line, reader.readLine(), reader.readLine(),
+                    Caregiver addTo = new Caregiver(line, reader.readLine(), reader.readLine(),
                     Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()),
                     Long.parseLong(reader.readLine()), Double.parseDouble(reader.readLine()),
-                    Double.parseDouble(reader.readLine())));
+                    Double.parseDouble(reader.readLine()));
+                    list_caregiver.add(addTo);
+                    updateChoicesCaregiver(addTo, true);
                 }
                 
             } catch (IOException e) {
