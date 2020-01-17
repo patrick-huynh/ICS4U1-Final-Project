@@ -148,6 +148,10 @@ public class Activity {
         }
     }
 
+    /**
+     * Sorts the activity names in alphabetical order.
+     * @param activities - The array of activities.
+     */
     public static void sortAlpha(Activity[] activities) {
         for (int i = 0; i < activities.length; i++) {
             Activity holder = activities[i];
@@ -179,7 +183,7 @@ public class Activity {
     /**
      * 
      * @param numOfActivities - The number of random activities you want to generate.
-     * @return 
+     * @return List<> - The list of activities put into a list of class Activity.
      */
     public static List<Activity> randomGen(int numOfActivities) {
         String[] names = {"Soccer", "Basketball", "Stretching", "Bingo", "Poker", "Speed Walking", "Flag Football", "Movies"};
@@ -202,6 +206,10 @@ public class Activity {
         return a;
     }
 
+    /**
+     * Prints the properties of the Activity class in a neat format.
+     * @return String - The properties.
+     */
     public String toString() {
         String type;
         if (isOutDoor()) {
