@@ -48,7 +48,7 @@ public class Suite {
 		}
 	}
 	
-	private final SimpleIntegerProperty suiteNumber;
+	private final SimpleIntegerProperty suiteNumber, numberOfOccupants;
 	private final Type suiteStyle;
 	private final SimpleStringProperty styleName;
 	private Caregiver presider;
@@ -67,6 +67,8 @@ public class Suite {
 		styleName.set(suiteStyle.getTypeName());
 		
 		occupants = new Senior[0];
+                numberOfOccupants = new SimpleIntegerProperty();
+                numberOfOccupants.set(0);
 		presider = null;
 	}
 	
@@ -119,7 +121,8 @@ public class Suite {
 				occupants[i] = temp[i];
 			}
 			
-			occupants[occupants.length - 1] = new Senior(fname, lname, dob, age, roomID, hours, hID);	
+			occupants[occupants.length - 1] = new Senior(fname, lname, dob, age, roomID, hours, hID);
+                        numberOfOccupants.set(numberOfOccupants.get() + 1);
 			System.out.println("Senior added successfully.");
 			return true;
 			
@@ -138,7 +141,8 @@ public class Suite {
 				occupants[i] = temp[i];
 			}
 			
-			occupants[occupants.length - 1] = senior;	
+			occupants[occupants.length - 1] = senior;
+                        numberOfOccupants.set(numberOfOccupants.get() + 1);
 			System.out.println("Senior added successfully.");
 			return true;
 		} else {
@@ -161,6 +165,7 @@ public class Suite {
 				occupants[temp.length + i] = seniors[i];
 			}
 			
+                        numberOfOccupants.set(numberOfOccupants.get() + seniors.length);
 			return true;
 		}  else {
 			return false;
@@ -172,6 +177,7 @@ public class Suite {
 		for (int i = 0; i < occupants.length; i++) {
 			if (occupants[i] != null && occupants[i].getHID() == home_id) {
 				occupants[i] = null;
+                                numberOfOccupants.set(numberOfOccupants.get() - 1);
 				return true;
 			}
 		}
