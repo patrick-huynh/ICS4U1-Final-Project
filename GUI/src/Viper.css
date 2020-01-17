@@ -16,6 +16,13 @@
     -fx-font-size: 24;
     -fx-font-family: 'serif';
 }
+.tab:selected{
+	-fx-background-color: #383838;
+	-fx-text-base-color: white;
+}
+.table-column{
+	-fx-text-base-color: black;
+}
 .logout{
 	-fx-background-color: #AB4642;
 }
