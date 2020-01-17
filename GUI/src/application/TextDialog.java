@@ -86,8 +86,8 @@ public class TextDialog {
 		});
 		
 		confirm.setOnAction(e -> {
-                        boolean allFields = false;
-                        boolean dates = false;
+             boolean allFields = false;
+             boolean dates = false;
 			
 			for (TextField contained_field : field_container) {
 				if(contained_field != null &&
@@ -95,7 +95,8 @@ public class TextDialog {
 					allFields = true;
 				}
 			}
-                        
+                  
+			
                         if(box.getMonthBox().getValue() != null && box.getDayBox().getValue() 
                                 != null && box.getYearBox().getValue() != null) {
                             dates = true;
@@ -213,9 +214,7 @@ public class TextDialog {
 	public void display() {
 		modal.showAndWait();
 	}
-	public void hide(){
-            	modal.hide();
-        }
+	
 	public ArrayList<Label> getLabels() {
 		return label_container;
 	}
