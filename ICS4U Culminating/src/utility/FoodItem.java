@@ -15,6 +15,7 @@ public class FoodItem {
 	private FoodGroup group;
 	private IntegerProperty quantity, stock;
 	private DoubleProperty cost;
+	private final IntegerProperty batchAdd;
 	
 	/**Creates a FoodItem with a name, expiry date, and FoodGroup, Lists the quantity to stock numbers.
 	 * @param item_name - The name of the FoodItem.
@@ -38,6 +39,9 @@ public class FoodItem {
 		
 		stock = new SimpleIntegerProperty();
 		stock.set(item_stock);
+		
+		batchAdd = new SimpleIntegerProperty();
+		batchAdd.set(group.getSupplier().getStdQty());
 		
 		cost = new SimpleDoubleProperty();
 		cost.set(0);
@@ -77,12 +81,7 @@ public class FoodItem {
 	public FoodGroup getGroup() {
 		return group;
 	}
-	
-	/**Sets the FoodGroup of this FoodItem. The FoodGroup currently has non named Supplier.
-	 * @param name - String*/
-	public void setGroup(String name) {
-		group = new FoodGroup(name);
-	}
+
 	/**Sets the FoodGroup of this FoodItem.
 	 * @param name - String
 	 * @param supplier - Supplier*/
@@ -90,8 +89,20 @@ public class FoodItem {
 		group = new FoodGroup(name, supplier);
 	}
 	
+	public String getGroupName() {
+		return groupName.get();
+	}
+	
 	public StringProperty groupNameProperty() {
 		return groupName;
+	}
+	
+	public int getBatchAdd() {
+		return batchAdd.get();
+	}
+	
+	public IntegerProperty batchAddProperty() {
+		return batchAdd;
 	}
 	
 	/**Gets the current quantity of this FoodItem.
@@ -130,6 +141,10 @@ public class FoodItem {
 		return stock;
 	}
 	
+	public double getCost() {
+		return cost.get();
+	}
+	
 	public DoubleProperty costProperty() {
 		return cost;
 	}
@@ -147,7 +162,7 @@ public class FoodItem {
 	 * @return double*/
 	public double computeSTDCost() {
 		Supplier supplier = group.getSupplier();
-		double expenses = supplier.getFlatFee() + supplier.getStdQty();
+		double expenses = supplier.getFlatFee() + supplier.getStdCost();
 		cost.set(expenses);
 		return expenses;
 	}
