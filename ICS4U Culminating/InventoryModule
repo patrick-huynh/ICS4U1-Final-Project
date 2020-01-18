@@ -1,0 +1,383 @@
+package gui;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import java.io.File;
+import java.text.NumberFormat;
+import java.text.DecimalFormat;
+import javafx.util.converter.NumberStringConverter;
+
+import utility.FoodGroup;
+import utility.FoodItem;
+import utility.Inventory;
+import utility.Supplier;
+import utility.TransferProtocol;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.stage.Screen;
+
+import javafx.geometry.Rectangle2D;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+
+import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
+
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+
+public class InventoryModule extends Application {
+
+	final NumberFormat nf = new DecimalFormat("##.##");
+	
+	Rectangle2D screen;
+	Scene scene;
+	TabPane main;
+	Tab tab_inventory, tab_supplier;
+	VBox box_inventory, box_supplier, divCost_inventory;
+	HBox div_inventory, divSearch_inventory;
+	
+	ContextMenu ctx_inventory;
+	MenuButton fileMenu_inventory;
+	MenuItem save_inventory, load_inventory, addRow_inventory, deleteRow_inventory;
+	Label filePrompt_inventory;
+	
+	TableView<FoodItem> table_inventory;
+	Inventory inventory;
+	ObservableList<FoodItem> list_inventory;
+	FilteredList<FoodItem> filtered_inventory;
+	SortedList<FoodItem> sorted_inventory;
+	
+	TableView<Supplier> table_supplier;
+	ObservableList<Supplier> list_supplier;
+	
+	TableView<FoodItem> cart;
+	ObservableList<FoodItem> added;
+	
+	ChoiceBox<String> choices_inventory;
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void start(Stage stage) {
+		screen = Screen.getPrimary().getVisualBounds();
+		main = new TabPane();
+		
+		//INVENTORY MODULE START
+		tab_inventory = new Tab("Inventory");
+		tab_inventory.setClosable(false);
+		
+		//INVENTORY TABLE SETUP
+		inventory = new Inventory();
+		table_inventory = new TableView<>();
+		table_inventory.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		list_inventory = FXCollections.observableArrayList();
+		table_inventory.setItems(list_inventory);
+		
+		TableColumn<FoodItem, String> name_inventory = new TableColumn<>("Item Name");
+		name_inventory.setCellValueFactory(new PropertyValueFactory<>("name"));
+		name_inventory.setCellFactory(TextFieldTableCell.forTableColumn());
+		name_inventory.setOnEditCommit(e -> {
+			((FoodItem) e.getTableView().getItems().get(
+						e.getTablePosition().getRow())).setName(e.getNewValue());
+			inventory.from(e.getTablePosition().getRow()).setName(e.getNewValue());
+		});
+		
+		TableColumn<FoodItem, String> expiry_inventory = new TableColumn<>("Expiry Date");
+		expiry_inventory.setCellValueFactory(new PropertyValueFactory<>("expiryDate"));
+		
+		TableColumn<FoodItem, String> groupName_inventory = new TableColumn<>("Group Name");
+		groupName_inventory.setCellValueFactory(cellData -> cellData.getValue().groupNameProperty());
+		
+		TableColumn<FoodItem, Number> qty_inventory = new TableColumn<>("Current Quantity");
+		qty_inventory.setCellValueFactory(cellData -> cellData.getValue().quantityProperty());
+		qty_inventory.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		qty_inventory.setOnEditCommit(e -> {
+			((FoodItem) e.getTableView().getItems().get(
+					e.getTablePosition().getRow())).setQuantity(e.getNewValue());
+			inventory.from(e.getTablePosition().getRow()).setQuantity(e.getNewValue());
+		});
+		
+		TableColumn<FoodItem, Number> stock_inventory = new TableColumn<>("Expected Stock");
+		stock_inventory.setCellValueFactory(cellData -> cellData.getValue().stockProperty());
+		stock_inventory.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		stock_inventory.setOnEditCommit(e -> {
+			((FoodItem) e.getTableView().getItems().get(
+					e.getTablePosition().getRow())).setStock(e.getNewValue());
+			inventory.from(e.getTablePosition().getRow()).setStock(e.getNewValue());
+		});
+		
+		table_inventory.getColumns().addAll(name_inventory, expiry_inventory, groupName_inventory, 
+				qty_inventory, stock_inventory);
+		
+		//INVENTORY FILE MENUBUTTON SETUP
+		filePrompt_inventory = new Label();
+		fileMenu_inventory = new MenuButton("File");
+		save_inventory = new MenuItem("Save");
+		save_inventory.setOnAction(e -> {
+			TransferProtocol.saveInventory(new File("recent_inventory.txt"), new File ("previous_inventory.txt"), 
+					list_inventory);
+			filePrompt_inventory.setText(" Inventory Data Saved");
+		});
+		
+		load_inventory = new MenuItem("Load");
+		load_inventory.setOnAction(e -> {
+			TransferProtocol.loadInventory(new File("recent_inventory.txt"), list_inventory, choices_inventory);
+			filePrompt_inventory.setText(" Inventory Data Loaded");
+		});
+		
+		fileMenu_inventory.getItems().addAll(save_inventory, load_inventory);
+		div_inventory = new HBox();
+		div_inventory.getChildren().addAll(fileMenu_inventory, filePrompt_inventory);
+		
+		//INVENTORY CONTEXTMENU SETUP
+		ctx_inventory = new ContextMenu();
+		addRow_inventory = new MenuItem("Add Food Item");
+		addRow_inventory.setOnAction(e -> {
+			addRowInventory(stage);
+		});
+		
+		deleteRow_inventory = new MenuItem("Delete Food Item");
+		deleteRow_inventory.setOnAction(e -> {
+			deleteRowInventory(stage);
+		});
+		
+		ctx_inventory.getItems().addAll(addRow_inventory, deleteRow_inventory);
+		table_inventory.setOnContextMenuRequested(e -> {
+			ctx_inventory.show(table_inventory, e.getScreenX(), e.getScreenY());
+		});
+		
+		//INVENTORY SEARCH BAR SETUP
+		
+		divSearch_inventory = new HBox();
+		
+		//INVENTORY COST BOX SETUP
+		ScrollPane window = new ScrollPane();
+		
+		cart = new TableView<>();
+		cart.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		added = FXCollections.observableArrayList();
+		cart.setItems(added);
+		
+		TableColumn<FoodItem, String> name_cart = new TableColumn<>("Name");
+		name_cart.setCellValueFactory(new PropertyValueFactory<>("name"));
+		
+		TableColumn<FoodItem, Number> cost_cart = new TableColumn<>("Standard Cost");
+		cost_cart.setCellValueFactory(cellData -> cellData.getValue().costProperty());
+		cost_cart.setCellFactory(tc -> new TableCell<FoodItem, Number>() {
+			@Override
+			protected void updateItem(Number value, boolean empty) {
+				super.updateItem(value, empty);
+				if (value == null || empty) {
+					setText("");
+				} else {
+					setText(nf.format(value));
+				}
+			}
+		});
+		
+		cart.getColumns().addAll(name_cart, cost_cart);
+		window.setContent(cart);
+		HBox window_hbox = new HBox();
+		window_hbox.getChildren().addAll(window);
+		window_hbox.setAlignment(Pos.CENTER);
+			
+		choices_inventory = new ChoiceBox<>();
+		Button addToCart = new Button("Add To Cart");
+		addToCart.setOnAction(e -> {
+			FoodItem toAdd = list_inventory.get(choices_inventory.getItems().indexOf(choices_inventory.getValue()));
+			toAdd.computeSTDCost();
+			added.add(toAdd);
+			cart.refresh();
+		});
+		
+		Button order = new Button("ORDER");
+		order.setOnAction(e -> {
+			//ADD ORDER METHOD HERE
+		});
+		
+		HBox div_costButtons = new HBox();
+		div_costButtons.getChildren().addAll(choices_inventory, addToCart, order);
+		
+		divCost_inventory = new VBox();
+		divCost_inventory.getChildren().addAll(window_hbox);
+		
+		box_inventory = new VBox();
+		box_inventory.setPadding(new Insets(10, 0, 0, 10));
+		box_inventory.setSpacing(5);
+		box_inventory.getChildren().addAll(div_inventory, table_inventory, divSearch_inventory, div_costButtons,
+				divCost_inventory);
+		tab_inventory.setContent(box_inventory);
+		
+		//SUPPLIER MODULE START
+		tab_supplier = new Tab("Supplier");
+		tab_supplier.setClosable(false);
+		
+		//SUPPLIER TABLE SETUP
+		table_supplier = new TableView<>();
+		table_supplier.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		list_supplier = FXCollections.observableArrayList();
+		TransferProtocol.loadSupplier(new File("suppliers.txt"), list_supplier);
+		table_supplier.setItems(list_supplier);
+		
+		TableColumn<Supplier, String> name_supplier = new TableColumn<>("Name");
+		name_supplier.setCellValueFactory(new PropertyValueFactory<>("name"));
+		
+		TableColumn<Supplier, String> address_supplier = new TableColumn<>("Address");
+		address_supplier.setCellValueFactory(new PropertyValueFactory<>("address"));
+		
+		TableColumn<Supplier, String> phone_supplier = new TableColumn<>("Phone Number");
+		phone_supplier.setCellValueFactory(new PropertyValueFactory<>("phone"));
+		
+		TableColumn<Supplier, Number> cost_supplier = new TableColumn<>("Cost");
+		cost_supplier.setCellValueFactory(cellData -> cellData.getValue().stdCostProperty());
+		cost_supplier.setCellFactory(tc -> new TableCell<Supplier, Number>() {
+			@Override
+			protected void updateItem(Number value, boolean empty) {
+				super.updateItem(value, empty);
+				if (value == null || empty) {
+					setText("");
+				} else {
+					setText(nf.format(value));
+				}
+			}
+		});
+		
+		TableColumn<Supplier, Number> quantity_supplier = new TableColumn<>("Quantity");
+		quantity_supplier.setCellValueFactory(cellData -> cellData.getValue().stdQtyProperty());
+		quantity_supplier.setCellFactory(tc -> new TableCell<Supplier, Number>() {
+			@Override
+			protected void updateItem(Number value, boolean empty) {
+				super.updateItem(value, empty);
+				if (value == null || empty) {
+					setText("");
+				} else {
+					setText(nf.format(value));
+				}
+			}
+		});
+		
+		TableColumn<Supplier, Number> fee_supplier = new TableColumn<>("Base Charge");
+		fee_supplier.setCellValueFactory(cellData -> cellData.getValue().flatFeeProperty());
+		fee_supplier.setCellFactory(tc -> new TableCell<Supplier, Number>() {
+			@Override
+			protected void updateItem(Number value, boolean empty) {
+				super.updateItem(value, empty);
+				if (value == null || empty) {
+					setText("");
+				} else {
+					setText(nf.format(value));
+				}
+			}
+		});
+		
+		table_supplier.getColumns().addAll(name_supplier, address_supplier, phone_supplier, cost_supplier, 
+				quantity_supplier, fee_supplier);
+		
+		box_supplier = new VBox();
+		box_supplier.setPadding(new Insets(10, 0, 0, 10));
+		box_supplier.setSpacing(5);
+		box_supplier.getChildren().add(table_supplier);
+		
+		tab_supplier.setContent(box_supplier);
+		main.getTabs().addAll(tab_inventory, tab_supplier);
+		
+		scene = new Scene(main, screen.getWidth(), screen.getHeight());
+		
+		stage.setScene(scene);
+		stage.setTitle("Inventory Module");
+		stage.show();
+	}
+	
+	//PRIVATE METHODS TO SUPPORT THE GUI
+	
+	//METHODS FOR CONTEXTMENU INVENTORY	
+	private void addRowInventory(Stage stage) {
+		TextDialog dialog_inventory = new TextDialog(stage);
+		dialog_inventory.setWindowTitle("Add Food Item");
+		dialog_inventory.setHeaderContent("Add a Food Item to the table.");
+		
+		LimitedTextField nameField = new LimitedTextField();
+		nameField.setAsAlphaOnly();
+		dialog_inventory.addOpenedPair(new Label("Name: "), true, nameField, false);
+		
+		dialog_inventory.addDateBox(new Label("Expiry Date: "));
+		dialog_inventory.getDateBox().setYearConstraints(2020, 2035);
+		
+		LimitedTextField groupField = new LimitedTextField();
+		groupField.setAsAlphaOnly();
+		dialog_inventory.addOpenedPair(new Label("Group Name: "), true, groupField, false);
+		
+		LimitedTextField qtyField = new LimitedTextField();
+		qtyField.setAsNumericOnly();
+		qtyField.setMaxLength(5);
+		dialog_inventory.addOpenedPair(new Label("Current Quantity"), true, qtyField, false);
+		
+		LimitedTextField stockField = new LimitedTextField();
+		stockField.setAsNumericOnly();
+		stockField.setMaxLength(5);
+		dialog_inventory.addOpenedPair(new Label("Expected Stock: "), true, stockField, false);
+		
+		dialog_inventory.addNumberChoiceBox(new Label("Supplier ID: "), 1, 4);
+		
+		dialog_inventory.primeButtons();
+		dialog_inventory.display();
+		
+		if (dialog_inventory.isSubmitPressed) {
+			ArrayList<HashMap<TextField, String>> resp = dialog_inventory.getResponses();
+			String nameP = resp.get(0).get(dialog_inventory.getFields().get(0));
+			
+			int day = dialog_inventory.getDateBox().getDayBox().getValue();
+			int month = dialog_inventory.getDateBox().getMonthBox().getValue();
+			int year = dialog_inventory.getDateBox().getYearBox().getValue();
+			
+			String expiryP = Integer.toString(day) + "/" + Integer.toString(month) + "/" + Integer.toString(year);
+			
+			String groupP = resp.get(1).get(dialog_inventory.getFields().get(1));
+			
+			int qtyP = Integer.parseInt(resp.get(2).get(dialog_inventory.getFields().get(2)));
+			int stockP = Integer.parseInt(resp.get(3).get(dialog_inventory.getFields().get(3)));
+			
+			Supplier supplierP = list_supplier.get(dialog_inventory.getNumberBox().getValue() - 1);
+			
+			FoodItem toAdd = new FoodItem(nameP, expiryP, new FoodGroup(groupP, supplierP), qtyP, stockP);
+			inventory.addItem(nameP, expiryP, new FoodGroup(groupP), qtyP, stockP);
+			list_inventory.add(toAdd);
+			TransferProtocol.updateChoicesInventory(choices_inventory, toAdd, true);
+			
+			table_inventory.refresh();
+		}
+	}
+	
+	public void deleteRowInventory(Stage stage) {
+		FoodItem removed = table_inventory.getSelectionModel().getSelectedItem();
+		list_inventory.remove(removed);
+		TransferProtocol.updateChoicesInventory(choices_inventory, removed, false);
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+}
