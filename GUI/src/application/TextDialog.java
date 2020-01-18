@@ -1,4 +1,4 @@
-package application;
+package gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
@@ -35,6 +36,7 @@ public class TextDialog {
 	private final Label header_content;
 	private final Button cancel, confirm, submit;
         private final DateBox box;
+        private ChoiceBox<Integer> numberBox;
 	
 	/**Creates a custom TextDialog with an empty header label and two buttons.
 	 * @param parent - The owner Stage of this TextDialog.*/
@@ -166,8 +168,7 @@ public class TextDialog {
                                             int birth_year = 2020 - Integer.parseInt(field.getText());
                                             box.getYearBox().getItems().clear();
                                             box.getYearBox().getItems().add(birth_year);
-                                        }
-                                    
+                                        } 
 					if (!newPropertyValue && field.getText().trim().isEmpty()) {
 						warning.setText("NEEDED");
 						warning.setTextFill(Color.RED);
@@ -210,6 +211,25 @@ public class TextDialog {
         public DateBox getDateBox() {
             return box;
         }
+        
+    public void addNumberChoiceBox(Label label, int lower, int upper) {
+    	numberBox = new ChoiceBox<>();
+    	
+    	for (int i = lower; i <= upper; i++) {
+    		numberBox.getItems().add(i);
+    	}
+    	
+    	frame.add(label, 1, row);
+    	frame.add(numberBox, 2, row);
+    	row++;
+    	updateAdd();
+    	
+    	label_container.add(label);
+    }
+    
+    public ChoiceBox<Integer> getNumberBox() {
+    	return numberBox;
+    }
         
 	public void display() {
 		modal.showAndWait();
