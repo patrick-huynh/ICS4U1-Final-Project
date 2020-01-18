@@ -1,15 +1,20 @@
 package utility;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class FoodItem {
-	private SimpleStringProperty name;
-	private SimpleStringProperty expiryDate;
+	private StringProperty groupName;
+	private SimpleStringProperty name, expiryDate;
 	private FoodGroup group;
 	private IntegerProperty quantity, stock;
-	private SimpleStringProperty typeOfMeal;
+	private DoubleProperty cost;
 	
 	/**Creates a FoodItem with a name, expiry date, and FoodGroup, Lists the quantity to stock numbers.
 	 * @param item_name - The name of the FoodItem.
@@ -17,22 +22,25 @@ public class FoodItem {
 	 * @param group - The FoodGroup of the FoodItem.
 	 * @param item_quantity - The quantity of products of this FoodItem currently in stock.
 	 * @param item_stock - The expected number of products of this FoodItem to be in stock.*/
-	public FoodItem(String item_name, String typeOfMeal, String expiry_date, FoodGroup group, int item_quantity, int item_stock) {
+	public FoodItem(String item_name, String expiry_date, FoodGroup group, int item_quantity, int item_stock) {
 		name = new SimpleStringProperty();
 		name.set(item_name);
 		
-		this.typeOfMeal = new SimpleStringProperty();
-		this.typeOfMeal.set(typeOfMeal);
-		
-		this.expiryDate.set(expiry_date);
+		expiryDate = new SimpleStringProperty();
+		expiryDate.set(expiry_date);
 		
 		this.group = group;
+		groupName = new SimpleStringProperty();
+		groupName.set(group.getGroupName());
 		
 		quantity = new SimpleIntegerProperty();
 		quantity.set(item_quantity);
 		
 		stock = new SimpleIntegerProperty();
 		stock.set(item_stock);
+		
+		cost = new SimpleDoubleProperty();
+		cost.set(0);
 	}
 	
 	/**Gets the name of the FoodItem.
@@ -47,22 +55,15 @@ public class FoodItem {
 		name.set(item_name);
 	}
 	
-	/**Gets the type of the FoodItem.
-	 * @return String*/
-	public String getType() {
-		return typeOfMeal.get();
-	}
-	
-	/**Sets the type of the FoodItem(eg. breakfast, lunch, diner).
-	 * @param typeOfMeal - String*/
-	public void setType(String type_of_meal) {
-		typeOfMeal.set(type_of_meal);
-	}
-	
 	/**Gets the String version of the LocalDate for the expiry of this FoodItem.
 	 * @return LocalDate*/
 	public String getExpiryDate() {
 		return expiryDate.get();
+	}
+	
+	public LocalDate getExpiryAsDate() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+		return LocalDate.parse(expiryDate.get(), formatter);
 	}
 	
 	/**Sets the expiry date of this FoodItem.
@@ -87,6 +88,10 @@ public class FoodItem {
 	 * @param supplier - Supplier*/
 	public void setGroup(String name, Supplier supplier) {
 		group = new FoodGroup(name, supplier);
+	}
+	
+	public StringProperty groupNameProperty() {
+		return groupName;
 	}
 	
 	/**Gets the current quantity of this FoodItem.
@@ -125,6 +130,10 @@ public class FoodItem {
 		return stock;
 	}
 	
+	public DoubleProperty costProperty() {
+		return cost;
+	}
+	
 	/**Checks if the current quantity of this FoodItem is below its expected stock.
 	 * @return boolean*/
 	public boolean isBelowExpected() {
@@ -138,6 +147,8 @@ public class FoodItem {
 	 * @return double*/
 	public double computeSTDCost() {
 		Supplier supplier = group.getSupplier();
-		return supplier.getFee() + supplier.getSTDQty() * supplier.getSTDCost();
+		double expenses = supplier.getFlatFee() + supplier.getStdQty();
+		cost.set(expenses);
+		return expenses;
 	}
 }
