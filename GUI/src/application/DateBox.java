@@ -1,4 +1,4 @@
-package application;
+package gui;
 
 import javafx.scene.control.ChoiceBox;
 
@@ -53,7 +53,7 @@ public final class DateBox {
 	}
         
         public void setYearConstraints(int lower, int upper) {
-            for (int i = lower; i < upper; i++) {
+            for (int i = lower; i <= upper; i++) {
                 year.getItems().add(i);
             }
         }
