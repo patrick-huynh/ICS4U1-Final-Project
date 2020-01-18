@@ -1,21 +1,22 @@
 package utility;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class Supplier {
 	private SimpleStringProperty name, address, phone;
-	private final SimpleDoubleProperty std_cost, flat_fee;
-	private SimpleIntegerProperty std_qty;
+	private final DoubleProperty stdCost, flatFee;
+	private IntegerProperty stdQty;
 	
 	/**Creates a new Supplier object with known contact information and applicable standard rates.
 	 * @param sName - The name of the Supplier object.
 	 * @param sAddress - The named location of the Supplier object (# street direction postal)
 	 * @param sPhone - The phone number of the Supplier object (416-###-####)
-	 * @param rate - The standard shipping rate for the Supplier.
 	 * @param cost - The standard cost per standard purchase of the Supplier.
-	 * @param quantity - The standard quantity of FoodItem objects in a standard purchase.
+	 * @param quantity - The standard quantity of FoodItem objects in a standard purchase. 
 	 * @param fee - The base fee due when a standard purchase is made.*/
 	public Supplier(String sName, String sAddress, String sPhone, double cost, int quantity, 
 			double fee) {
@@ -28,25 +29,25 @@ public class Supplier {
 		phone = new SimpleStringProperty();
 		phone.set(sPhone);
 		
-		std_cost = new SimpleDoubleProperty();
-		std_cost.set(cost);
+		stdCost = new SimpleDoubleProperty();
+		stdCost.set(cost);
 		
-		std_qty = new SimpleIntegerProperty();
-		std_qty.set(quantity);
+		stdQty = new SimpleIntegerProperty();
+		stdQty.set(quantity);
 		
-		flat_fee = new SimpleDoubleProperty();
-		flat_fee.set(fee);
+		flatFee = new SimpleDoubleProperty();
+		flatFee.set(fee);
 	}
 	
 	/**Gets the name of this Supplier.
 	 * @return String*/
-	public String getSupplierName() {
+	public String getName() {
 		return name.get();
 	}
 	
 	/**Sets the name of this Supplier.
 	 * @param sName - String*/
-	public void setSupplierName(String sName) {
+	public void setName(String sName) {
 		name.set(sName);
 	}
 	
@@ -64,32 +65,44 @@ public class Supplier {
 	
 	/**Gets the phone number of this Supplier.
 	 * @return String*/
-	public String getPhoneNumber() {
+	public String getPhone() {
 		return phone.get();
 	}
 	
 	/**Sets the phone number of this Supplier.
 	 * @param sPhone - String*/
-	public void setPhoneNumber(String sPhone) {
+	public void setPhone(String sPhone) {
 		phone.set(sPhone);
 	}
 	
 	/**Gets the price set by this Supplier for one standard purchase of their items.
 	 * @return double*/
-	public double getSTDCost() {
-		return std_cost.get();
+	public double getStdCost() {
+		return stdCost.get();
+	}
+	
+	public DoubleProperty stdCostProperty() {
+		return stdCost;
+	}
+	
+	public DoubleProperty flatFeeProperty() {
+		return flatFee;
+	}
+	
+	public IntegerProperty stdQtyProperty() {
+		return stdQty;
 	}
 	
 	/**Gets the quantity of items this Supplier packs in one standard purchase.
 	 * @return int*/
-	public int getSTDQty() {
-		return std_qty.get();
+	public int getStdQty() {
+		return stdQty.get();
 	}
 	
 	/**Gets the flat fee issued by this Supplier for all purchases.
 	 * @return double*/
-	public double getFee() {
-		return flat_fee.get();
+	public double getFlatFee() {
+		return flatFee.get();
 	}
 	
 	@Override
@@ -99,8 +112,8 @@ public class Supplier {
 		return "Supplier Name: " + name.get()
 			+ "\nAddress: " + address.get() 
 			+ "\nPhone: " + phone.get()
-			+ "\nStandard Quantity: " + std_qty.get() 
-			+ "\nStandard Cost: " + std_cost.get() 
-			+ "\nFlat Fee: " + flat_fee.get();
+			+ "\nStandard Quantity: " + stdQty.get() 
+			+ "\nStandard Cost: " + stdCost.get() 
+			+ "\nFlat Fee: " + flatFee.get();
 	}
 }
