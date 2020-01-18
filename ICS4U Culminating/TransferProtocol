@@ -91,7 +91,46 @@ public final class TransferProtocol {
     }
     
     public static void saveInventory(File source, File target, ObservableList<FoodItem> list) {
+    	copy(source, target);
     	
+    	try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
+    			) {
+    		for (FoodItem item : list) {
+    			//FOODITEM PARAMETERS
+    			writer.write(item.getName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(item.getExpiryDate());
+    			writer.write(System.getProperty("line.separator"));
+    			
+    			//FOODGROUP PARAMETERS IN MOST-POPULATED CONSTRUCTOR
+    			writer.write(item.getGroupName());	
+    			writer.write(System.getProperty("line.separator"));
+    			
+    			//SUPPLIER INFORMATION NECESSARY TO CREATE NEW FOODGROUP AND PRESERVe SUPPLIER INFORMATION ON LOAD
+    			writer.write(item.getGroup().getSupplier().getName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(item.getGroup().getSupplier().getAddress());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(item.getGroup().getSupplier().getPhone());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Double.toString(item.getGroup().getSupplier().getStdCost()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(item.getGroup().getSupplier().getStdQty()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Double.toString(item.getGroup().getSupplier().getFlatFee()));
+    			writer.write(System.getProperty("line.separator"));
+    			
+    			//FOODITEM PARAMETERS
+    			writer.write(Integer.toString(item.getQuantity()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(item.getStock()));
+    			writer.write(System.getProperty("line.separator"));
+    		}
+    		
+    	} catch (IOException e) {
+    		System.err.println("Error saving to file. Ensure recent_inventory.txt and previous_inventory.txt exist.");
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    	}
     }
     
     public static void loadInventory(File source, ObservableList<FoodItem> list, ChoiceBox<String> box) {
@@ -100,8 +139,12 @@ public final class TransferProtocol {
     		
     		String line;
     		while((line = reader.readLine()) != null) {
-    			FoodItem toAdd = new FoodItem(line, reader.readLine(), new FoodGroup(reader.readLine()), 
+    			FoodItem toAdd = new FoodItem(line, reader.readLine(), new FoodGroup(reader.readLine(), 
+    					new Supplier(reader.readLine(), reader.readLine(), reader.readLine(), 
+    							Double.parseDouble(reader.readLine()), Integer.parseInt(reader.readLine()),
+    							Double.parseDouble(reader.readLine()))), 
     					Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()));
+    			
     			list.add(toAdd);
     			updateChoicesInventory(box, toAdd, true);
     		}
