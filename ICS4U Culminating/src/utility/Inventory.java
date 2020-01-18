@@ -14,19 +14,24 @@ public class Inventory {
 	public Inventory() {
 		inventory = new FoodItem[0];
 		size = 0;
-	}
-	
-	/**Creates an empty Inventory object with a monthly-budget.
-	 * @param month_budget The monthly budget allocated to dining and food services.*/
-	public Inventory(double month_budget) {
-		this();
-		this.month_budget.set(month_budget);
+		month_budget = new SimpleDoubleProperty();
+		month_budget.set(20000);
+		
+		orderTimestamp = LocalDateTime.now();
 	}
 	
 	/**Gets the size of the inventory.
 	 * @return int*/
 	public int getSize() {
 		return size;
+	}
+	
+	public double getMonthBudget() {
+		return month_budget.get();
+	}
+	
+	public void setMonthBudget(double budget) {
+		month_budget.set(budget);
 	}
 	
 	private boolean itemExists(String item_name) {
@@ -219,14 +224,8 @@ public class Inventory {
 		return orderTimestamp;
 	}
 	
-	/*public boolean order() {
-	 * cost box with radio buttons
-	 * check all checked, map each choice with a food item
-	 * get food item, get supplier, computeSTD cost
-	 * add to running total
-	 * compare total to month budget
-	 * if less, allow
-	 * ask to remove so that less
-		sets the order time stamp as well
-	}*/
+	public void order(double expenses) {
+		month_budget.set(month_budget.get() - expenses);
+		orderTimestamp = LocalDateTime.now();
+	}
 }
