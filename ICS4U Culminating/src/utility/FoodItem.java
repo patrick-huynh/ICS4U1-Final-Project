@@ -66,7 +66,7 @@ public class FoodItem {
 	}
 	
 	public LocalDate getExpiryAsDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 		return LocalDate.parse(expiryDate.get(), formatter);
 	}
 	
@@ -91,6 +91,10 @@ public class FoodItem {
 	
 	public String getGroupName() {
 		return groupName.get();
+	}
+	
+	public void setGroupName(String groupName) {
+		this.groupName.set(groupName);
 	}
 	
 	public StringProperty groupNameProperty() {
