@@ -20,6 +20,10 @@ public class Inventory {
 		orderTimestamp = LocalDateTime.now();
 	}
 	
+	public static void clear() {
+		
+	}
+	
 	/**Gets the size of the inventory.
 	 * @return int*/
 	public int getSize() {
@@ -63,7 +67,23 @@ public class Inventory {
 			size++;
 			return true;
 		} else {
-			//write to label that item already exists in inventory
+			return false;
+		}
+	}
+	
+	public boolean addItem(FoodItem item) {
+		if(!itemExists(item.getName())) {
+			FoodItem[] copy = inventory.clone();
+			inventory = new FoodItem[copy.length + 1];
+			
+			for (int i = 0; i < copy.length; i++) {
+				inventory[i] = copy[i];
+			}
+			
+			inventory[inventory.length - 1] = item;
+			size++;
+			return true;
+		} else {
 			return false;
 		}
 	}
@@ -91,6 +111,7 @@ public class Inventory {
 		for (int i = 0; i < size; i++) {
 			if (inventory[i] != null && inventory[i].isBelowExpected()) {
 				FoodItem[] copy = below_stock.clone();
+				below_stock = new FoodItem[copy.length + 1];
 				
 				for (int j = 0; j < copy.length; j++) {
 					below_stock[j] = copy[j];
@@ -104,13 +125,14 @@ public class Inventory {
 	}
 	
 	/**Checks the Inventory and returns a FoodItem array containing FoodItem objects to expire at the given date.*/
-	public FoodItem[] toExpire(LocalDate time) {
+	public FoodItem[] toExpire() {
 		FoodItem[] to_expire = new FoodItem[0];
 		
 		for (int i = 0; i < size; i++) {
-			if (inventory[i] != null && inventory[i].getExpiryAsDate().compareTo(inventory[i].getExpiryAsDate().plusWeeks(1)
-					) <= 7) {
+			if (inventory[i] != null && inventory[i].getExpiryAsDate().compareTo(LocalDate.now()) <= 7 && 
+					inventory[i].getExpiryAsDate().compareTo(LocalDate.now()) > 0) {
 				FoodItem[] copy = to_expire.clone();
+				to_expire = new FoodItem[copy.length + 1];
 				
 				for (int j = 0; j < copy.length; j++) {
 					to_expire[j] = copy[j];
@@ -122,13 +144,13 @@ public class Inventory {
 		return to_expire;
 	}
 	
-	public FoodItem[] expired(LocalDate time) {
+	public FoodItem[] expired() {
 		FoodItem[] expired = new FoodItem[0];
 		
 		for (int i = 0; i < size; i++) {
-			if (inventory[i] != null && inventory[i].getExpiryAsDate().compareTo(inventory[i].getExpiryAsDate().plusWeeks(1)
-					) <= 0) {
+			if (inventory[i] != null && inventory[i].getExpiryAsDate().compareTo(LocalDate.now()) < 0) {
 				FoodItem[] copy = expired.clone();
+				expired = new FoodItem[copy.length + 1];
 				
 				for (int j = 0; j < copy.length; j++) {
 					expired[j] = copy[j];
@@ -138,34 +160,6 @@ public class Inventory {
 			}
 		}
 		return expired;
-	}
-	
-	/**Gets the FoodItem in the inventory that has the greatest current stock.
-	 * @return FoodItem*/
-	public FoodItem hasMostInStock() {
-		FoodItem mostInStock = inventory[0];
-		
-		for (int i = 1; i < size; i++) {
-			if (inventory[i] != null && inventory[i].getQuantity() > mostInStock.getQuantity()) {
-				mostInStock = inventory[i];
-			}
-		}
-		
-		return mostInStock;
-	}
-	
-	/**Gets the FoodItem that has the highest cost.
-	 * @return FoodItem*/
-	public FoodItem isMostExpensive() {
-		FoodItem mostExpensive = inventory[0];
-		
-		for (int i = 0; i < size; i++) {
-			if (inventory[i] != null && inventory[i].computeSTDCost() > mostExpensive.computeSTDCost()) {
-				mostExpensive = inventory[i];
-			}
-		}	
-		
-		return mostExpensive;
 	}
 	
 	/**Checks the Inventory and returns a FoodItem array containing FoodItem objects that are instances of the 
@@ -187,19 +181,7 @@ public class Inventory {
 		
 		return instances;
 	}
-	
-	/**Computes the mean cost for all the FoodItem objects in the Inventory to two decimal places.
-	 * @return double*/
-	public double computeMeanCost() {
-		double mean_cost = 0.00d;
-		
-		for (int i = 0; i < size; i++) {
-			mean_cost += inventory[i].computeSTDCost();
-		}
-		
-		return Math.round(mean_cost / size * 100.0) / 100.0; 
-	}
-	
+
 	   /**
      * 
      * @param index - The index in the FoodItem array.
