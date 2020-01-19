@@ -121,6 +121,10 @@ public class FoodItem {
 		quantity.set(item_quantity.intValue());
 	}
 	
+	public void addQuantity(int amount) {
+		quantity.set(quantity.get() + amount);
+	}
+	
 	/**Gets the quantity property for this FoodItem object.
 	 * @return IntegerProperty*/
 	public IntegerProperty quantityProperty() {
