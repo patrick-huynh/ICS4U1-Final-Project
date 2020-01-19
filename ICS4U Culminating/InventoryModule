@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.io.File;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
-import javafx.util.converter.NumberStringConverter;
 
 import utility.FoodGroup;
 import utility.FoodItem;
@@ -68,14 +67,14 @@ public class InventoryModule extends Application {
 	
 	ContextMenu ctx_inventory, ctx_cart;
 	MenuButton fileMenu_inventory;
-	MenuItem save_inventory, load_inventory, addRow_inventory, deleteRow_inventory;
+	MenuItem save_inventory, load_inventory, reload_inventory, addRow_inventory, deleteRow_inventory;
 	Label filePrompt_inventory, budget;
 	
 	TableView<FoodItem> table_inventory;
 	Inventory inventory;
-	ObservableList<FoodItem> list_inventory;
+	ObservableList<FoodItem> list_inventory, choiceList;
 	FilteredList<FoodItem> filtered_inventory;
-	SortedList<FoodItem> sorted_inventory;
+	SortedList<FoodItem> sorted_inventory, choiceSorted;
 	
 	TableView<Supplier> table_supplier;
 	ObservableList<Supplier> list_supplier;
@@ -84,7 +83,7 @@ public class InventoryModule extends Application {
 	ObservableList<FoodItem> added;
 	TextField costField_inventory;
 	
-	ChoiceBox<String> choices_inventory;
+	ChoiceBox<String> choices_inventory, filterBox_inventory;
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -99,7 +98,9 @@ public class InventoryModule extends Application {
 		//INVENTORY TABLE SETUP
 		inventory = new Inventory();
 		table_inventory = new TableView<>();
+		table_inventory.setEditable(true);
 		table_inventory.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table_inventory.setPlaceholder(new Label("Right-click to add an item or load data into the table."));
 		list_inventory = FXCollections.observableArrayList();
 		
 		TableColumn<FoodItem, String> name_inventory = new TableColumn<>("Item Name");
@@ -109,6 +110,8 @@ public class InventoryModule extends Application {
 			((FoodItem) e.getTableView().getItems().get(
 						e.getTablePosition().getRow())).setName(e.getNewValue());
 			inventory.from(e.getTablePosition().getRow()).setName(e.getNewValue());
+			choices_inventory.getItems().set(e.getTablePosition().getRow(), 
+					e.getNewValue());
 		});
 		
 		TableColumn<FoodItem, String> expiry_inventory = new TableColumn<>("Expiry Date");
@@ -116,23 +119,39 @@ public class InventoryModule extends Application {
 		
 		TableColumn<FoodItem, String> groupName_inventory = new TableColumn<>("Group Name");
 		groupName_inventory.setCellValueFactory(cellData -> cellData.getValue().groupNameProperty());
+		groupName_inventory.setCellFactory(TextFieldTableCell.forTableColumn());
+		groupName_inventory.setOnEditCommit(e -> {
+			((FoodItem) e.getTableView().getItems().get(
+					e.getTablePosition().getRow())).setGroupName(e.getNewValue());
+			inventory.from(e.getTablePosition().getRow()).setGroupName(e.getNewValue());
+		});
 		
 		TableColumn<FoodItem, Number> qty_inventory = new TableColumn<>("Current Quantity");
 		qty_inventory.setCellValueFactory(cellData -> cellData.getValue().quantityProperty());
-		qty_inventory.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-		qty_inventory.setOnEditCommit(e -> {
-			((FoodItem) e.getTableView().getItems().get(
-					e.getTablePosition().getRow())).setQuantity(e.getNewValue());
-			inventory.from(e.getTablePosition().getRow()).setQuantity(e.getNewValue());
+		qty_inventory.setCellFactory(tc -> new TableCell<FoodItem, Number>() {
+			@Override
+			protected void updateItem(Number value, boolean empty) {
+				super.updateItem(value, empty);
+				if (value == null || empty) {
+					setText("");
+				} else {
+					setText(nf.format(value));
+				}
+			}
 		});
 		
 		TableColumn<FoodItem, Number> stock_inventory = new TableColumn<>("Expected Stock");
 		stock_inventory.setCellValueFactory(cellData -> cellData.getValue().stockProperty());
-		stock_inventory.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-		stock_inventory.setOnEditCommit(e -> {
-			((FoodItem) e.getTableView().getItems().get(
-					e.getTablePosition().getRow())).setStock(e.getNewValue());
-			inventory.from(e.getTablePosition().getRow()).setStock(e.getNewValue());
+		stock_inventory.setCellFactory(tc -> new TableCell<FoodItem, Number>() {
+			@Override
+			protected void updateItem(Number value, boolean empty) {
+				super.updateItem(value, empty);
+				if (value == null || empty) {
+					setText("");
+				} else {
+					setText(nf.format(value));
+				}
+			}
 		});
 		
 		table_inventory.getColumns().addAll(name_inventory, expiry_inventory, groupName_inventory, 
@@ -150,15 +169,22 @@ public class InventoryModule extends Application {
 		
 		load_inventory = new MenuItem("Load");
 		load_inventory.setOnAction(e -> {
-			TransferProtocol.loadInventory(new File("recent_inventory.txt"), list_inventory, choices_inventory);
+			TransferProtocol.loadInventory(new File("recent_inventory.txt"), inventory, list_inventory, choices_inventory);
 			filePrompt_inventory.setText(" Inventory Data Loaded");
+		});
+		
+		reload_inventory = new MenuItem("Reload");
+		reload_inventory.setOnAction(e -> {
+			TransferProtocol.reloadInventory(new File("recent_inventory.txt"), new File("previous_inventory.txt"), 
+					inventory, list_inventory, choices_inventory);
+			filePrompt_inventory.setText(" Inventory Data Reloaded");
 		});
 		
 		budget = new Label(Double.toString(inventory.getMonthBudget()));
 		Region budgetRegion = new Region();
 		HBox.setHgrow(budgetRegion, Priority.ALWAYS);
 		
-		fileMenu_inventory.getItems().addAll(save_inventory, load_inventory);
+		fileMenu_inventory.getItems().addAll(save_inventory, load_inventory, reload_inventory);
 		div_inventory = new HBox();
 		div_inventory.getChildren().addAll(fileMenu_inventory, filePrompt_inventory, budgetRegion, budget);
 		
@@ -178,6 +204,7 @@ public class InventoryModule extends Application {
 		table_inventory.setOnContextMenuRequested(e -> {
 			ctx_inventory.show(table_inventory, e.getScreenX(), e.getScreenY());
 		});
+		
 		
 		//INVENTORY SEARCH BAR SETUP
 		filtered_inventory = new FilteredList<>(list_inventory, p -> true);
@@ -208,8 +235,35 @@ public class InventoryModule extends Application {
 		sorted_inventory.comparatorProperty().bind(table_inventory.comparatorProperty());
 		table_inventory.setItems(sorted_inventory);
 		
+		//FILTER BOX INVENTORY SETUP
+		choiceList = FXCollections.observableArrayList();
+		filterBox_inventory = new ChoiceBox<>();
+		filterBox_inventory.getItems().addAll("Restore", "Below Expected", "To Expire", "Expired");
+		filterBox_inventory.setValue("Restore");
+		
+		filterBox_inventory.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue)
+				-> {
+					switch ((Integer) newValue) {
+						case 0:
+							table_inventory.setItems(sorted_inventory);
+							choiceList.removeAll(choiceList);
+							break;
+						case 1:
+							buildChoiceList(inventory.belowExpected());
+							break;
+						case 2:
+							buildChoiceList(inventory.toExpire());
+							break;
+						case 3:
+							buildChoiceList(inventory.expired());
+							break;
+					}
+				});
+		
+		
+		
 		divSearch_inventory = new HBox();
-		divSearch_inventory.getChildren().add(search_inventory);
+		divSearch_inventory.getChildren().addAll(search_inventory, filterBox_inventory);
 		divSearch_inventory.setAlignment(Pos.CENTER);
 		
 		//INVENTORY COST BOX SETUP
@@ -266,9 +320,13 @@ public class InventoryModule extends Application {
 		MenuItem deleteRow_cart = new MenuItem("Remove From Cart");
 		deleteRow_cart.setOnAction(e -> {
 			FoodItem removed = cart.getSelectionModel().getSelectedItem();
-			added.remove(removed);
-			costField_inventory.setText(Double.toString(Double.parseDouble(costField_inventory.getText()) - 
-					removed.getCost()));
+			if (added.size() > 0 && removed != null) {
+				added.remove(removed);
+				costField_inventory.setText(Double.toString(Double.parseDouble(costField_inventory.getText()) - 
+						removed.getCost()));
+			} else {
+				filePrompt_inventory.setText(" No item selected in cart.");
+			}
 		});
 		ctx_cart.getItems().add(deleteRow_cart);
 		
@@ -436,10 +494,15 @@ public class InventoryModule extends Application {
 			String nameP = resp.get(0).get(dialog_inventory.getFields().get(0));
 			
 			int day = dialog_inventory.getDateBox().getDayBox().getValue();
-			int month = dialog_inventory.getDateBox().getMonthBox().getValue();
-			int year = dialog_inventory.getDateBox().getYearBox().getValue();
+			String dayString = Integer.toString(day);
 			
-			String expiryP = Integer.toString(day) + "/" + Integer.toString(month) + "/" + Integer.toString(year);
+			int month = dialog_inventory.getDateBox().getMonthBox().getValue();
+			String monthString = Integer.toString(month);
+			
+			int year = dialog_inventory.getDateBox().getYearBox().getValue();
+			String yearString = Integer.toString(year);
+			
+			String expiryP = dayString + "/" + monthString + "/" + yearString;
 			
 			String groupP = resp.get(1).get(dialog_inventory.getFields().get(1));
 			
@@ -454,13 +517,19 @@ public class InventoryModule extends Application {
 			TransferProtocol.updateChoicesInventory(choices_inventory, toAdd, true);
 			
 			table_inventory.refresh();
+			filePrompt_inventory.setText(" Item added.");
 		}
 	}
 	
 	public void deleteRowInventory(Stage stage) {
 		FoodItem removed = table_inventory.getSelectionModel().getSelectedItem();
-		list_inventory.remove(removed);
-		TransferProtocol.updateChoicesInventory(choices_inventory, removed, false);
+		if (list_inventory.size() > 0 && removed != null) {
+			list_inventory.remove(removed);
+			TransferProtocol.updateChoicesInventory(choices_inventory, removed, false);
+			filePrompt_inventory.setText(" Item deleted.");
+		} else {
+			filePrompt_inventory.setText(" No item selected in table.");
+		}
 	}
 	
 	private void orderInventory() {
@@ -498,6 +567,15 @@ public class InventoryModule extends Application {
 			}
 		}
 	}
+	
+	private void buildChoiceList(FoodItem[] items) {
+		choiceList.removeAll(choiceList);
+		for (FoodItem item : items) {
+			choiceList.add(item);
+		}
+		table_inventory.setItems(choiceList);
+	}
+	
 	
 	public static void main(String[] args) {
 		launch(args);
