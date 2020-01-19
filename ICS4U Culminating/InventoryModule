@@ -558,7 +558,7 @@ public class InventoryModule extends Application {
 				checkout.setContentText("Supplies have been contacted and your standardized requests are being processed. "
 						+ "Please wait for the items to arrive.");
 				checkout.showAndWait();
-				inventory.order(Double.parseDouble(costField_inventory.getText()));
+				inventory.order(Double.parseDouble(costField_inventory.getText()), added, list_inventory);
 				budget.setText(Double.toString(Double.parseDouble(budget.getText()) - Double.parseDouble(
 						costField_inventory.getText())));
 				
