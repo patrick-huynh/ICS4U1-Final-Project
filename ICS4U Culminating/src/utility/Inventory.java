@@ -22,10 +22,6 @@ public class Inventory {
 		orderTimestamp = LocalDateTime.now();
 	}
 	
-	public static void clear() {
-		
-	}
-	
 	/**Gets the size of the inventory.
 	 * @return int*/
 	public int getSize() {
