@@ -2,6 +2,8 @@ package utility;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Inventory {
@@ -206,8 +208,24 @@ public class Inventory {
 		return orderTimestamp;
 	}
 	
-	public void order(double expenses) {
+	public void order(double expenses, List<FoodItem> cartList, List<FoodItem> tableList) {
 		month_budget.set(month_budget.get() - expenses);
 		orderTimestamp = LocalDateTime.now();
+		
+		for (FoodItem item : cartList) {
+			for (int i = 0; i < inventory.length; i++) {
+				if (item.getName().equals(inventory[i].getName())) {
+					inventory[i].addQuantity(item.getBatchAdd());
+					break;
+				}
+			}
+			
+			for (FoodItem tableItem : tableList) {
+				if (item.getName().equals(tableItem.getName())) {
+					tableItem.addQuantity(item.getBatchAdd());
+				}
+			}
+		}
+		
 	}
 }
