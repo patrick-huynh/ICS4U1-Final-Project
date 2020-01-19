@@ -56,11 +56,19 @@ public final class TransferProtocol {
     	
     }
     
+    public static void reloadSenior(File source, File target, ObservableList<Senior> list, ChoiceBox<String> box) {
+    	
+    }
+    
     public static void saveCaregiver(File source, File target, ObservableList<Caregiver> list) {
     	
     }
     
     public static void loadCaregiver(File source, ObservableList<Caregiver> list) {
+    	
+    }
+    
+    public static void reloadCaregiver(File source, File target, ObservableList<Caregiver> list, ChoiceBox<String> box) {
     	
     }
     
@@ -133,7 +141,12 @@ public final class TransferProtocol {
     	}
     }
     
-    public static void loadInventory(File source, ObservableList<FoodItem> list, ChoiceBox<String> box) {
+    public static void loadInventory(File source, Inventory inventory, ObservableList<FoodItem> list, 
+    		ChoiceBox<String> box) {
+    	
+    	box.getItems().removeAll(box.getItems());
+    	list.removeAll(list);
+    	
     	try (BufferedReader reader = new BufferedReader(new FileReader(source));	
     			) {
     		
@@ -144,7 +157,7 @@ public final class TransferProtocol {
     							Double.parseDouble(reader.readLine()), Integer.parseInt(reader.readLine()),
     							Double.parseDouble(reader.readLine()))), 
     					Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()));
-    			
+    			inventory.addItem(toAdd);
     			list.add(toAdd);
     			updateChoicesInventory(box, toAdd, true);
     		}
@@ -152,6 +165,14 @@ public final class TransferProtocol {
     		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
     		System.err.println("Error configuring inventory list to table. Check that recent_inventory.txt exists.");
     	}
+    }
+    
+    public static void reloadInventory(File source, File target, Inventory inventory, ObservableList<FoodItem> list,
+    		ChoiceBox<String> box) {
+    	box.getItems().removeAll(box.getItems());
+    	list.removeAll(list);
+    	swap(source, target, "temp.txt");
+    	loadInventory(source, inventory, list, box);
     }
     
 }
