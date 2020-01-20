@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -76,7 +77,7 @@ public class LogInPage extends Application {
         GridPane.setConstraints(incorrect, 1, 5);
         
         //Password Input
-        TextField passInput = new TextField();
+        PasswordField passInput = new PasswordField();
         passInput.setPrefWidth(200);
         passInput.setPromptText("password");
         GridPane.setConstraints(passInput, 1, 1);
