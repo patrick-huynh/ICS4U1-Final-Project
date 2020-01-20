@@ -1,0 +1,24 @@
+Good Meats and Seafood
+123 Meat Road
+416-395-4240
+1000.00
+100
+150.50
+Veg Eatables Farmer's Market
+965 Hawk Street
+416-985-6363
+1500.00
+100
+250.00
+Grain Stand Canada
+444 Sheppard Avenue East
+416-213-3666
+1500.00
+100
+165.35
+Dairy And Alternatives
+777 Lucky Avenue
+416-777-8888
+2000.00
+100
+195.45
