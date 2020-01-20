@@ -85,6 +85,9 @@ public class InventoryModule extends Application {
 	
 	ChoiceBox<String> choices_inventory, filterBox_inventory;
 	
+	
+	Button home_inventory, home_suppliers;
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void start(Stage stage) {
