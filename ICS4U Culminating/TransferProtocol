@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
-
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.BufferedWriter;
@@ -41,35 +42,150 @@ public final class TransferProtocol {
     /**Swaps the contents of two File objects using TransferProtocol.copy().
      * @param path - The path to a temporary file in the project source folder.*/
     public static void swap(File source, File target, String path) {
-    	File temp = new File(path);
-    	copy(target, temp);
-    	copy(source, target);
-    	copy(temp, source);
+    	try {
+        	File temp = new File(path);
+        	copy(target, temp);
+        	copy(source, target);
+        	copy(temp, source);
+        	FileChannel.open(Paths.get(temp.toURI()), StandardOpenOption.WRITE).truncate(0).close();
+    	} catch (IOException e) {
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    	}
+    }
+    
+    public static void updateChoicesSenior(ChoiceBox<Long> box, Senior senior, boolean add) {
+    	if (add) {
+    		box.getItems().add(senior.getHID());
+    	} else {
+    		box.getItems().remove(senior.getHID()); 
+    	}
     }
     
     /**Saves the contents of ObservableList of type Senior to a designated source file.*/
     public static void saveSenior(File source, File target, ObservableList<Senior> list) {
+    	copy(source, target);
     	
+    	try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
+    			){
+    		for (Senior senior : list) {
+    			writer.write(senior.getFName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(senior.getLName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(senior.getDOB());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(senior.getAge()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(senior.getRoomID()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Double.toString(senior.getHours()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Long.toString(senior.getHID()));
+    			writer.write(System.getProperty("line.separator"));
+    		}
+    		
+    	} catch (IOException e) {
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    		System.err.println("Error saving senior data. Ensure that recent_senior.txt and previous_senior.txt exist.");
+    	}
     }
     
-    public static void loadSenior(File source, ObservableList<Senior> list) {
+    public static void loadSenior(File source, ObservableList<Senior> list, ChoiceBox<Long> box) {
+    	box.getItems().removeAll(box.getItems());
+    	list.removeAll(list);
     	
+    	try (BufferedReader reader = new BufferedReader(new FileReader(source));
+    			){
+    		String line;
+    		
+    		while ((line = reader.readLine()) != null) {
+    			Senior toAdd = new Senior(line, reader.readLine(), reader.readLine(), 
+    					Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()), 
+    					Double.parseDouble(reader.readLine()), Long.parseLong(reader.readLine()));
+    			list.add(toAdd);
+    			updateChoicesSenior(box, toAdd, true);
+    		}
+    		
+    	} catch (IOException e) {
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    		System.err.println("Error configuring senior data to table. Check that recent_senior.txt exists.");
+    	}
     }
     
-    public static void reloadSenior(File source, File target, ObservableList<Senior> list, ChoiceBox<String> box) {
-    	
+    public static void reloadSenior(File source, File target, ObservableList<Senior> list, ChoiceBox<Long> box) {
+    	box.getItems().removeAll(box.getItems());
+    	list.removeAll(list);
+    	swap(source, target, "temp.txt");
+    	loadSenior(source, list, box);
+    }
+    
+    public static void updateChoicesCaregiver(ChoiceBox<Long> box, Caregiver caregiver, boolean add) {
+    	if (add) {
+    		box.getItems().add(caregiver.getEmpNum());
+    	} else {
+    		box.getItems().remove(caregiver.getEmpNum());
+    	}
     }
     
     public static void saveCaregiver(File source, File target, ObservableList<Caregiver> list) {
+    	copy(source, target);
+    	
+    	try (BufferedWriter writer = new BufferedWriter(new FileWriter(source))
+    			){
+    		for (Caregiver caregiver : list) {
+    			writer.write(caregiver.getFName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(caregiver.getLName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(caregiver.getDOB());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(caregiver.getAge()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(caregiver.getRoomID()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Long.toString(caregiver.getEmpNum()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Double.toString(caregiver.getHours()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Double.toString(caregiver.getWage()));
+    		}
+    		
+    	} catch (IOException e) {
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    		System.err.println("Error saving caregiver data. Ensure that recent_caregiver.txt and previous_caregiver.txt"
+    				+ " exist.");
+    	}
     	
     }
     
-    public static void loadCaregiver(File source, ObservableList<Caregiver> list) {
+    public static void loadCaregiver(File source, ObservableList<Caregiver> list, ChoiceBox<Long> box) {
+    	box.getItems().removeAll(box.getItems());
+    	list.removeAll(list);
     	
+    	try (BufferedReader reader = new BufferedReader(new FileReader(source))
+    			){
+    		String line;
+    		
+    		while ((line = reader.readLine()) != null) {
+    			Caregiver toAdd = new Caregiver(line, reader.readLine(), reader.readLine(), 
+    					Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()), 
+    					Long.parseLong(reader.readLine()), Double.parseDouble(reader.readLine()), 
+    					Double.parseDouble(reader.readLine()));
+    			list.add(toAdd);
+    			updateChoicesCaregiver(box, toAdd, true);
+    		}
+    		
+    	} catch (IOException e) {
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    		System.err.println("Error configuring caregiver data. Ensure that recent_caregiver.txt exists.");
+    	}
     }
     
-    public static void reloadCaregiver(File source, File target, ObservableList<Caregiver> list, ChoiceBox<String> box) {
-    	
+    public static void reloadCaregiver(File source, File target, ObservableList<Caregiver> list, ChoiceBox<Long> box) {
+    	box.getItems().removeAll(box.getItems());
+    	list.removeAll(list);
+    	swap(source, target, "temp.txt");
+    	loadCaregiver(source, list, box);
     }
     
     public static void loadSupplier(File source, ObservableList<Supplier> list) {
