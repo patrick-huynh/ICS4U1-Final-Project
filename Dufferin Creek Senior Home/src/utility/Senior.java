@@ -97,6 +97,10 @@ public class Senior extends Person {
         }
     }
     
+    /**
+    *@param s - The list of seniors.
+    * Sorts seniors by homeID.
+    */
     public static void sortHomeID(List<Senior> s) {
     	for (int i = 0; i < s.size(); i++) {
     		Senior holder = s.get(i);
@@ -137,6 +141,14 @@ public class Senior extends Person {
         
     }
     
+   /**
+    * Searches for a senior by their homeID.
+    * @param ID - The home ID you want to search for.
+    * @param s - The array of seniors.
+    * @param l - The farthest left of the senior array (usually 0).
+    * @param r - The farthest right of the senior array (usually length of array).
+    * @return Senior - The senior with the corresponding home ID.
+    */
     public static Senior searchHomeID(long ID, List<Senior> s, int l, int r) {
     	Senior.sortHomeID(s);
     	if (r >= l) {
