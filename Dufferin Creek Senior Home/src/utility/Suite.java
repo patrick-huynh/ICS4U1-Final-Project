@@ -39,11 +39,11 @@ public class Suite {
 		public String getTypeName() {
 			return typeName;
 		}
-		
+		/** Gets monthly cost.*/
 		public double getMonthlyCost() {
 			return monthlyCost;
 		}
-		
+		/** Gets feeMulitple */
 		public double getFeeMultiple() {
 			return feeMultiple;
 		}
@@ -74,6 +74,10 @@ public class Suite {
 		presider = null;
 	}
 	
+	/**
+	* Gets numberOfOccupants
+	*@return IntegerProperty
+	*/
 	public IntegerProperty numberOfOccupantsProperty() {
 		return numberOfOccupants;
 	}
@@ -96,10 +100,18 @@ public class Suite {
 		return suiteStyle;
 	}
 	
+	/**
+	* Gets the style name.
+	*@return String - The style name.
+	*/
 	public String getStyleName() {
 		return styleName.get();
 	}
 	
+	/**
+	* Sets the style name
+	* @param styleName - The style name.
+	*/
 	public void setStyleName(String styleName) {
 		this.styleName.set(styleName);
 	}
@@ -117,6 +129,11 @@ public class Suite {
 		presider.assigned = true;
 	}
 	
+	/**
+	* Checks if occupant exists
+	* @param senior - The senior.
+	* @return boolean - Returns true if an occupant exists.
+	*/
 	public boolean occupantExists(Senior senior) {
 		for (int i = 0; i < occupants.length; i++) {
 			if (occupants[i].getHID() == senior.getHID()) {
@@ -126,6 +143,9 @@ public class Suite {
 		return false;
 	}
 	
+	/**
+	* The presider
+	*/
 	public boolean presiderExists(Caregiver caregiver) {
 		if (this.getPresider() != null) {
 			return true;
@@ -157,7 +177,11 @@ public class Suite {
 			return false;
 		}
 	}
-	
+	/**
+	* Adds an occupant.
+	* @param senior - The senior to add.
+	* @return boolean - true if everything is exceuted succesfully.
+	*/
 	public boolean addOccupant(Senior senior) {
 		if (this.suiteStyle.getMaximum() > occupants.length) {
 			Senior[] temp = occupants.clone();
@@ -177,7 +201,11 @@ public class Suite {
 		}
 	}
 	
-	/***/
+	/**
+	* Adds occupants.
+	*@param seniors - The seniors to add.
+	*@return boolean - true if everything is executed correctly.
+	*/
 	public boolean addOccupants(Senior...seniors) {
 		if (this.suiteStyle.getMaximum() >= occupants.length + seniors.length) {
 			Senior[] temp = occupants.clone();
@@ -198,7 +226,11 @@ public class Suite {
 		}
 	}
 	
-	/***/
+	/**
+	*Removes occupants.
+	*@param home_id - The home ID of the occupant to remove.
+	*@return boolean - true if everything is executed correctly.
+	*/
 	public boolean removeOccupant(long home_id) {
 		for (int i = 0; i < occupants.length; i++) {
 			if (occupants[i] != null && occupants[i].getHID() == home_id) {
@@ -210,13 +242,22 @@ public class Suite {
 		return false;
 	}
 	
+	/**
+	*Checks if the home ID exists in the suite.
+	*@param homeid - The home ID of a senior.
+	*@return boolean - true if it does exist.
+	*/
 	public boolean homeIDExists(long homeid) {
 		if (occupants.length > 0 && Senior.searchHomeID(homeid, occupants, 0, occupants.length) != null) {
 			return true;
 		}
 		return false;
 	}
-	
+	/**
+	* Checks if a caregiver exists in the suite.
+	* @param empNum - The employee to check.
+	* @return boolean - true if a caregiver exists.
+	*/
 	public boolean empNumExists(long empNum) {
 		if (presider.getEmpNum() == empNum) {
 			return true;
