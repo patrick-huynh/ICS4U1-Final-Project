@@ -11,10 +11,10 @@ public class Caregiver extends Person {
     public boolean assigned;
     
     /**
-     * Constructor for class Caregiver.
+     * Constructor for Caregiver class.
      * @param empNum - The employee number.
-	 * @param hours - The hours worked per week.
-	 * @param wage - The hourly wage.	
+     * @param hours - The number of hours worked.
+     * @param wage - The wage for the caregiver.
      */
     public Caregiver(String fname, String lname, String DOB, int age, int roomID,
             long empNum, double hours, double wage) {
@@ -74,25 +74,52 @@ public class Caregiver extends Person {
     	this.wage.set(wage.doubleValue());
     }
     
+    /**
+     * This method calculates the weekly pay for the Caregiver.
+     */
     public void calculateWeeklyPay() {
     	weekly_pay.set(wage.get()*hours.get()*0.735);
     }
+    
+    /**
+     * @return double - The weekly pay.
+     */
     public double getWeeklyPay() {
     	return weekly_pay.get();
     }
+    
+    /**
+     * This method calculates the monthly pay for the Caregiver.
+     */
     public void calculateMonthlyPay() {
     	monthly_pay.set(wage.get()*hours.get()*0.735*4.34);
     }
+    
+    /**
+     * @return double - The monthly pay.
+     */
     public double getMonthlyPay() {
     	return monthly_pay.get();
     }
+    
+    /**
+     * This method calculates the annual pay for the Caregiver.
+     */
     public void calculateAnnualPay() {
     	annual_pay.set(wage.get()*hours.get()*0.735*4.34*12.0);
     }
+    
+    /**
+     * @return double - The annual pay.
+     */
     public double getAnnualPay() {
     	return annual_pay.get();
     }
     
+    /**
+     * Sorts the caregiver by EmpNum.
+     * @param c - The list of caregivers to sort.
+     */
     public static void sortEmpNum(List<Caregiver> c){
         for (int i = 0; i < c.size(); i++) {
     		Caregiver holder = c.get(i);
@@ -105,6 +132,14 @@ public class Caregiver extends Person {
     	}
     }
     
+    /**
+     * Searches for Caregiver depending on EmpNum using Binary search (recursion).
+     * @param empNum - The employee number to search for.
+     * @param c - The list of Caregivers.
+     * @param l - The left most index of the array.
+     * @param r - The right most index of the array.
+     * @return Caregiver - The caregiver with the searched employee number.
+     */
     public static Caregiver searchEmpNum(long empNum, List<Caregiver> c, int l, int r) {
     	Caregiver.sortEmpNum(c);
         l = 0;
