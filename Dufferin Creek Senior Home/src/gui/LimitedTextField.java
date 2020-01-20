@@ -13,7 +13,7 @@ public class LimitedTextField extends TextField {
 	private IntegerProperty maxLength;
 	private BooleanProperty isNumeric;
 	
-	/**Creates a TextField with length properties.*/
+	/**Creates a TextField with default length and input type properties.*/
 	public LimitedTextField() {
 		super();
 		maxLength = new SimpleIntegerProperty(255);
@@ -21,23 +21,34 @@ public class LimitedTextField extends TextField {
 		isNumeric.set(false);
 	}
 	
+	/**Creates a TextField with default length and input type properties with prompt text.
+	@param text - The text to append to the TextField space.*/
 	public LimitedTextField(String text) {
 		super(text);
 		maxLength = new SimpleIntegerProperty(255);
 	}
 	
+	/**Gets the maximum length property of this LimitedTextField.
+	@return IntegerProperty*/
 	public IntegerProperty maxLengthProperty() {
 		return maxLength;
 	}
 	
+	/**Gets the value of the maximum length property as a primitive int type.
+	@return int*/
 	public final int getMaxLength() {
 		return maxLength.get();
 	}
 	
+	/**Returns whether or not this field is numeric.
+	@return boolean*/
 	public final boolean isNumeric() {
 		return isNumeric.get();
 	}
 	
+	/**Sets the maximum length of this LimitedTextField (overrides the initial commit) if it is greater than or equal to 0.
+	@param maximum - The upper limit of the length property.
+	@return boolean*/
 	public final boolean setMaxLength(int maximum) {
 		if (maximum >= 0) {
 			this.maxLength.set(maximum);
@@ -47,6 +58,10 @@ public class LimitedTextField extends TextField {
 		return false;
 	}
 	
+	/**Replaces the current text in the LimitedTextField if it exceeds the current length.
+	@param start - The initial index of the target String object.
+	@param end - The end index of the target String object.
+	@param insertedText - The String object representing the text of interest.*/
 	@Override
 	public void replaceText(int start, int end, String insertedText) {
 		String currentText = this.getText() == null ? "" : this.getText();
@@ -62,11 +77,12 @@ public class LimitedTextField extends TextField {
 		}
 	}
 	
-	//Scope problems
+	//Workaround to scope problems in the succeeding methods, in order.
 	private LimitedTextField getThis() {
 		return this;
 	}
 	
+	/**Sets the LimitedTextField as numeric only (accepts only number symbols). Adds a listener to the text property.*/
 	public void setAsNumericOnly() {
 		this.textProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -78,6 +94,8 @@ public class LimitedTextField extends TextField {
 		});
 	}
         
+	/**Sets the LimitedTextField as alphabetic only (accepts only ISO Latin Alphabetic characters). 
+	Adds a listener to the text property.*/
         public void setAsAlphaOnly() {
             this.textProperty().addListener(new ChangeListener<String>() {
                 @Override
