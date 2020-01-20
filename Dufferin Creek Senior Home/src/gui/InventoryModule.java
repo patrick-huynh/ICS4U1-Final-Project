@@ -85,16 +85,17 @@ public class InventoryModule extends Application {
 	
 	ChoiceBox<String> choices_inventory, filterBox_inventory;
 	
-	
 	Button home_inventory, home_suppliers;
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void start(Stage stage) {
+		
+		//Gets the visual bounds of the user's screen.
 		screen = Screen.getPrimary().getVisualBounds();
 		main = new TabPane();
 		
-		
+		/*Adds the home buttons to the Supplier and Inventory tabs.*/
 		home_inventory = new Button("Home");
 		home_inventory.setOnAction(actionEvent ->  {
         	    stage.hide();
@@ -123,6 +124,9 @@ public class InventoryModule extends Application {
 		tab_inventory.setClosable(false);
 		
 		//INVENTORY TABLE SETUP
+		
+		/*Creates the inventory table, sets it editable, and adds a placeholder and column resize policy. The ObservableList
+		backing this table is set to an ObservableArrayList.*/
 		inventory = new Inventory();
 		table_inventory = new TableView<>();
 		table_inventory.setEditable(true);
@@ -131,6 +135,18 @@ public class InventoryModule extends Application {
 		list_inventory = FXCollections.observableArrayList();
 		
 		//INVENTORY COLUMNS SETUP
+		
+		/*The typical format for a String parameterized TableColumn object. TableColumns take the properties from the class specified
+		in the diamond operator and displays as the second type listed. 
+		The method .setCellFactory defines what to display in the column. Either a lambda expression or a new PropertyValueFactory,
+		which is also parameterized, are used to locate (by reflection) the property of the first type in the diamond operator 
+		corresponding to the named property in its constructor. 
+		The method .setCellFactory defines how to display the data. TextFieldTableCell puts a TextField into each table cell of the 
+		TableColumn, allowing it to be directly edited via key and mouse input. 
+		The method .setOnEditCommit processes the value of the commit event (after ENTER is pressed) by setting the value of the 
+		property in that class to the input value in the cell, while displaying it in the table.
+		*/
+		
 		TableColumn<FoodItem, String> name_inventory = new TableColumn<>("Item Name");
 		name_inventory.setCellValueFactory(new PropertyValueFactory<>("name"));
 		name_inventory.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -145,6 +161,9 @@ public class InventoryModule extends Application {
 		TableColumn<FoodItem, String> expiry_inventory = new TableColumn<>("Expiry Date");
 		expiry_inventory.setCellValueFactory(new PropertyValueFactory<>("expiryDate"));
 		
+		/*An example of the lambda expression in .setCellFactory. In lieu of a PropertyValueFactory,
+		each of the individual cells is linked explicitly to a property in the first-order class in the diamond operator.
+		*/
 		TableColumn<FoodItem, String> groupName_inventory = new TableColumn<>("Group Name");
 		groupName_inventory.setCellValueFactory(cellData -> cellData.getValue().groupNameProperty());
 		groupName_inventory.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -154,6 +173,10 @@ public class InventoryModule extends Application {
 			inventory.from(e.getTablePosition().getRow()).setGroupName(e.getNewValue());
 		});
 		
+		/*An example of a display type change for a Number field. Instead of using a TextFieldTableCell, Number fields
+		that do not need editing can set a Cell Factory that updates formatting using a NumberFormat object 
+		directly in the TableCell.
+		*/
 		TableColumn<FoodItem, Number> qty_inventory = new TableColumn<>("Current Quantity");
 		qty_inventory.setCellValueFactory(cellData -> cellData.getValue().quantityProperty());
 		qty_inventory.setCellFactory(tc -> new TableCell<FoodItem, Number>() {
@@ -182,11 +205,17 @@ public class InventoryModule extends Application {
 			}
 		});
 		
+		/*Adds the TableColumn objects to the inventory table.*/
 		table_inventory.getColumns().addAll(name_inventory, expiry_inventory, groupName_inventory, 
 				qty_inventory, stock_inventory);
 		
 		//INVENTORY FILE MENUBUTTON SETUP
 		filePrompt_inventory = new Label();
+		
+		/*A MenuButton is a control used in the scene graph to display a dropdown of MenuItem objects. The save method
+		for the inventory from class TransferProtocol is used to create version history and data transfer to a supported
+		external file with a .txt extension.*/
+		
 		fileMenu_inventory = new MenuButton("File");
 		save_inventory = new MenuItem("Save");
 		save_inventory.setOnAction(e -> {
@@ -195,6 +224,7 @@ public class InventoryModule extends Application {
 			filePrompt_inventory.setText(" Inventory Data Saved");
 		});
 		
+		/*Setting a node on action means to fire a series of key processes when an action event is received.*/
 		load_inventory = new MenuItem("Load");
 		load_inventory.setOnAction(e -> {
 			TransferProtocol.loadInventory(new File("recent_inventory.txt"), inventory, list_inventory, choices_inventory);
@@ -208,6 +238,8 @@ public class InventoryModule extends Application {
 			filePrompt_inventory.setText(" Inventory Data Reloaded");
 		});
 		
+		/*Sets the Hgrow property of the containing HBox to separate the cost label from the file menu and file prompt label.
+		The Region between the file menu and file prompt and the cost label has a grow priority of ALWAYS.*/
 		budget = new Label(Double.toString(inventory.getMonthBudget()));
 		Region budgetRegion = new Region();
 		HBox.setHgrow(budgetRegion, Priority.ALWAYS);
@@ -217,6 +249,9 @@ public class InventoryModule extends Application {
 		div_inventory.getChildren().addAll(fileMenu_inventory, home_inventory, filePrompt_inventory, budgetRegion, budget);
 		
 		//INVENTORY CONTEXTMENU SETUP
+		
+		/**A ContextMenu is a menu that appears on right-click on the node. Adding a row or deleting a row is by selected item
+		in the table.*/
 		ctx_inventory = new ContextMenu();
 		addRow_inventory = new MenuItem("Add Food Item");
 		addRow_inventory.setOnAction(e -> {
@@ -235,10 +270,17 @@ public class InventoryModule extends Application {
 		
 		
 		//INVENTORY SEARCH BAR SETUP
+		
+		/*The FilteredList that takes from the ObservableListArray constantly updating is used to create a predicate, 
+		which in turn returns a list of FoodItem objects that correspond to the search request.*/
 		filtered_inventory = new FilteredList<>(list_inventory, p -> true);
 		TextField search_inventory = new TextField();
 		search_inventory.setPromptText("Search the inventory");
 		
+		/**A listener is added to the text property of the TextField representing the search bar. This listener 
+		observes whether key input event has occurred; if so, the oldValue (empty) is change to a newValue (the new String).
+		This newValue is used with the predicate of the FilteredList to determine if a specific lookup property of the
+		FoodItem matches the filter (text in the TextField). */
 		search_inventory.textProperty().addListener((observable, oldValue, newValue) -> {
 			filtered_inventory.setPredicate(item -> {
 				if(newValue == null || newValue.isEmpty()) {
@@ -259,16 +301,27 @@ public class InventoryModule extends Application {
 			});
 		});
 		
+		/**A SortedList is used to sort the FilteredList; as such, the updated display in the TableView is sorted 
+		by the lookup property (either alphabetically or numerically).*/
 		sorted_inventory = new SortedList<>(filtered_inventory);
 		sorted_inventory.comparatorProperty().bind(table_inventory.comparatorProperty());
 		table_inventory.setItems(sorted_inventory);
 		
 		//FILTER BOX INVENTORY SETUP
 		choiceList = FXCollections.observableArrayList();
+		
+		/**A String ChoiceBox is a control used in the scene graph to display a dropdown list of static choices.*/
 		filterBox_inventory = new ChoiceBox<>();
 		filterBox_inventory.getItems().addAll("Restore", "Below Expected", "To Expire", "Expired");
 		filterBox_inventory.setValue("Restore");
 		
+		/*The selected index of the selection model of the ChoiceBox is listened to; depending on the index, 
+		a particular method is run.
+		Case 0 sets the table back to the initial view of the inventory table.
+		Case 1 sets the list to contain all items below expected stock.
+		Case 2 sets the list to contain all items about to expire.
+		Case 3 sets the list to contain all items that are expired.
+		*/
 		filterBox_inventory.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue)
 				-> {
 					switch ((Integer) newValue) {
@@ -288,6 +341,7 @@ public class InventoryModule extends Application {
 					}
 				});
 		
+		//The method .setAlignment() uses Pos (geometry class) to set the alignment of all of the children of the HBox.
 		divSearch_inventory = new HBox();
 		divSearch_inventory.getChildren().addAll(search_inventory, filterBox_inventory);
 		divSearch_inventory.setAlignment(Pos.CENTER);
@@ -301,6 +355,10 @@ public class InventoryModule extends Application {
 		costField_inventory.setDisable(true);
 		costField_inventory.setText("0.00");
 		
+		/*A new TableView is created and is put into a ScrollPane (window) effectively resizing it and making it 
+		uneditable. The listener is added to the ObservableList that supports the table model and checks if its size is 
+		greater than 0; if it is, the ORDER button is set enabled so that the user can proceed to checkout.
+		*/
 		cart = new TableView<>();
 		cart.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		added = FXCollections.observableArrayList();
@@ -309,6 +367,7 @@ public class InventoryModule extends Application {
 		});
 		cart.setItems(added);
 		
+		//CART TABLE SETUP
 		TableColumn<FoodItem, String> name_cart = new TableColumn<>("Name");
 		name_cart.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
@@ -342,6 +401,8 @@ public class InventoryModule extends Application {
 		
 		cart.getColumns().addAll(name_cart, cost_cart, quantity_cart);
 		
+		/*ContextMenu for the add to cart table. It only allows deleting. When a FoodItem is removed from the cart 
+		the cost of the items in the cart is updated accordingly.*/
 		ctx_cart = new ContextMenu();
 		ctx_cart.setAutoHide(true);
 		
@@ -362,6 +423,7 @@ public class InventoryModule extends Application {
 			ctx_cart.show(cart, e.getScreenX(), e.getScreenY());
 		});
 		
+		//SETUP OF THE SCROLLPANE
 		window.setContent(cart);
 		window.setMinViewportHeight(cart.getHeight());
 		window.setFitToWidth(true);
@@ -373,6 +435,8 @@ public class InventoryModule extends Application {
 		window_hbox.setPadding(new Insets(30));
 		window_hbox.setAlignment(Pos.CENTER);
 			
+		/*The ADD TO CART button adds a currently existing item in the inventory table to the cart table. Upon adding the item,
+		the total cost of the items in the cart is updated.*/
 		choices_inventory = new ChoiceBox<>();
 		Button addToCart = new Button("Add To Cart");
 		addToCart.setOnAction(e -> {
@@ -396,6 +460,7 @@ public class InventoryModule extends Application {
 		divCost_inventory = new VBox();
 		divCost_inventory.getChildren().addAll(window_hbox);
 		
+		/*Scene graph setup (tab hierarchy)*/
 		box_inventory = new VBox();
 		box_inventory.setPadding(new Insets(10, 0, 0, 10));
 		box_inventory.setSpacing(5);
@@ -487,8 +552,15 @@ public class InventoryModule extends Application {
 	
 	//PRIVATE METHODS TO SUPPORT THE GUI
 	
-	//METHODS FOR CONTEXTMENU INVENTORY	
+	//METHODS FOR CONTEXTMENU INVENTORY
+	
+	/**Adds a row to the inventory table.
+	@param stage*/
 	private void addRowInventory(Stage stage) {
+		/*Creates a TextDialog for the inventory (requests all necessary parameters to create a FoodItem
+		The LimitedTextField objects get input
+		The DateBox is a series of ChoiceBox objects for day, month, and year
+		*/
 		TextDialog dialog_inventory = new TextDialog(stage);
 		dialog_inventory.setWindowTitle("Add Food Item");
 		dialog_inventory.setHeaderContent("Add a Food Item to the table.");
@@ -516,9 +588,13 @@ public class InventoryModule extends Application {
 		
 		dialog_inventory.addNumberChoiceBox(new Label("Supplier ID: "), 1, 4);
 		
+		/*The method .primeButtons() activates the buttons for validation; .display() shows the dialog and waits until a response.*/
 		dialog_inventory.primeButtons();
 		dialog_inventory.display();
 		
+		/**If SUBMIT is pressed, an ArrayList representing the responses from the TextDialog is taken, a new FoodItem is added
+		to the table, to the inventory, and to the inventory ChoiceBox.
+		*/
 		if (dialog_inventory.isSubmitPressed) {
 			ArrayList<HashMap<TextField, String>> resp = dialog_inventory.getResponses();
 			String nameP = resp.get(0).get(dialog_inventory.getFields().get(0));
@@ -551,6 +627,7 @@ public class InventoryModule extends Application {
 		}
 	}
 	
+	/**Deletes a Row in the inventory via a the selection model of the TableView.*/
 	public void deleteRowInventory() {
 		FoodItem removed = table_inventory.getSelectionModel().getSelectedItem();
 		if (list_inventory.size() > 0 && removed != null) {
@@ -562,6 +639,9 @@ public class InventoryModule extends Application {
 		}
 	}
 	
+	/**Orders all of the items in the cart table. Creates an Error alert if the expenses exceed the monthly budget.
+	Otherwise, a subtraction is made to the monthly budget, and quantities are increased.
+	*/
 	private void orderInventory() {
 		if (Double.parseDouble(costField_inventory.getText()) > inventory.getMonthBudget()) {
 			//Error Dialog
@@ -583,7 +663,7 @@ public class InventoryModule extends Application {
 				Alert checkout = new Alert(AlertType.INFORMATION);
 				checkout.setTitle("Checkout");
 				checkout.setHeaderText(null);
-				checkout.setContentText("Supplies have been contacted and your standardized requests are being processed. "
+				checkout.setContentText("Suppliers have been contacted and your standardized requests are being processed. "
 						+ "Please wait for the items to arrive.");
 				checkout.showAndWait();
 				inventory.order(Double.parseDouble(costField_inventory.getText()), added, list_inventory);
@@ -596,6 +676,8 @@ public class InventoryModule extends Application {
 		}
 	}
 	
+	/**Creates the ChoiceBox for the cart list. 
+	@param items - an array of FoodItem objects (taken from class Inventory)*/
 	private void buildChoiceList(FoodItem[] items) {
 		choiceList.removeAll(choiceList);
 		for (FoodItem item : items) {
