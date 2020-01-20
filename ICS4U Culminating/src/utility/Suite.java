@@ -1,5 +1,6 @@
 package utility;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -48,7 +49,8 @@ public class Suite {
 		}
 	}
 	
-	private final SimpleIntegerProperty suiteNumber, numberOfOccupants;
+	private IntegerProperty numberOfOccupants;
+	private final SimpleIntegerProperty suiteNumber;
 	private final Type suiteStyle;
 	private final SimpleStringProperty styleName;
 	private Caregiver presider;
@@ -70,6 +72,10 @@ public class Suite {
                 numberOfOccupants = new SimpleIntegerProperty();
                 numberOfOccupants.set(0);
 		presider = null;
+	}
+	
+	public IntegerProperty numberOfOccupantsProperty() {
+		return numberOfOccupants;
 	}
 	
 	/**Gets the identification number of the suite.
@@ -108,6 +114,23 @@ public class Suite {
 	 * @param presider - The Caregiver assigned to the suite.*/
 	public void setPresider(Caregiver presider) {
 		this.presider = presider;
+		presider.assigned = true;
+	}
+	
+	public boolean occupantExists(Senior senior) {
+		for (int i = 0; i < occupants.length; i++) {
+			if (occupants[i].getHID() == senior.getHID()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean presiderExists(Caregiver caregiver) {
+		if (this.getPresider() != null) {
+			return true;
+		}
+		return false;
 	}
 
 	/**Adds an occupant to the suite.*/
@@ -121,8 +144,11 @@ public class Suite {
 				occupants[i] = temp[i];
 			}
 			
-			occupants[occupants.length - 1] = new Senior(fname, lname, dob, age, roomID, hours, hID);
-                        numberOfOccupants.set(numberOfOccupants.get() + 1);
+			Senior senior = new Senior(fname, lname, dob, age, roomID, hours, hID);
+			occupants[occupants.length - 1] = senior;
+            numberOfOccupants.set(numberOfOccupants.get() + 1);
+            senior.inside = true;
+            
 			System.out.println("Senior added successfully.");
 			return true;
 			
@@ -177,10 +203,24 @@ public class Suite {
 		for (int i = 0; i < occupants.length; i++) {
 			if (occupants[i] != null && occupants[i].getHID() == home_id) {
 				occupants[i] = null;
-                                numberOfOccupants.set(numberOfOccupants.get() - 1);
+                numberOfOccupants.set(numberOfOccupants.get() - 1);
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	public boolean homeIDExists(long homeid) {
+		if (occupants.length > 0 && Senior.searchHomeID(homeid, occupants, 0, occupants.length) != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean empNumExists(long empNum) {
+		if (presider.getEmpNum() == empNum) {
+			return true;
+		} 
 		return false;
 	}
 }
