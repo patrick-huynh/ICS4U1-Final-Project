@@ -91,6 +91,30 @@ public class InventoryModule extends Application {
 		screen = Screen.getPrimary().getVisualBounds();
 		main = new TabPane();
 		
+		
+		home_inventory = new Button("Home");
+		home_inventory.setOnAction(actionEvent ->  {
+        	    stage.hide();
+	            MainMenu mainMenu = new MainMenu();
+            		try {
+				mainMenu.start(stage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        	});
+		home_suppliers = new Button("Home");
+		home_suppliers.setOnAction(actionEvent ->  {
+            		stage.hide();
+            		MainMenu mainMenu = new MainMenu();
+            		try {
+				mainMenu.start(stage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        	});
+		
 		//INVENTORY MODULE START
 		tab_inventory = new Tab("Inventory");
 		tab_inventory.setClosable(false);
@@ -187,7 +211,7 @@ public class InventoryModule extends Application {
 		
 		fileMenu_inventory.getItems().addAll(save_inventory, load_inventory, reload_inventory);
 		div_inventory = new HBox();
-		div_inventory.getChildren().addAll(fileMenu_inventory, filePrompt_inventory, budgetRegion, budget);
+		div_inventory.getChildren().addAll(fileMenu_inventory, home_inventory, filePrompt_inventory, budgetRegion, budget);
 		
 		//INVENTORY CONTEXTMENU SETUP
 		ctx_inventory = new ContextMenu();
@@ -446,7 +470,7 @@ public class InventoryModule extends Application {
 		box_supplier = new VBox();
 		box_supplier.setPadding(new Insets(10, 0, 0, 10));
 		box_supplier.setSpacing(5);
-		box_supplier.getChildren().add(table_supplier);
+		box_supplier.getChildren().addAll(home_suppliers, table_supplier);
 		
 		tab_supplier.setContent(box_supplier);
 		main.getTabs().addAll(tab_inventory, tab_supplier);
