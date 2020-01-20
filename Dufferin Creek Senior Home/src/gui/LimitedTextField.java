@@ -13,6 +13,7 @@ public class LimitedTextField extends TextField {
 	private IntegerProperty maxLength;
 	private BooleanProperty isNumeric;
 	
+	/**Creates a TextField with length properties.*/
 	public LimitedTextField() {
 		super();
 		maxLength = new SimpleIntegerProperty(255);
