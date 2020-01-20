@@ -40,6 +40,8 @@ public final class TransferProtocol {
     }
     
     /**Swaps the contents of two File objects using TransferProtocol.copy().
+     * @param source - The source file.
+     * @param target - The destination file.
      * @param path - The path to a temporary file in the project source folder.*/
     public static void swap(File source, File target, String path) {
     	try {
@@ -53,6 +55,10 @@ public final class TransferProtocol {
     	}
     }
     
+    /**Updates the Senior ChoiceBox tied to the suite module.
+     @param box - The linked ChoiceBox for the Senior tab.
+     @param senior - The Senior to add or remove from the ChoiceBox.
+     @param add - A boolean flag indicating whether to add or remove the passed-in Senior object.*/
     public static void updateChoicesSenior(ChoiceBox<Long> box, Senior senior, boolean add) {
     	if (add) {
     		box.getItems().add(senior.getHID());
@@ -61,10 +67,14 @@ public final class TransferProtocol {
     	}
     }
     
-    /**Saves the contents of ObservableList of type Senior to a designated source file.*/
+    /**Saves the contents of ObservableList of type Senior to a designated source file.
+     @param source - The source file.
+     @param target - The destination file.
+     @param list - The ObservableList backing the suite module in the Senior tab.*/
     public static void saveSenior(File source, File target, ObservableList<Senior> list) {
     	copy(source, target);
     	
+        /*Uses try-with resources to prevent resource leaks and to auto-close the writer.*/
     	try (BufferedWriter writer = new BufferedWriter(new FileWriter(source));
     			){
     		for (Senior senior : list) {
@@ -90,6 +100,10 @@ public final class TransferProtocol {
     	}
     }
     
+    /**Loads the seniors from a source file to a destination observable list. Updates a linked ChoiceBox.
+     @param source - The source file.
+     @param list - The destination list of type Senior.
+     @param box - The ChoiceBox to update.*/
     public static void loadSenior(File source, ObservableList<Senior> list, ChoiceBox<Long> box) {
     	box.getItems().removeAll(box.getItems());
     	list.removeAll(list);
@@ -98,6 +112,7 @@ public final class TransferProtocol {
     			){
     		String line;
     		
+                /*Instantiates a Senior object using a buffered read character stream.*/
     		while ((line = reader.readLine()) != null) {
     			Senior toAdd = new Senior(line, reader.readLine(), reader.readLine(), 
     					Integer.parseInt(reader.readLine()), Integer.parseInt(reader.readLine()), 
@@ -112,6 +127,12 @@ public final class TransferProtocol {
     	}
     }
     
+    /**Reloads the Senior table data by swapping the most recent copy with a version in the 
+     history one save point step behind the current version.
+     @param source - The source File.
+     @param target - The destination file
+     @param list - The list to modify of type of Senior.
+     @param box - The ChoiceBox to update upon reloading.*/
     public static void reloadSenior(File source, File target, ObservableList<Senior> list, ChoiceBox<Long> box) {
     	box.getItems().removeAll(box.getItems());
     	list.removeAll(list);
@@ -119,6 +140,10 @@ public final class TransferProtocol {
     	loadSenior(source, list, box);
     }
     
+    /**Updates the Caregiver ChoiceBox tied to the suite module.
+     @param box - The box to update.
+     @param caregiver - The caregiver to add or remove from the suite.
+     @param add - A boolean flag indicating whether the caregiver should be added or removed.*/
     public static void updateChoicesCaregiver(ChoiceBox<Long> box, Caregiver caregiver, boolean add) {
     	if (add) {
     		box.getItems().add(caregiver.getEmpNum());
@@ -127,6 +152,10 @@ public final class TransferProtocol {
     	}
     }
     
+     /**Saves the contents of ObservableList of type Caregiver to a designated source file.
+     @param source - The source file.
+     @param target - The destination file.
+     @param list - The ObservableList backing the suite module in the Caregiver tab.*/
     public static void saveCaregiver(File source, File target, ObservableList<Caregiver> list) {
     	copy(source, target);
     	
@@ -158,6 +187,10 @@ public final class TransferProtocol {
     	
     }
     
+     /**Loads the caregivers from a source file to a destination observable list. Updates a linked ChoiceBox.
+     @param source - The source file.
+     @param list - The destination list of type Caregiver.
+     @param box - The ChoiceBox to update.*/
     public static void loadCaregiver(File source, ObservableList<Caregiver> list, ChoiceBox<Long> box) {
     	box.getItems().removeAll(box.getItems());
     	list.removeAll(list);
@@ -181,6 +214,12 @@ public final class TransferProtocol {
     	}
     }
     
+     /**Reloads the Caregiver table data by swapping the most recent copy with a version in the 
+     history one save point step behind the current version.
+     @param source - The source File.
+     @param target - The destination file
+     @param list - The list to modify of type of Caregiver.
+     @param box - The ChoiceBox to update upon reloading.*/
     public static void reloadCaregiver(File source, File target, ObservableList<Caregiver> list, ChoiceBox<Long> box) {
     	box.getItems().removeAll(box.getItems());
     	list.removeAll(list);
@@ -188,6 +227,9 @@ public final class TransferProtocol {
     	loadCaregiver(source, list, box);
     }
     
+     /**Loads the suppliers from a source file to a destination observable list. Updates a linked ChoiceBox.
+     @param source - The source file.
+     @param list - The destination list of type Supplier.*/
     public static void loadSupplier(File source, ObservableList<Supplier> list) {
     	try (BufferedReader reader = new BufferedReader(new FileReader(source));
     			) {
@@ -206,6 +248,11 @@ public final class TransferProtocol {
     	}
     }
     
+        
+    /**Updates the FoodItem ChoiceBox tied to the inventory module.
+     @param box - The box to update.
+     @param item - The  item to add or remove from the inventory.
+     @param add - A boolean flag indicating whether the caregiver should be added or removed.*/
     public static void updateChoicesInventory(ChoiceBox<String> box, FoodItem item, boolean add) {
     	if (add) {
     		box.getItems().add(item.getName());
@@ -214,6 +261,10 @@ public final class TransferProtocol {
     	}
     }
     
+     /**Saves the contents of ObservableList of type FoodItem to a designated source file.
+     @param source - The source file.
+     @param target - The destination file.
+     @param list - The ObservableList backing the inventory module in the Inventory tab.*/
     public static void saveInventory(File source, File target, ObservableList<FoodItem> list) {
     	copy(source, target);
     	
@@ -257,6 +308,11 @@ public final class TransferProtocol {
     	}
     }
     
+     /**Loads the suppliers from a source file to a destination observable list. Updates a linked ChoiceBox.
+     @param source - The source file.
+     @param inventory - The inventory containing a FoodItem array to update parallel to the list.
+     @param list - The destination list of type FoodItem.
+     @param box - The ChoiceBox to update.*/
     public static void loadInventory(File source, Inventory inventory, ObservableList<FoodItem> list, 
     		ChoiceBox<String> box) {
     	
@@ -283,6 +339,13 @@ public final class TransferProtocol {
     	}
     }
     
+    /**Reloads the FoodItem table data by swapping the most recent copy with a version in the 
+     history one save point step behind the current version.
+     @param source - The source File.
+     @param target - The destination file
+     @param inventory - The parallel FoodItem array to the supporting ObservableList of the inventory table.
+     @param list - The list to modify of type of FoodItem.
+     @param box - The ChoiceBox to update upon reloading.*/
     public static void reloadInventory(File source, File target, Inventory inventory, ObservableList<FoodItem> list,
     		ChoiceBox<String> box) {
     	box.getItems().removeAll(box.getItems());
