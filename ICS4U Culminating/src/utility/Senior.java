@@ -10,6 +10,7 @@ public class Senior extends Person {
 
     private final SimpleLongProperty hID;
     private SimpleDoubleProperty hours, monthlyPayment;	
+    public boolean inside;
     
     /**
      * Constructor for Senior class.
@@ -44,6 +45,8 @@ public class Senior extends Person {
         } else {
             System.out.println("Room ID does not exist.");
         }
+        
+        inside = false;
     }
 
     /**
