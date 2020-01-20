@@ -103,6 +103,7 @@ public class InventoryModule extends Application {
 		table_inventory.setPlaceholder(new Label("Right-click to add an item or load data into the table."));
 		list_inventory = FXCollections.observableArrayList();
 		
+		//INVENTORY COLUMNS SETUP
 		TableColumn<FoodItem, String> name_inventory = new TableColumn<>("Item Name");
 		name_inventory.setCellValueFactory(new PropertyValueFactory<>("name"));
 		name_inventory.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -197,7 +198,7 @@ public class InventoryModule extends Application {
 		
 		deleteRow_inventory = new MenuItem("Delete Food Item");
 		deleteRow_inventory.setOnAction(e -> {
-			deleteRowInventory(stage);
+			deleteRowInventory();
 		});
 		
 		ctx_inventory.getItems().addAll(addRow_inventory, deleteRow_inventory);
@@ -260,8 +261,6 @@ public class InventoryModule extends Application {
 					}
 				});
 		
-		
-		
 		divSearch_inventory = new HBox();
 		divSearch_inventory.getChildren().addAll(search_inventory, filterBox_inventory);
 		divSearch_inventory.setAlignment(Pos.CENTER);
@@ -317,6 +316,8 @@ public class InventoryModule extends Application {
 		cart.getColumns().addAll(name_cart, cost_cart, quantity_cart);
 		
 		ctx_cart = new ContextMenu();
+		ctx_cart.setAutoHide(true);
+		
 		MenuItem deleteRow_cart = new MenuItem("Remove From Cart");
 		deleteRow_cart.setOnAction(e -> {
 			FoodItem removed = cart.getSelectionModel().getSelectedItem();
@@ -374,6 +375,8 @@ public class InventoryModule extends Application {
 		box_inventory.getChildren().addAll(div_inventory, table_inventory, divSearch_inventory, div_costButtons,
 				divCost_inventory);
 		tab_inventory.setContent(box_inventory);
+		
+		
 		
 		//SUPPLIER MODULE START
 		tab_supplier = new Tab("Supplier");
@@ -521,7 +524,7 @@ public class InventoryModule extends Application {
 		}
 	}
 	
-	public void deleteRowInventory(Stage stage) {
+	public void deleteRowInventory() {
 		FoodItem removed = table_inventory.getSelectionModel().getSelectedItem();
 		if (list_inventory.size() > 0 && removed != null) {
 			list_inventory.remove(removed);
@@ -533,8 +536,6 @@ public class InventoryModule extends Application {
 	}
 	
 	private void orderInventory() {
-		//Confirmation Dialog
-		
 		if (Double.parseDouble(costField_inventory.getText()) > inventory.getMonthBudget()) {
 			//Error Dialog
 			Alert error = new Alert(AlertType.ERROR);
