@@ -40,6 +40,9 @@ public abstract class Person {
         return fName.get();
     }
 
+    /**
+    * Sets first name
+    */
     public void setFName(String fName) {
         this.fName.set(fName);
     }
@@ -53,6 +56,10 @@ public abstract class Person {
         return lName.get();
     }
 
+    
+    /**
+    * Sets last name.
+    */
     public void setLName(String lName) {
         this.lName.set(lName);
     }
