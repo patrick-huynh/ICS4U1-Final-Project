@@ -22,24 +22,30 @@ public class Inventory {
 		orderTimestamp = LocalDateTime.now();
 	}
 	
-	public static void clear() {
-		
-	}
-	
 	/**Gets the size of the inventory.
 	 * @return int*/
 	public int getSize() {
 		return size;
 	}
 	
+	/**
+	*@return double - The monthly budget.
+	*/
 	public double getMonthBudget() {
 		return month_budget.get();
 	}
 	
+	/**
+	*@param budget - The monthly budget.
+	*/
 	public void setMonthBudget(double budget) {
 		month_budget.set(budget);
 	}
 	
+	/**
+	* @param item_name - The name to check if it exists.
+	*@return boolean - true if it does exist.
+	*/
 	private boolean itemExists(String item_name) {
 		for (int i = 0; i < size; i++) {
 			if (inventory[i].getName().equalsIgnoreCase(item_name)) {
@@ -73,6 +79,11 @@ public class Inventory {
 		}
 	}
 	
+	/**
+	* This method adds food items.
+	* @param item - The food item to add.
+	* @return boolean - true if successful.
+	*/
 	public boolean addItem(FoodItem item) {
 		if(!itemExists(item.getName())) {
 			FoodItem[] copy = inventory.clone();
@@ -146,6 +157,10 @@ public class Inventory {
 		return to_expire;
 	}
 	
+	/**
+	* Moves expired food items into the expired list.
+	* @return FoodItem[] - The expired food items list.
+	*/
 	public FoodItem[] expired() {
 		FoodItem[] expired = new FoodItem[0];
 		
@@ -208,6 +223,12 @@ public class Inventory {
 		return orderTimestamp;
 	}
 	
+	/**
+	*Orders food items.
+	*@param expenses - The expenses to order. 
+	*@param cartList - The cartList to be added to.
+	*@param tableList - The tableList to be added to.
+	*/
 	public void order(double expenses, List<FoodItem> cartList, List<FoodItem> tableList) {
 		month_budget.set(month_budget.get() - expenses);
 		orderTimestamp = LocalDateTime.now();
