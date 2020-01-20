@@ -81,14 +81,27 @@ public class Supplier {
 		return stdCost.get();
 	}
 	
+	/**
+	* Gets the stdCostProperty.
+	*@return DoubleProperty
+	*/
 	public DoubleProperty stdCostProperty() {
 		return stdCost;
 	}
 	
+	/**
+	* Gets flatFeeProperty.
+	* @return DoubleProperty
+	*/
 	public DoubleProperty flatFeeProperty() {
 		return flatFee;
 	}
 	
+	
+	/**
+	* Gets stdQtyProperty.
+	*@return IntegerProperty
+	*/
 	public IntegerProperty stdQtyProperty() {
 		return stdQty;
 	}
