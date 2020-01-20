@@ -65,6 +65,9 @@ public class FoodItem {
 		return expiryDate.get();
 	}
 	
+	/**
+	* Gets expiry date as a Date object
+	*/
 	public LocalDate getExpiryAsDate() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 		return LocalDate.parse(expiryDate.get(), formatter);
@@ -93,18 +96,31 @@ public class FoodItem {
 		return groupName.get();
 	}
 	
+	/**
+	* Sets the group name.
+	*/
 	public void setGroupName(String groupName) {
 		this.groupName.set(groupName);
 	}
 	
+	/**
+	* Sets the group name.
+	*/
 	public StringProperty groupNameProperty() {
 		return groupName;
 	}
 	
+	/**
+	* Get the batchAdd.
+	*/
 	public int getBatchAdd() {
 		return batchAdd.get();
 	}
 	
+	/**
+	* Gets the batchAdd.
+	*@return IntegerProperty
+	*/
 	public IntegerProperty batchAddProperty() {
 		return batchAdd;
 	}
@@ -148,11 +164,18 @@ public class FoodItem {
 	public IntegerProperty stockProperty() {
 		return stock;
 	}
-	
+	/**
+	* Gets the cost 
+	* @return double - The cost.
+	*/
 	public double getCost() {
 		return cost.get();
 	}
 	
+	/**
+	* Gets cost of property
+	* @return DoubleProperty
+	*/
 	public DoubleProperty costProperty() {
 		return cost;
 	}
