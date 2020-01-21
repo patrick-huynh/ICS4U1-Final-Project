@@ -246,7 +246,8 @@ public class InventoryModule extends Application {
 		
 		fileMenu_inventory.getItems().addAll(save_inventory, load_inventory, reload_inventory);
 		div_inventory = new HBox();
-		div_inventory.getChildren().addAll(fileMenu_inventory, home_inventory, filePrompt_inventory, budgetRegion, budget);
+		div_inventory.getChildren().addAll(fileMenu_inventory, home_inventory, 
+				filePrompt_inventory, budgetRegion, budget);
 		
 		//INVENTORY CONTEXTMENU SETUP
 		
@@ -538,7 +539,8 @@ public class InventoryModule extends Application {
 		box_supplier = new VBox();
 		box_supplier.setPadding(new Insets(10, 0, 0, 10));
 		box_supplier.setSpacing(5);
-		box_supplier.getChildren().addAll(home_suppliers, table_supplier);
+		box_supplier.getChildren().addAll(home_suppliers, 
+				table_supplier);
 		
 		tab_supplier.setContent(box_supplier);
 		main.getTabs().addAll(tab_inventory, tab_supplier);
@@ -686,6 +688,9 @@ public class InventoryModule extends Application {
 		table_inventory.setItems(choiceList);
 	}
 	
+	public ObservableList<FoodItem> copyInventory() {
+		return list_inventory;
+	}
 	
 	public static void main(String[] args) {
 		launch(args);
