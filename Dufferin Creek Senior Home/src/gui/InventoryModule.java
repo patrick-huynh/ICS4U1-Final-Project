@@ -546,7 +546,8 @@ public class InventoryModule extends Application {
 		main.getTabs().addAll(tab_inventory, tab_supplier);
 		
 		scene = new Scene(main, screen.getWidth(), screen.getHeight());
-		
+        scene.getStylesheets().add("Viper.css");
+
 		stage.setScene(scene);
 		stage.setTitle("Inventory Module");
 		stage.show();
