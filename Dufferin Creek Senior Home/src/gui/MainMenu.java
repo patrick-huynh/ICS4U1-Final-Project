@@ -94,7 +94,7 @@ public class MainMenu extends Application {
         
         suiteBtn.setOnAction(actionEvent ->  {
             primaryStage.hide();
-            SuiteModule suiteModule = new SuiteModule();
+            ModuleSuite suiteModule = new ModuleSuite();
             suiteModule.start(primaryStage);
         });
         
@@ -105,7 +105,7 @@ public class MainMenu extends Application {
         GridPane.setConstraints(inventoryBtn, 1, 1);
         inventoryBtn.setOnAction(actionEvent ->  {
             primaryStage.hide();
-            InventoryModule inventoryTable = new InventoryModule();
+            Module inventoryTable = new Module();
             inventoryTable.start(primaryStage);
         });
         
