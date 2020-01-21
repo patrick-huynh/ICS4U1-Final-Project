@@ -11,6 +11,7 @@ import java.text.NumberFormat;
 import java.text.DecimalFormat;
 
 import utility.Senior;
+import utility.Activity;
 import utility.Caregiver;
 import utility.Suite;
 import utility.TransferProtocol;
@@ -69,6 +70,11 @@ public class SuiteModule extends Application {
 	ContextMenu ctx_senior, ctx_caregiver;
 	MenuItem add_senior, add_caregiver, delete_senior, delete_caregiver;
 	
+	TableView<Activity> table_activities;
+	ObservableList<Activity> list_activities;
+	FilteredList<Activity> filtered_activities;
+	SortedList<Activity> sorted_activities;
+	
 	TableView<Senior> table_senior;
 	ObservableList<Senior> list_senior;
 	FilteredList<Senior> filtered_senior;
@@ -82,6 +88,7 @@ public class SuiteModule extends Application {
 	final Suite[] rooms = new Suite[12];
 	TableView<Suite> table_suite;
 	ObservableList<Suite> list_suite;
+	Button home_senior, home_caregiver, home_suite;
 	
 	ChoiceBox<Long> choices_senior, choices_caregiver;
 	
@@ -90,7 +97,40 @@ public class SuiteModule extends Application {
 	public void start(Stage stage) {
 		screen = Screen.getPrimary().getVisualBounds();
 		main = new TabPane();
-		
+		//Home Button created to each tab will lead to the MainMenu
+		home_senior = new Button("Home");
+		home_senior.setOnAction(actionEvent ->  {
+            stage.hide();
+            MainMenu mainMenu = new MainMenu();
+            try {
+				mainMenu.start(stage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        });
+		home_caregiver = new Button("Home");
+		home_caregiver.setOnAction(actionEvent ->  {
+            stage.hide();
+            MainMenu mainMenu = new MainMenu();
+            try {
+				mainMenu.start(stage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        });
+		home_suite = new Button("Home");
+		home_suite.setOnAction(actionEvent ->  {
+            stage.hide();
+            MainMenu mainMenu = new MainMenu();
+            try {
+				mainMenu.start(stage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        });
 		//SENIOR MODULE START
 		tab_senior = new Tab("Senior");
 		tab_senior.setClosable(false);
@@ -193,7 +233,7 @@ public class SuiteModule extends Application {
 		file_senior.getItems().addAll(save_senior, load_senior, reload_senior);
 		
 		div_senior = new HBox();
-		div_senior.getChildren().addAll(file_senior, filePrompt_senior);
+		div_senior.getChildren().addAll(file_senior, filePrompt_senior, home_senior);
 		
 		
 		//SENIOR CONTEXTMENU SETUP
@@ -247,7 +287,7 @@ public class SuiteModule extends Application {
 		
 		divSearch_senior = new HBox();
 		divSearch_senior.getChildren().add(field_senior);
-		divSearch_senior.setAlignment(Pos.CENTER);
+		divSearch_senior.setAlignment(Pos.CENTER_LEFT);
 		
 		//SENIOR COST BOX
 		choices_senior = new ChoiceBox<>();
@@ -261,14 +301,50 @@ public class SuiteModule extends Application {
         	}
 
         });
+
+		//ACTIVITIES TABLE/GENERATOR
+		table_activities = new TableView<>();
+		table_activities.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		list_activities = FXCollections.observableArrayList();
+		list_activities.addAll(Activity.randomGen(8));
+		
+		Label activity_label = new Label("Activities");
+		activity_label.setId("activityLabel");
+		
+		TableColumn<Activity, String> name_activity = new TableColumn<>("Name");
+		name_activity.setCellValueFactory(new PropertyValueFactory<>("name"));
+		name_activity.setCellFactory(TextFieldTableCell.forTableColumn());
+		TableColumn<Activity, String> startTime_activity = new TableColumn<>("Start Time");
+		startTime_activity.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+		startTime_activity.setCellFactory(TextFieldTableCell.forTableColumn());
+		TableColumn<Activity, String> endTime_activity = new TableColumn<>("End Time");
+		endTime_activity.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+		endTime_activity.setCellFactory(TextFieldTableCell.forTableColumn());
+		TableColumn<Activity, Boolean> type_activity = new TableColumn<>("Outdoor");
+		type_activity.setCellValueFactory(cellData -> cellData.getValue().outdoorProperty());
+		
+		table_activities.getColumns().addAll(name_activity, startTime_activity, endTime_activity, type_activity);
+		table_activities.setItems(list_activities);
         
         HBox divCost_senior = new HBox();
         divCost_senior.getChildren().addAll(choices_senior, compute_senior, costField_senior);
 		
+
+		VBox activityGenerator = new VBox();
+		activityGenerator.setPrefWidth(1000);
+		activityGenerator.getChildren().addAll(activity_label, table_activities);
+		VBox box_divSearchCost = new VBox();
+		box_divSearchCost.setPrefWidth(400);
+		box_divSearchCost.setSpacing(15);
+		box_divSearchCost.getChildren().addAll(divSearch_senior, divCost_senior);
+
+		HBox box = new HBox(25);
+		box.getChildren().addAll(box_divSearchCost, activityGenerator);
+		
 		box_senior = new VBox();
 		box_senior.setSpacing(5);
 		box_senior.setPadding(new Insets(10, 0, 0, 10));
-		box_senior.getChildren().addAll(div_senior, table_senior, divSearch_senior, divCost_senior);
+		box_senior.getChildren().addAll(div_senior, table_senior, box);
 		tab_senior.setContent(box_senior);
 		main.getTabs().add(tab_senior);
 		
@@ -398,7 +474,7 @@ public class SuiteModule extends Application {
         file_caregiver.getItems().addAll(save_caregiver, load_caregiver, reload_caregiver);		
 		
 		div_caregiver = new HBox();
-		div_caregiver.getChildren().addAll(file_caregiver, filePrompt_caregiver);
+		div_caregiver.getChildren().addAll(file_caregiver, filePrompt_caregiver, home_caregiver);
 		
 		//CAREGIVER CONTEXTMENU SETUP
 		ctx_caregiver = new ContextMenu();
@@ -561,7 +637,7 @@ public class SuiteModule extends Application {
 		table_options.getItems().addAll(save_suite, option_add, option_remove);
 		
 		div_suite = new HBox();
-		div_suite.getChildren().addAll(table_options, filePrompt_suite);
+		div_suite.getChildren().addAll(table_options, home_suite, filePrompt_suite);
 		
 		box_suite = new VBox();
 		box_suite.setSpacing(5);
@@ -574,6 +650,8 @@ public class SuiteModule extends Application {
 		main.getTabs().add(tab_suite);
 		
 		scene = new Scene(main, screen.getWidth(), screen.getHeight());
+        scene.getStylesheets().add("Viper.css");
+
 		stage.setTitle("Suite Module");
 		stage.setScene(scene);
 		stage.show();
