@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -52,6 +53,7 @@ import javafx.collections.transformation.SortedList;
 public class SuiteModule extends Application {
 
 	final NumberFormat nf = new DecimalFormat("####");
+	Random rand = new Random();
 	
 	Rectangle2D screen;
 	Scene scene;
@@ -62,7 +64,7 @@ public class SuiteModule extends Application {
 	
 	MenuButton file_senior, file_caregiver, table_options;
 	MenuItem save_senior, load_senior, reload_senior, save_caregiver, load_caregiver, reload_caregiver,
-	option_add, option_remove;
+	save_suite, load_suite, option_add, option_remove;
     Label filePrompt_senior, filePrompt_caregiver, filePrompt_suite;
 	ContextMenu ctx_senior, ctx_caregiver;
 	MenuItem add_senior, add_caregiver, delete_senior, delete_caregiver;
@@ -253,7 +255,7 @@ public class SuiteModule extends Application {
         costField_senior.setDisable(true);
         Button compute_senior = new Button("Compute Monthly Cost");
         compute_senior.setOnAction(e -> {
-        	if (choices_senior.getValue() != null) {
+        	if (choices_senior.getValue() != null && choices_senior.getItems().indexOf(choices_senior.getValue()) >= 0) {
             	Senior ofInterest = list_senior.get(choices_senior.getItems().indexOf(choices_senior.getValue()));
             	costField_senior.setText(Double.toString(ofInterest.getMonthlyPayment()));
         	}
@@ -405,13 +407,11 @@ public class SuiteModule extends Application {
 		add_caregiver = new MenuItem("Add Caregiver");
 		add_caregiver.setOnAction(e -> {
 			addRowCaregiver(stage);
-			filePrompt_caregiver.setText(" Caregiver added.");
 		});
 		
 		delete_caregiver = new MenuItem("Delete Caregiver");
 		delete_caregiver.setOnAction(e -> {
 			deleteRowCaregiver();
-			filePrompt_caregiver.setText(" Caregiver deleted.");
 		});
 		
 		ctx_caregiver.getItems().addAll(add_caregiver, delete_caregiver);
@@ -461,7 +461,7 @@ public class SuiteModule extends Application {
 		
 		TextField costField_caregiver = new TextField();
 		costField_caregiver.setDisable(true);
-		Button compute_caregiver = new Button("Compute Yearly Salary");
+		Button compute_caregiver = new Button("Compute");
 		compute_caregiver.setOnAction(e -> {
 			if (choices_caregiver.getValue() != null) {
 				Caregiver ofInterest = list_caregiver.get(choices_caregiver.getItems().indexOf(
@@ -531,13 +531,23 @@ public class SuiteModule extends Application {
 				}
 			}
 		});
+		
+		TableColumn<Suite, Boolean> presiderColumn = new TableColumn<>("Room Has A Presider");
+		presiderColumn.setCellValueFactory(cellData -> cellData.getValue().presiderIsInProperty());
 
-		table_suite.getColumns().addAll(number_suite, style_suite, numOccupants);
+		table_suite.getColumns().addAll(number_suite, style_suite, numOccupants, presiderColumn);
 		table_suite.setItems(list_suite);
 		
 		//SUITE TABLE OPTIONS
 		filePrompt_suite = new Label();
 		table_options = new MenuButton("Table Options");
+		
+		save_suite = new MenuItem("Save");
+		save_suite.setOnAction(e -> {
+			TransferProtocol.saveSuite(new File("recent_suite.txt"), new File("previous_caregiver.txt"), rooms);
+			filePrompt_suite.setText(" Suite data saved.");
+		});
+		
 		option_add = new MenuItem("Add Person");
 		option_add.setOnAction(e -> {
 			addRowSuite(stage, true);
@@ -548,7 +558,7 @@ public class SuiteModule extends Application {
 			deleteRowSuite(stage);
 		});
 		
-		table_options.getItems().addAll(option_add, option_remove);
+		table_options.getItems().addAll(save_suite, option_add, option_remove);
 		
 		div_suite = new HBox();
 		div_suite.getChildren().addAll(table_options, filePrompt_suite);
@@ -797,21 +807,20 @@ public class SuiteModule extends Application {
     		
     		if (seniorSuite_dialog.isSubmitPressed && list_senior.size() > 0) {
     			ArrayList<HashMap<TextField, String>> resp = seniorSuite_dialog.getResponses();
-    			int roomNum = Integer.parseInt(resp.get(0).get(seniorSuite_dialog.getFields().get(0))) - 1;
+    			int roomNum = Integer.parseInt(resp.get(0).get(seniorSuite_dialog.getFields().get(0)));
     			long homeid = Long.parseLong(resp.get(1).get(seniorSuite_dialog.getFields().get(1)));
     			
     			Senior searched = Senior.searchHomeID(homeid, list_senior, 0, list_senior.size());
     			
-    			if (searched != null && roomNum >= 0 && roomNum < 12 && !rooms[roomNum].occupantExists(searched)
-    					&& !searched.inside) {
+    			if (searched != null && roomNum > 0 && roomNum <= 12 && !rooms[roomNum - 1].occupantExists(searched)
+    					&& !searched.isInside()) {
     				rooms[roomNum - 1].addOccupant(searched);
     				filePrompt_suite.setText(" Senior added to the complex.");
     			} else {
-    				filePrompt_suite.setText(" Senior not found. Please add the Senior in the Senior tab first.");
+    				filePrompt_suite.setText(" Senior not found or senior is already in this suite or another suite.");
     			}
     		} else {
-    			filePrompt_suite.setText(" No Seniors in the table, room number does not exist, or occupant "
-    					+ "is already in this suite.");
+    			filePrompt_suite.setText(" No matching senior, room number, or home ID.");
     		}
     	} else {
     		TextDialog caregiver_dialog = new TextDialog(stage);
@@ -826,7 +835,7 @@ public class SuiteModule extends Application {
     		LimitedTextField empNum_caregiver = new LimitedTextField();
     		empNum_caregiver.setAsNumericOnly();
     		empNum_caregiver.setMaxLength(4);
-    		caregiver_dialog.addOpenedPair(new Label("Home ID: "), true, empNum_caregiver, false);
+    		caregiver_dialog.addOpenedPair(new Label("Employee Number: "), true, empNum_caregiver, false);
     		
     		caregiver_dialog.addDateBox(new Label("Date Assigned: "));
     		caregiver_dialog.getDateBox().setYearConstraints(2020, 2035);
@@ -836,20 +845,21 @@ public class SuiteModule extends Application {
     		
     		if (caregiver_dialog.isSubmitPressed && list_caregiver.size() > 0) {
     			ArrayList<HashMap<TextField, String>> resp = caregiver_dialog.getResponses();
-    			int roomNum = Integer.parseInt(resp.get(0).get(caregiver_dialog.getFields().get(0))) - 1;
+    			int roomNum = Integer.parseInt(resp.get(0).get(caregiver_dialog.getFields().get(0)));
     			long empnum = Long.parseLong(resp.get(1).get(caregiver_dialog.getFields().get(1)));
     			
     			Caregiver searched = Caregiver.searchEmpNum(empnum, list_caregiver, 0, list_caregiver.size());
     			
-    			if (searched != null && roomNum >= 0 && roomNum < 12 && !rooms[roomNum].presiderExists(searched)
-    					&& !searched.assigned) {
-    				rooms[roomNum].setPresider(searched);
+    			if (searched != null && roomNum > 0 && roomNum <= 12 && !rooms[roomNum - 1].presiderExists(searched)
+    					&& !searched.isAssigned()) {
+    				rooms[roomNum - 1].addPresider(searched);
     				filePrompt_suite.setText(" Caregiver assigned.");
                 } else {
-                	filePrompt_suite.setText(" Caregiver not found. Please add the Caregiver in the Caregiver tab first.");
+                	filePrompt_suite.setText(" Caregiver not found or caregiver is already assigned to this suite or "
+                			+ "another suite.");
                 }
     		} else {
-    			filePrompt_suite.setText(" No Caregivers in the table, room number does not exist, or presider exists.");
+    			filePrompt_suite.setText(" No matching caregiver, room number, or employee number.");
     		}
     	}
     }
@@ -863,7 +873,7 @@ public class SuiteModule extends Application {
     	
     	ChoiceDialog<String> choice_dialog = new ChoiceDialog<>("Senior", choices);
     	choice_dialog.setTitle("Remove Person");
-    	choice_dialog.setHeaderText("Remove a person to the Suite.");
+    	choice_dialog.setHeaderText("Remove a person from the Suite.");
     	choice_dialog.setContentText("Choose type: ");
     	
     	Optional<String> result = choice_dialog.showAndWait();
@@ -895,12 +905,13 @@ public class SuiteModule extends Application {
     		
     		if (deleteSenior.isSubmitPressed && list_senior.size() > 0) {
     			ArrayList<HashMap<TextField, String>> resp = deleteSenior.getResponses();
-    			int roomNum = Integer.parseInt(resp.get(0).get(deleteSenior.getFields().get(0))) - 1;
+    			int roomNum = Integer.parseInt(resp.get(0).get(deleteSenior.getFields().get(0)));
     			long homeid = Long.parseLong(resp.get(1).get(deleteSenior.getFields().get(1)));
     			
     			Senior searched = Senior.searchHomeID(homeid, list_senior, 0, list_senior.size());
     			
-    			if (searched != null && roomNum >= 0 && roomNum < 12) {
+    			if (searched != null && roomNum >= 0 && roomNum < 12 && rooms[roomNum - 1].occupantExists(searched)
+    					&& searched.isInside()) {
     				rooms[roomNum - 1].removeOccupant(searched.getHID());
     				filePrompt_suite.setText(" Senior removed from the complex.");
     			} else {
@@ -913,7 +924,7 @@ public class SuiteModule extends Application {
     		
     	} else {
     		TextDialog caregiver_dialog = new TextDialog(stage);
-    		caregiver_dialog.setHeaderContent("Remove a Caregiver to the Suite.");
+    		caregiver_dialog.setHeaderContent("Remove a Caregiver from the Suite.");
     		caregiver_dialog.setWindowTitle("Delete Caregiver");
     		
     		LimitedTextField roomNumber_caregiver = new LimitedTextField();
@@ -924,7 +935,7 @@ public class SuiteModule extends Application {
     		LimitedTextField empNum_caregiver = new LimitedTextField();
     		empNum_caregiver.setAsNumericOnly();
     		empNum_caregiver.setMaxLength(4);
-    		caregiver_dialog.addOpenedPair(new Label("Home ID: "), true, empNum_caregiver, false);
+    		caregiver_dialog.addOpenedPair(new Label("Employee Number: "), true, empNum_caregiver, false);
     		
     		caregiver_dialog.addDateBox(new Label("Date Removed: "));
     		caregiver_dialog.getDateBox().setYearConstraints(2020, 2035);
@@ -934,16 +945,17 @@ public class SuiteModule extends Application {
     		
     		if (caregiver_dialog.isSubmitPressed && list_caregiver.size() > 0) {
     			ArrayList<HashMap<TextField, String>> resp = caregiver_dialog.getResponses();
-    			int roomNum = Integer.parseInt(resp.get(0).get(caregiver_dialog.getFields().get(0))) - 1;
+    			int roomNum = Integer.parseInt(resp.get(0).get(caregiver_dialog.getFields().get(0)));
     			long empnum = Long.parseLong(resp.get(1).get(caregiver_dialog.getFields().get(1)));
     			
     			Caregiver searched = Caregiver.searchEmpNum(empnum, list_caregiver, 0, list_caregiver.size());
     			
-    			if (searched != null && roomNum >= 0 && roomNum < 12) {
-    				rooms[roomNum].setPresider(null);
+    			if (searched != null && roomNum > 0 && roomNum <= 12 && rooms[roomNum - 1].presiderExists(searched)
+    					&& searched.isAssigned()) {
+    				rooms[roomNum - 1].removePresider();
     				filePrompt_suite.setText(" Caregiver removed from the complex.");
                 } else {
-                	filePrompt_suite.setText(" Caregiver not found. Please add the Caregiver in the Caregiver tab first.");
+                	filePrompt_suite.setText(" Caregiver not found or caregiver is not assigned to this suite.");
                 }
     		} else {
     			filePrompt_suite.setText(" No Caregivers in the table, room number does not exist, or presider "
