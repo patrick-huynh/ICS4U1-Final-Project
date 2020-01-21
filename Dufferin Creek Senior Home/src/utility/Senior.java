@@ -7,10 +7,10 @@ import java.util.List;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Senior extends Person {
-
+	
     private final SimpleLongProperty hID;
     private SimpleDoubleProperty hours, monthlyPayment;	
-    public boolean inside;
+    private boolean inside;
     
     /**
      * Constructor for Senior class.
@@ -56,6 +56,18 @@ public class Senior extends Person {
         return hID.get();
     }
     
+    /**Gets the value of the inside property, which indicates whether or not a Senior is already in a Suite.
+     * @return boolean*/
+    public boolean isInside() {
+    	return inside;
+    }
+    
+    /**Sets the value of the inside property
+     * @param inside - The resident status of the Senior in the complex.*/
+    public void setInside(boolean inside) {
+    	this.inside = inside;
+    }
+    
     /**
      * @param hID - The ID of the Senior.
      */
@@ -70,6 +82,8 @@ public class Senior extends Person {
         return hours.get();
     }
     
+    /**Gets the monthly payment due by the Senior.
+     * @return double*/
     public double getMonthlyPayment() {
     	return monthlyPayment.get();
     }
@@ -99,7 +113,7 @@ public class Senior extends Person {
     
     /**
     *@param s - The list of seniors.
-    * Sorts seniors by homeID.
+    * Sorts seniors by homeID using a List.
     */
     public static void sortHomeID(List<Senior> s) {
     	for (int i = 0; i < s.size(); i++) {
@@ -141,14 +155,14 @@ public class Senior extends Person {
         
     }
     
-   /**
-    * Searches for a senior by their homeID.
-    * @param ID - The home ID you want to search for.
-    * @param s - The array of seniors.
-    * @param l - The farthest left of the senior array (usually 0).
-    * @param r - The farthest right of the senior array (usually length of array).
-    * @return Senior - The senior with the corresponding home ID.
-    */
+    /**
+     * Searches for a senior by their homeID.
+     * @param ID - The home ID you want to search for.
+     * @param s - The list of seniors.
+     * @param l - The farthest left of the senior array (usually 0).
+     * @param r - The farthest right of the senior array (usually length of array).
+     * @return Senior - The senior with the corresponding home ID.
+     */
     public static Senior searchHomeID(long ID, List<Senior> s, int l, int r) {
     	Senior.sortHomeID(s);
     	if (r >= l) {
@@ -172,6 +186,7 @@ public class Senior extends Person {
     public String toString() {
         return super.toString() + "\n"
                 + "Home ID Number: " + getHID() + "\n"
-                + "Hours Cared: " + getHours();
+                + "Hours Cared: " + getHours()
+        		+ "Monthly Payment: " + getMonthlyPayment();
     }
 }
