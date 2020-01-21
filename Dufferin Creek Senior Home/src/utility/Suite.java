@@ -1,6 +1,8 @@
 package utility;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -12,8 +14,8 @@ public class Suite {
 	 * SINGLE_KITCHEN: One bedroom with a kitchen
 	 * DOUBLE_KITCHEN: Two bedrooms with a kitchen*/
 	public enum Type {
-		SINGLE(2, "SINGLE", 1500, 15), DOUBLE(4, "DOUBLE", 3000, 30), SINGLE_KITCHEN(3, "SINGLE KITCHEN", 3000, 30), 
-		DOUBLE_KITCHEN(5, "DOUBLE KITCHEN", 5000, 50);
+		SINGLE(2, "SINGLE", 1500, 7.50), DOUBLE(4, "DOUBLE", 3000, 15.00), SINGLE_KITCHEN(3, "SINGLE KITCHEN", 3000, 25.00), 
+		DOUBLE_KITCHEN(5, "DOUBLE KITCHEN", 5000, 30.00);
 		
 		private int maximum;
 		private String typeName;
@@ -39,16 +41,19 @@ public class Suite {
 		public String getTypeName() {
 			return typeName;
 		}
-		/** Gets monthly cost.*/
+		
+		/**Gets the monthly cost of this Suite based on Type.*/
 		public double getMonthlyCost() {
 			return monthlyCost;
 		}
-		/** Gets feeMulitple */
+		
+		/**Gets the fee multiple (head count hourly) for the Suite.*/
 		public double getFeeMultiple() {
 			return feeMultiple;
 		}
 	}
 	
+	private BooleanProperty presiderIsIn;
 	private IntegerProperty numberOfOccupants;
 	private final SimpleIntegerProperty suiteNumber;
 	private final Type suiteStyle;
@@ -72,14 +77,21 @@ public class Suite {
                 numberOfOccupants = new SimpleIntegerProperty();
                 numberOfOccupants.set(0);
 		presider = null;
+		
+		presiderIsIn = new SimpleBooleanProperty();
+		presiderIsIn.set(false);
 	}
 	
-	/**
-	* Gets numberOfOccupants
-	*@return IntegerProperty
-	*/
+	/**Returns the integer property for the number of occupants in this Suite.
+	 * @return IntegerProperty*/
 	public IntegerProperty numberOfOccupantsProperty() {
 		return numberOfOccupants;
+	}
+	
+	/**Gets the number of occupants currently in the Suite.
+	 * @return int*/
+	public int getNumberOfOccupants() {
+		return numberOfOccupants.get();
 	}
 	
 	/**Gets the identification number of the suite.
@@ -100,18 +112,29 @@ public class Suite {
 		return suiteStyle;
 	}
 	
-	/**
-	* Gets the style name.
-	*@return String - The style name.
-	*/
+	/**Gets the Type of this Suite based on its style name.
+	 * @param name - The name of the style.*/
+	public static Type getTypeByName(String name) {
+		if (name.equals("SINGLE")) {
+			return Type.SINGLE;
+		} else if (name.equals("DOUBLE")) {
+			return Type.DOUBLE;
+		} else if (name.equals("SINGLE KITCHEN")) {
+			return Type.SINGLE_KITCHEN;
+		} else if (name.equals("DOUBLE KITCHEN")) {
+			return Type.DOUBLE_KITCHEN;
+		}
+		return null;
+	}
+	
+	/**Gets the style name.
+	 * @return String*/
 	public String getStyleName() {
 		return styleName.get();
 	}
 	
-	/**
-	* Sets the style name
-	* @param styleName - The style name.
-	*/
+	/**Sets the style name.
+	 * @param styleName - The style name of the Suite.*/
 	public void setStyleName(String styleName) {
 		this.styleName.set(styleName);
 	}
@@ -122,18 +145,46 @@ public class Suite {
 		return presider;
 	}
 	
-	/**Sets the presiding Caregiver of the suite.
-	 * @param presider - The Caregiver assigned to the suite.*/
+	/**Sets the presider of this Suite (for null carryover) */
 	public void setPresider(Caregiver presider) {
 		this.presider = presider;
-		presider.assigned = true;
 	}
 	
-	/**
-	* Checks if occupant exists
-	* @param senior - The senior.
-	* @return boolean - Returns true if an occupant exists.
-	*/
+	/**Sets the presiding Caregiver of the suite, and sets the Caregiver to status assigned and the suite to 
+	 * covered (non-null instances).
+	 * @param presider - The Caregiver assigned to the suite.*/
+	public void addPresider(Caregiver presider) {
+		this.presider = presider;
+		this.presider.setAssigned(true);
+		presiderIsIn.set(true);
+	}
+	
+	/**Removes the presiding Caregiver from this Suite.*/
+	public void removePresider() {
+		this.presider.setAssigned(false);
+		this.presider = null;
+		presiderIsIn.set(false);
+	}
+	
+	/**Determines whether this Suite has a presider or not.
+	 * @return boolean*/
+	public boolean getPresiderIsIn() {
+		return presiderIsIn.get();
+	}
+	
+	/**Sets whether a presider is covering this Suite or not.*/
+	public void setPresiderIsIn(boolean presiderIsIn) {
+		this.presiderIsIn.set(presiderIsIn);
+	}
+	
+	/**Returns the value of the boolean property for presider resident state.
+	 * @return BooleanProperty*/
+	public BooleanProperty presiderIsInProperty() {
+		return presiderIsIn;
+	}
+	
+	/**Checks whether the Senior object exists in the Suite.
+	 * @return boolean*/
 	public boolean occupantExists(Senior senior) {
 		for (int i = 0; i < occupants.length; i++) {
 			if (occupants[i].getHID() == senior.getHID()) {
@@ -143,9 +194,8 @@ public class Suite {
 		return false;
 	}
 	
-	/**
-	* The presider
-	*/
+	/**Checks whether a Caregiver is assigned to this room or not.
+	 * @return boolean*/
 	public boolean presiderExists(Caregiver caregiver) {
 		if (this.getPresider() != null) {
 			return true;
@@ -167,9 +217,9 @@ public class Suite {
 			Senior senior = new Senior(fname, lname, dob, age, roomID, hours, hID);
 			occupants[occupants.length - 1] = senior;
             numberOfOccupants.set(numberOfOccupants.get() + 1);
-            senior.inside = true;
+            senior.setInside(true);
             
-			System.out.println("Senior added successfully.");
+			System.out.println("Senior add attempted.");
 			return true;
 			
 		} else { 
@@ -177,6 +227,7 @@ public class Suite {
 			return false;
 		}
 	}
+	
 	/**
 	* Adds an occupant.
 	* @param senior - The senior to add.
@@ -193,7 +244,8 @@ public class Suite {
 			
 			occupants[occupants.length - 1] = senior;
                         numberOfOccupants.set(numberOfOccupants.get() + 1);
-			System.out.println("Senior added successfully.");
+			System.out.println("Senior add attempted.");
+			senior.setInside(true);
 			return true;
 		} else {
 			System.out.println("Senior add failed. This suite has reached maximum occupants.");
@@ -234,6 +286,7 @@ public class Suite {
 	public boolean removeOccupant(long home_id) {
 		for (int i = 0; i < occupants.length; i++) {
 			if (occupants[i] != null && occupants[i].getHID() == home_id) {
+				occupants[i].setInside(false);
 				occupants[i] = null;
                 numberOfOccupants.set(numberOfOccupants.get() - 1);
 				return true;
@@ -253,15 +306,9 @@ public class Suite {
 		}
 		return false;
 	}
-	/**
-	* Checks if a caregiver exists in the suite.
-	* @param empNum - The employee to check.
-	* @return boolean - true if a caregiver exists.
-	*/
-	public boolean empNumExists(long empNum) {
-		if (presider.getEmpNum() == empNum) {
-			return true;
-		} 
-		return false;
+	
+	/**Gets the occupants list for this Suite.*/
+	public Senior[] getOccupants() {
+		return occupants;
 	}
 }
