@@ -8,13 +8,13 @@ public class Caregiver extends Person {
 
     private final SimpleLongProperty empNum;
     private final SimpleDoubleProperty wage, hours, weekly_pay, monthly_pay, annual_pay;
-    public boolean assigned;
+    private boolean assigned;
     
     /**
-     * Constructor for Caregiver class.
+     * Constructor for class Caregiver.
      * @param empNum - The employee number.
-     * @param hours - The number of hours worked.
-     * @param wage - The wage for the caregiver.
+	 * @param hours - The hours worked per week.
+	 * @param wage - The hourly wage.	
      */
     public Caregiver(String fname, String lname, String DOB, int age, int roomID,
             long empNum, double hours, double wage) {
@@ -50,6 +50,18 @@ public class Caregiver extends Person {
         this.empNum.set(empNum.longValue());
     }
     
+    /**Checks whether or not a Caregiver is already assigned to a Suite.
+     * @return boolean*/
+    public boolean isAssigned() {
+    	return assigned;
+    }
+    
+    /**Sets the value of the assigned property.
+     * @param assigned - The resident state of the Caregiver in the complex.*/
+    public void setAssigned(boolean assigned) {
+    	this.assigned = assigned;
+    }
+    
     /**Gets the number of weekly hours worked by this Caregiver.
      * @return double*/
     public double getHours() {
@@ -81,43 +93,34 @@ public class Caregiver extends Person {
     	weekly_pay.set(wage.get()*hours.get()*0.735);
     }
     
-    /**
-     * @return double - The weekly pay.
-     */
+    /**@return double - The weekly pay*/
     public double getWeeklyPay() {
     	return weekly_pay.get();
     }
     
-    /**
-     * This method calculates the monthly pay for the Caregiver.
-     */
+    /**Computes the monthly pay for the Caregiver.*/
     public void calculateMonthlyPay() {
     	monthly_pay.set(wage.get()*hours.get()*0.735*4.34);
     }
     
-    /**
-     * @return double - The monthly pay.
-     */
+    /**@return double - The monthly pay*/
     public double getMonthlyPay() {
     	return monthly_pay.get();
     }
     
-    /**
-     * This method calculates the annual pay for the Caregiver.
-     */
+    /**Computes the annual pay for the Caregiver.*/
     public void calculateAnnualPay() {
     	annual_pay.set(wage.get()*hours.get()*0.735*4.34*12.0);
     }
     
-    /**
-     * @return double - The annual pay.
-     */
+    /**@return double - The annual pay.*/
     public double getAnnualPay() {
     	return annual_pay.get();
     }
     
+    
     /**
-     * Sorts the caregiver by EmpNum.
+     * Sorts the caregiver by employee number.
      * @param c - The list of caregivers to sort.
      */
     public static void sortEmpNum(List<Caregiver> c){
