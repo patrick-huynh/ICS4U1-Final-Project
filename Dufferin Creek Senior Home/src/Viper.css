@@ -1,0 +1,51 @@
+.root{
+    -fx-background-color: #383838;
+}
+.label{
+    -fx-text-fill: white;
+}
+.button{
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 4;
+}
+.button-blue{
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: #383838;
+    -fx-background-radius: 25px;
+    -fx-font-size: 24;
+    -fx-font-family: 'serif';
+}
+.tab:selected{
+	-fx-background-color: #383838;
+	-fx-text-base-color: white;
+}
+.table-view .column-header-background .label, .menu-item .label, .menu-button .label, .choice-box .label{
+	-fx-text-fill: black;
+}
+.logout{
+	-fx-background-color: #AB4642;
+}
+.logout:hover{
+	-fx-background-color: #D6615C;
+}
+.button-blue:hover{
+    -fx-background-color: #36cf3c;
+    
+}
+#bold-label{
+    -fx-font-weight: bold;
+}
+#incorrect{
+    -fx-text-fill: red;
+    
+}
+.text-field:disabled, .text-field:readonly{
+	/*-fx-text-: white;*/
+	-fx-font-weight: bold;
+	-fx-opacity: 1.0;
+}
+#activityLabel{
+	-fx-font-size: 24;
+	-fx-font-weight: bold;
+}
