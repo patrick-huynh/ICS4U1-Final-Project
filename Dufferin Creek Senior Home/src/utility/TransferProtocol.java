@@ -100,6 +100,8 @@ public final class TransferProtocol {
     	}
     }
     
+    
+    
     /**Loads the seniors from a source file to a destination observable list. Updates a linked ChoiceBox.
      @param source - The source file.
      @param list - The destination list of type Senior.
@@ -177,6 +179,7 @@ public final class TransferProtocol {
     			writer.write(Double.toString(caregiver.getHours()));
     			writer.write(System.getProperty("line.separator"));
     			writer.write(Double.toString(caregiver.getWage()));
+    			writer.write(System.getProperty("line.separator"));
     		}
     		
     	} catch (IOException e) {
@@ -184,7 +187,6 @@ public final class TransferProtocol {
     		System.err.println("Error saving caregiver data. Ensure that recent_caregiver.txt and previous_caregiver.txt"
     				+ " exist.");
     	}
-    	
     }
     
      /**Loads the caregivers from a source file to a destination observable list. Updates a linked ChoiceBox.
@@ -225,6 +227,73 @@ public final class TransferProtocol {
     	list.removeAll(list);
     	swap(source, target, "temp.txt");
     	loadCaregiver(source, list, box);
+    }
+    
+    /**Saves the information from the Suite to a text file using conventional write methods.
+     * @param source - The source File.
+     * @param target - The destination file.
+     * @param list - The Suite[] array for the complex.*/
+    public static void saveSuite(File source, File target, Suite[] list) {
+    	copy(source, target);
+    	
+    	try (BufferedWriter writer = new BufferedWriter(new FileWriter(source))
+    			) {
+    		
+    		for (Suite suite : list) {
+    			writer.write(Integer.toString(suite.getSuiteNumber()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(suite.getSuiteStyle().getTypeName());
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Integer.toString(suite.getNumberOfOccupants()));
+    			writer.write(System.getProperty("line.separator"));
+    			writer.write(Boolean.toString(suite.getPresiderIsIn()));
+    			writer.write(System.getProperty("line.separator"));
+    			
+        		if (suite.getPresider() != null) {
+        			writer.write(suite.getPresider().getFName());
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(suite.getPresider().getLName());
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(suite.getPresider().getDOB());
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Integer.toString(suite.getPresider().getAge()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Integer.toString(suite.getPresider().getRoomID()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Long.toString(suite.getPresider().getEmpNum()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Double.toString(suite.getPresider().getHours()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Double.toString(suite.getPresider().getWage()));
+        			writer.write(System.getProperty("line.separator"));
+        		} else {
+        			writer.write("null");
+        			writer.write(System.getProperty("line.separator"));
+        		}
+    			
+    			for (Senior senior : suite.getOccupants()) {
+        			writer.write(senior.getFName());
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(senior.getLName());
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(senior.getDOB());
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Integer.toString(senior.getAge()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Integer.toString(senior.getRoomID()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Double.toString(senior.getHours()));
+        			writer.write(System.getProperty("line.separator"));
+        			writer.write(Long.toString(senior.getHID()));
+        			writer.write(System.getProperty("line.separator"));
+    			}
+    			
+    		}
+
+    	} catch(IOException e) {
+    		Logger.getLogger(TransferProtocol.class.getName()).log(Level.SEVERE, null, e);
+    		System.err.println("Failed to configure suite. Ensure recent_suite.txt and previous_suite.txt exist.");
+    	}
     }
     
      /**Loads the suppliers from a source file to a destination observable list. Updates a linked ChoiceBox.
